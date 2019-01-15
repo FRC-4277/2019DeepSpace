@@ -16,7 +16,7 @@ package frc.robot;
  * floating around.
  */
 public interface RobotMap {
-  //Drive TalonSRX
+    //Drive TalonSRX
 	public static int FRONT_LEFT_TALON = 21;
 	public static int BACK_LEFT_TALON = 22;
 	public static int FRONT_RIGHT_TALON = 23;

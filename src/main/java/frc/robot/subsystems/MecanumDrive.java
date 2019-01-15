@@ -10,6 +10,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import frc.robot.Robot;
 import frc.robot.commands.*;
 
 @SuppressWarnings("deprecation")
@@ -37,7 +39,7 @@ public class MecanumDrive extends Subsystem {
 	}
 	
 	public void mecaumDriveJoystick(Joystick driveStick) {
-		 drive.mecanumDrive_Cartesian(driveStick.getRawAxis(0), driveStick.getRawAxis(1), driveStick.getRawAxis(2),0);
+		drive.mecanumDrive_Cartesian(driveStick.getX(), driveStick.getY(), driveStick.getTwist(), 0);
 	}
 	
 	public void fieldOrientedMecanumDriveJoystick(Joystick driveStick, Double gyro) {

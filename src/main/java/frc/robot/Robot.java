@@ -12,10 +12,13 @@ import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
 
 /**
@@ -35,7 +38,7 @@ public class Robot extends TimedRobot implements RobotMap {
   public static MecanumDrive mecanumDrive = 
    new MecanumDrive(FRONT_LEFT_TALON, BACK_LEFT_TALON, FRONT_RIGHT_TALON, BACK_RIGHT_TALON);
 
-   public static AHRS navX = new AHRS(SerialPort.Port.kMXP);
+  public static AHRS navX = new AHRS(SPI.Port.kMXP);
 
   /**
    * This function is run when the robot is first started up and should be
@@ -48,6 +51,7 @@ public class Robot extends TimedRobot implements RobotMap {
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
     navX.reset();
+    LiveWindow.addSensor("MecanumDrive", "NavX", navX);
   }
 
   /**

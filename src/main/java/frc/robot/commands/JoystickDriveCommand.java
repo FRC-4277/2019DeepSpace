@@ -22,7 +22,7 @@ public class JoystickDriveCommand extends Command implements  RobotMap{
 	protected void  execute() {
 		if(OI.driveStick.getRawAxis(3) > 0) 
 			Robot.mecanumDrive.mecaumDriveJoystick(OI.driveStick);
-		
+
 		else if(OI.driveStick.getRawAxis(3) < 0)
 			Robot.mecanumDrive.fieldOrientedMecanumDriveJoystick(OI.driveStick, Robot.navX.getAngle());
 	}
