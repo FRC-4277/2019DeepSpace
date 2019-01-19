@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot;
+package frc.robot.map;
 
 
 
@@ -16,10 +16,8 @@ package frc.robot;
  * floating around.
  */
 public interface RobotMap {
-    //Drive TalonSRX
-	public static int FRONT_LEFT_TALON = 21;
-	public static int BACK_LEFT_TALON = 22;
-	public static int FRONT_RIGHT_TALON = 23;
-	public static int BACK_RIGHT_TALON = 24;
-	
+	public int getFrontLeftTalon();
+	public int getBackLeftTalon();
+	public int getFrontRightTalon();
+	public int getBackRightTalon();
 }

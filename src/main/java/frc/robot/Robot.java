@@ -7,19 +7,20 @@
 
 package frc.robot;
 
+import frc.robot.map.CloneRobotMap;
+import frc.robot.map.CompetitionRobotMap;
+import frc.robot.map.RobotMap;
 import frc.robot.subsystems.*;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,17 +29,18 @@ import edu.wpi.first.wpilibj.SerialPort;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot implements RobotMap {
-	
+public class Robot extends TimedRobot {
+  public static Robot instance;
   public static OI m_oi;
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
+  SendableChooser<Boolean> m_cloneChooser = new SendableChooser<>(); 
   
-  public static MecanumDrive mecanumDrive = 
-   new MecanumDrive(FRONT_LEFT_TALON, BACK_LEFT_TALON, FRONT_RIGHT_TALON, BACK_RIGHT_TALON);
+  public static RobotMap map;
+  public static MecanumDrive mecanumDrive;
 
-  public static AHRS navX = new AHRS(SPI.Port.kMXP);
+  public static AHRS navX;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -46,12 +48,47 @@ public class Robot extends TimedRobot implements RobotMap {
    */
   @Override
   public void robotInit() {
+    instance = this;
     m_oi = new OI();
+    
     //m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
-    navX.reset();
+
+    // Robot Chooser
+    m_cloneChooser.setDefaultOption("Competition", false);
+    m_cloneChooser.addOption("Clone", true);
+    SmartDashboard.putData("Robot", m_cloneChooser);
+    
+    if (!isClone()) {
+      navX = new AHRS(SPI.Port.kMXP);
+      navX.reset();
+    }
+
     LiveWindow.addSensor("MecanumDrive", "NavX", navX);
+  }
+
+  public boolean isClone() {
+    return m_cloneChooser.getSelected();
+  }
+
+  public RobotMap updateMap() {
+    // If clone is selected, then set and return a new CloneRobotMap,
+    // otherwise do the same for ComeptitionRobotMap
+    System.out.println("Robot changed to " + (isClone() ? "CLONE" : "COMPETITION"));
+    return map = isClone() ? new CloneRobotMap() : new CompetitionRobotMap();
+  }
+
+  public void instansiateSubsystems() {
+    updateMap();
+    if (mecanumDrive == null) {
+      mecanumDrive = new MecanumDrive(
+      map.getFrontLeftTalon(),
+      map.getBackLeftTalon(),
+      map.getFrontRightTalon(),
+      map.getBackRightTalon()
+    );
+    }
   }
 
   /**
@@ -93,6 +130,7 @@ public class Robot extends TimedRobot implements RobotMap {
    */
   @Override
   public void autonomousInit() {
+    instansiateSubsystems();
     m_autonomousCommand = m_chooser.getSelected();
 
     /*
@@ -118,6 +156,7 @@ public class Robot extends TimedRobot implements RobotMap {
 
   @Override
   public void teleopInit() {
+    instansiateSubsystems();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -135,10 +174,19 @@ public class Robot extends TimedRobot implements RobotMap {
     Scheduler.getInstance().run();
   }
 
+  @Override
+  public void testInit() {
+    instansiateSubsystems();
+  }
+
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic() {
+  }
+
+  public static Robot getInstance() {
+    return instance;
   }
 }

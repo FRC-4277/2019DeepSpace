@@ -3,11 +3,10 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.RobotMap;
 import frc.robot.OI;
 
 
-public class JoystickDriveCommand extends Command implements  RobotMap{
+public class JoystickDriveCommand extends Command {
 
 	
 	public JoystickDriveCommand() {
@@ -20,11 +19,17 @@ public class JoystickDriveCommand extends Command implements  RobotMap{
 	}
 	
 	protected void  execute() {
-		if(OI.driveStick.getRawAxis(3) > 0) 
-			Robot.mecanumDrive.mecaumDriveJoystick(OI.driveStick);
+		if (Robot.getInstance().isClone()) {
+			// Clone robot has no NavX, so only robot oriented driving
+			Robot.mecanumDrive.mecanumDriveJoystick(OI.driveStick);
+		} else {
+			// Use both field oriented and robot oriented for COMPETITION ROBOT
+			if(OI.driveStick.getRawAxis(3) > 0) 
+				Robot.mecanumDrive.mecanumDriveJoystick(OI.driveStick);
 
-		else if(OI.driveStick.getRawAxis(3) < 0)
-			Robot.mecanumDrive.fieldOrientedMecanumDriveJoystick(OI.driveStick, Robot.navX.getAngle());
+			else if(OI.driveStick.getRawAxis(3) < 0)
+				Robot.mecanumDrive.fieldOrientedMecanumDriveJoystick(OI.driveStick, Robot.navX.getAngle());
+		}
 	}
 	
 	@Override
