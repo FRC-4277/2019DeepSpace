@@ -18,8 +18,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  * Add your docs here.
  */
 public class Elevator extends Subsystem {
-  private WPI_TalonSRX mainMotor;
-  private WPI_TalonSRX followerMotor;
+  private WPI_TalonSRX mainMotor, followerMotor;
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
@@ -36,7 +35,10 @@ public class Elevator extends Subsystem {
     mainMotor.config_kD(0, 0);
     mainMotor.config_kF(0, 0);
 
-    followerMotor.follow(mainMotor);
+    
+    /*followerMotor = new WPI_TalonSRX();
+    followerMotor.setSubsystem("Elevator");
+    followerMotor.follow(mainMotor);*/
   }
 
   public void drive(double power) {
