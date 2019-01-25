@@ -31,4 +31,9 @@ public class CloneRobotMap implements RobotMap {
     public int getBackRightTalon() {
         return 58;
     }
+
+    @Override
+    public int getElevatorTalon() {
+        return 59;
+    }
 }

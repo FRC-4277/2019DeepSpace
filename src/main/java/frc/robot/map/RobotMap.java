@@ -20,4 +20,6 @@ public interface RobotMap {
 	public int getBackLeftTalon();
 	public int getFrontRightTalon();
 	public int getBackRightTalon();
+	
+	public int getElevatorTalon();
 }
