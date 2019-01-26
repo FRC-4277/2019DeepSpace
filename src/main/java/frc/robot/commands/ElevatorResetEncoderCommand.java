@@ -10,8 +10,8 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class ResetElevatorEncoderCommand extends Command {
-  public ResetElevatorEncoderCommand() {
+public class ElevatorResetEncoderCommand extends Command {
+  public ElevatorResetEncoderCommand() {
     requires(Robot.elevator);
   }
 

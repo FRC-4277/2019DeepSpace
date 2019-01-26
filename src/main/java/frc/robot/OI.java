@@ -17,7 +17,7 @@ import frc.robot.commands.ElevatorMoveToLoadingStationCommand;
 import frc.robot.commands.ElevatorMoveToMediumCommand;
 import frc.robot.commands.ElevatorStopManualCommand;
 import frc.robot.commands.ElevatorUpCommand;
-import frc.robot.commands.ResetElevatorEncoderCommand;
+import frc.robot.commands.ElevatorResetEncoderCommand;
 import frc.robot.map.XboxControllerMap;
 
 /**
@@ -67,7 +67,7 @@ public class OI {
     buttonA.whenPressed(new ElevatorMoveToHomeCommand());
 
     Button buttonB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_B);
-    buttonB.whenPressed(new ResetElevatorEncoderCommand());
+    buttonB.whenPressed(new ElevatorResetEncoderCommand());
 
     Button buttonRB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_RB);
     buttonRB.whenPressed(new ElevatorStopManualCommand());
