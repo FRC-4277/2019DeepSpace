@@ -11,8 +11,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.ElevatorDownCommand;
+import frc.robot.commands.ElevatorMoveToMediumCommand;
+import frc.robot.commands.ElevatorStopManualCommand;
 import frc.robot.commands.ElevatorUpCommand;
-import frc.robot.commands.MoveElevatorCommand;
 import frc.robot.commands.ResetElevatorEncoderCommand;
 import frc.robot.map.XboxControllerMap;
 
@@ -54,7 +55,7 @@ public class OI {
 
   static {
     Button buttonX = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_X);
-    buttonX.whileHeld(new MoveElevatorCommand(100_000));
+    buttonX.whileHeld(new ElevatorMoveToMediumCommand());
 
     Button buttonY = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_Y);
     buttonY.whileHeld(new ElevatorUpCommand());
@@ -64,5 +65,8 @@ public class OI {
 
     Button buttonB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_B);
     buttonB.whenPressed(new ResetElevatorEncoderCommand());
+
+    Button buttonRB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_RB);
+    buttonRB.whenPressed(new ElevatorStopManualCommand());
   }
 }

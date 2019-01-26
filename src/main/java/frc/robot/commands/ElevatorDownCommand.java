@@ -23,18 +23,19 @@ public class ElevatorDownCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.elevator.drive(-0.5);
+    Robot.elevator.drive(-.25);
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return true;
+    return false;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.elevator.stop();
   }
 
   // Called when another command which requires one or more of the same

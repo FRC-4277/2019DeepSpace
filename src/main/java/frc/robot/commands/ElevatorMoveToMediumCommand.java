@@ -9,13 +9,11 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.subsystems.Elevator.Mode;
 
-public class MoveElevatorCommand extends Command {
-  private int position;
-
-  public MoveElevatorCommand(int position) {
+public class ElevatorMoveToMediumCommand extends Command {
+  public ElevatorMoveToMediumCommand() {
     requires(Robot.elevator);
-    this.position = position;
   }
 
   // Called just before this Command runs the first time
@@ -26,19 +24,18 @@ public class MoveElevatorCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.elevator.goToPosition(position);
+    Robot.elevator.goToModeIndefinitely(Mode.MEDIUM);
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return true;
+    return false;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.elevator.stop();
   }
 
   // Called when another command which requires one or more of the same
