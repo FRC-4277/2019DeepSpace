@@ -43,6 +43,7 @@ public class Elevator extends Subsystem {
     followerMotor = new WPI_TalonSRX(followerId);
     followerMotor.setSubsystem("Elevator");
     followerMotor.setInverted(true);
+    followerMotor.setNeutralMode(NeutralMode.Brake);
     followerMotor.follow(mainMotor);
 
     resetEncoder();
