@@ -37,11 +37,12 @@ public class Elevator extends Subsystem {
     mainMotor.setSensorPhase(false);
     resetEncoder();
     stop();    
+    configurePID(0.2, 0, 0);
 
-    //followerMotor = new WPI_TalonSRX(followerId);
-    //followerMotor.setSubsystem("Elevator");
-    //followerMotor.setInverted(true);
-    //followerMotor.follow(mainMotor);
+    followerMotor = new WPI_TalonSRX(followerId);
+    followerMotor.setSubsystem("Elevator");
+    followerMotor.setInverted(true);
+    followerMotor.follow(mainMotor);
   }
 
   private void configurePID(double p, double i, double d) {
@@ -62,7 +63,6 @@ public class Elevator extends Subsystem {
   }
 
   public void goToPosition(double target) {
-    configurePID(2, 0, 0);
     System.out.println("goToPosition: " + target);
     mainMotor.set(ControlMode.Position, target);
   }
