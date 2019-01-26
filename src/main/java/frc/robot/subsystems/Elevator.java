@@ -35,19 +35,22 @@ public class Elevator extends Subsystem {
     super("Elevator");
 
     mainMotor = new WPI_TalonSRX(talonId);
-    mainMotor.setSubsystem("Elevator");
-    mainMotor.setInverted(true);
-    mainMotor.setNeutralMode(NeutralMode.Brake);
+    configureMotorBasics(mainMotor);
+    // Sensor Phase is valid for COMPETITION ROBOT, maybe not clone (but doesn't matter)
     mainMotor.setSensorPhase(true);
     
     followerMotor = new WPI_TalonSRX(followerId);
-    followerMotor.setSubsystem("Elevator");
-    followerMotor.setInverted(true);
-    followerMotor.setNeutralMode(NeutralMode.Brake);
+    configureMotorBasics(followerMotor);
     followerMotor.follow(mainMotor);
 
     resetEncoder();
     stop();
+  }
+
+  private void configureMotorBasics(WPI_TalonSRX talonSRX) {
+    talonSRX.setSubsystem("Elevator");
+    talonSRX.setInverted(true);
+    talonSRX.setNeutralMode(NeutralMode.Brake);
   }
 
   private void configurePID(PIDProfile profile) {
