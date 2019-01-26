@@ -31,4 +31,14 @@ public class CompetitionRobotMap implements RobotMap {
     public int getBackRightTalon() {
         return 24;
     }
+
+    @Override
+    public int getElevatorTalon() {
+        return -1;
+    }
+
+    @Override
+    public int getElevatorFollowerTalon() {
+        return -1;
+    }
 }
