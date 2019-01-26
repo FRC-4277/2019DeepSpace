@@ -39,6 +39,7 @@ public class Robot extends TimedRobot {
 
   public static RobotMap map;
   public static MecanumDrive mecanumDrive;
+  public static Elevator elevator;
 
   public static AHRS navX;
 
@@ -51,7 +52,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     instance = this;
-    m_oi = new OI();
 
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
@@ -88,6 +88,12 @@ public class Robot extends TimedRobot {
     if (mecanumDrive == null) {
       mecanumDrive = new MecanumDrive(map.getFrontLeftTalon(), map.getBackLeftTalon(), map.getFrontRightTalon(),
           map.getBackRightTalon());
+    }
+    if (elevator == null) {
+      elevator = new Elevator(map.getElevatorTalon(), map.getElevatorFollowerTalon());
+    }
+    if (m_oi == null) {
+      m_oi = new OI();
     }
   }
 

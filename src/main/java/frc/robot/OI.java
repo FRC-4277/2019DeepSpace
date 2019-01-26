@@ -8,6 +8,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.MoveElevatorCommand;
+import frc.robot.map.XboxControllerMap;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -43,5 +47,10 @@ public class OI {
   // button.whenReleased(new ExampleCommand());
 
   public static Joystick driveStick = new Joystick(0);
+  public static Joystick xboxController = new Joystick(1);
 
+  static {
+    Button button = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_A);
+    button.whenPressed(new MoveElevatorCommand(100_000));
+  }
 }

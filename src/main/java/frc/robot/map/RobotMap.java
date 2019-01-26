@@ -22,4 +22,5 @@ public interface RobotMap {
 	public int getBackRightTalon();
 	
 	public int getElevatorTalon();
+	public int getElevatorFollowerTalon();
 }
