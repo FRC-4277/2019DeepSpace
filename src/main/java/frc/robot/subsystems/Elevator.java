@@ -7,12 +7,17 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
  * Add your docs here.
@@ -27,39 +32,59 @@ public class Elevator extends Subsystem {
 
     mainMotor = new WPI_TalonSRX(talonId);
     mainMotor.setSubsystem("Elevator");
+    mainMotor.setInverted(true);
     mainMotor.setNeutralMode(NeutralMode.Brake);
     mainMotor.setSensorPhase(false);
-    mainMotor.setSelectedSensorPosition(0);
+    resetEncoder();
+    stop();    
+
+    //followerMotor = new WPI_TalonSRX(followerId);
+    //followerMotor.setSubsystem("Elevator");
+    //followerMotor.setInverted(true);
+    //followerMotor.follow(mainMotor);
+  }
+
+  private void configurePID(double p, double i, double d) {
     mainMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-    mainMotor.config_kP(0, 10);
-    mainMotor.config_kI(0, 0.5);
-    mainMotor.config_kD(0, 0.5);
-    mainMotor.config_kF(0, 0);
-
-    followerMotor = new WPI_TalonSRX(followerId);
-    followerMotor.setSubsystem("Elevator");
-    followerMotor.follow(mainMotor);
-
-    System.out.println("Subsystem made");
+    mainMotor.configAllowableClosedloopError(0, 1000, 50);
+    //mainMotor.configNominal
+    mainMotor.config_kP(0, p);
+    mainMotor.config_kI(0, i);
+    mainMotor.config_kD(0, d);
   }
 
   public void drive(double power) {
-    mainMotor.disable();
-    mainMotor.set(power);
+    mainMotor.set(ControlMode.PercentOutput, power);
   }
 
   public void stop() {
-    mainMotor.set(0);
+    mainMotor.set(ControlMode.PercentOutput, 0);
   }
 
   public void goToPosition(double target) {
-    System.out.println("goToPosition");
+    configurePID(2, 0, 0);
+    System.out.println("goToPosition: " + target);
     mainMotor.set(ControlMode.Position, target);
+  }
+
+  public void resetEncoder() {
+    mainMotor.setSelectedSensorPosition(0);
   }
 
   @Override
   public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
+    
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    super.initSendable(builder);
+    builder.addDoubleProperty("SensorPosition", new DoubleSupplier(){
+    
+      @Override
+      public double getAsDouble() {
+        return mainMotor.getSelectedSensorPosition();
+      }
+    }, null); 
   }
 }

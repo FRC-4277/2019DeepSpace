@@ -10,7 +10,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.ElevatorDownCommand;
+import frc.robot.commands.ElevatorUpCommand;
 import frc.robot.commands.MoveElevatorCommand;
+import frc.robot.commands.ResetElevatorEncoderCommand;
 import frc.robot.map.XboxControllerMap;
 
 /**
@@ -50,7 +53,16 @@ public class OI {
   public static Joystick xboxController = new Joystick(1);
 
   static {
-    Button button = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_A);
-    button.whenPressed(new MoveElevatorCommand(100_000));
+    Button buttonX = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_X);
+    buttonX.whileHeld(new MoveElevatorCommand(100_000));
+
+    Button buttonY = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_Y);
+    buttonY.whileHeld(new ElevatorUpCommand());
+
+    Button buttonA = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_A);
+    buttonA.whileHeld(new ElevatorDownCommand());
+
+    Button buttonB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_B);
+    buttonB.whenPressed(new ResetElevatorEncoderCommand());
   }
 }
