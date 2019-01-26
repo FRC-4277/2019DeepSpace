@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -26,8 +27,9 @@ public class Elevator extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
   private Mode mode = Mode.MANUAL_CONTROL;
+  // 0.014
   private PIDProfile upPID = new PIDProfile(0.014, 0, 0);
-  private PIDProfile downPID = new PIDProfile(0, 0, 0);
+  private PIDProfile downPID = new PIDProfile(0.008, 0, 0);
 
   public Elevator(int talonId, int followerId) {
     super("Elevator");
@@ -76,7 +78,8 @@ public class Elevator extends Subsystem {
     mainMotor.set(ControlMode.Position, target);
   }
 
-  public void goToModeIndefinitely(Mode mode) {
+  public void goToMode(Mode mode) {
+    this.mode = mode;
     if (mode.isElevatorLevel()) {
       boolean up = mode.getSetPoint() > getSensorPosition();
       if (up) {
@@ -88,6 +91,10 @@ public class Elevator extends Subsystem {
       }
       mainMotor.set(ControlMode.Position, mode.getSetPoint());
     }
+  }
+
+  public Mode getMode() {
+    return mode;
   }
 
   public void resetEncoder() {
@@ -107,6 +114,11 @@ public class Elevator extends Subsystem {
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
     builder.addDoubleProperty("SensorPosition", this::getSensorPosition, null); 
+    builder.addStringProperty("Mode", new Supplier<String>() {
+      public String get() {
+        return mode.name();
+      }
+    }, null);
   }
 
   public class PIDProfile {
@@ -129,10 +141,10 @@ public class Elevator extends Subsystem {
     MANUAL_CONTROL(false),
     // LEVELS
     HOME(0, true),
-    LOADING_STATION(50_000, true),
+    LOADING_STATION(201_155, true),
     LOW(100_000, true),
     MEDIUM(312_935, true),
-    HIGH(200_000, true);
+    HIGH(614_647, true);
 
     private boolean isElevatorLevel;
     private int setPoint;

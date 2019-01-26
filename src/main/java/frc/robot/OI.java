@@ -11,6 +11,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.ElevatorDownCommand;
+import frc.robot.commands.ElevatorMoveToHighCommand;
+import frc.robot.commands.ElevatorMoveToHomeCommand;
+import frc.robot.commands.ElevatorMoveToLoadingStationCommand;
 import frc.robot.commands.ElevatorMoveToMediumCommand;
 import frc.robot.commands.ElevatorStopManualCommand;
 import frc.robot.commands.ElevatorUpCommand;
@@ -55,18 +58,21 @@ public class OI {
 
   static {
     Button buttonX = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_X);
-    buttonX.whileHeld(new ElevatorMoveToMediumCommand());
+    buttonX.whenPressed(new ElevatorMoveToMediumCommand());
 
     Button buttonY = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_Y);
-    buttonY.whileHeld(new ElevatorUpCommand());
+    buttonY.whenPressed(new ElevatorMoveToHighCommand());
 
     Button buttonA = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_A);
-    buttonA.whileHeld(new ElevatorDownCommand());
+    buttonA.whenPressed(new ElevatorMoveToHomeCommand());
 
     Button buttonB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_B);
     buttonB.whenPressed(new ResetElevatorEncoderCommand());
 
     Button buttonRB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_RB);
     buttonRB.whenPressed(new ElevatorStopManualCommand());
+    
+    Button buttonLB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_LB);
+    buttonLB.whenPressed(new ElevatorMoveToLoadingStationCommand());
   }
 }
