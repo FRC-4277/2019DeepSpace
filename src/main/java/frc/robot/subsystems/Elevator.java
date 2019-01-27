@@ -108,6 +108,7 @@ public class Elevator extends Subsystem {
    * @param target target position (in encoder ticks)
    */
   public void goToPosition(double target) {
+    mode = Mode.MANUAL_TARGET;
     mainMotor.set(ControlMode.Position, target);
   }
 
@@ -164,7 +165,7 @@ public class Elevator extends Subsystem {
     builder.addDoubleProperty("SensorPosition", this::getSensorPosition, null); 
     builder.addStringProperty("Mode", new Supplier<String>() {
       public String get() {
-        return mode.name();
+        return mode.getName();
       }
     }, null);
   }
@@ -201,34 +202,44 @@ public class Elevator extends Subsystem {
     /**
      * This mode is when the elevator is being controlled manually (through controller)
      */
-    MANUAL_CONTROL(false),
+    MANUAL_CONTROL("Manual Control", false),
+    /**
+     * This mode is when a manual value is set for the target position
+     */
+    MANUAL_TARGET("Manual Target", false),
     /**
      * Home level, where the elevator starts and to score at lowest hatches and cargo on rocket.
      */
-    HOME(0, true),
+    HOME("Home", 0, true),
     /**
      * Level at loading station.
      */
-    LOADING_STATION(201_155, true),
+    LOADING_STATION("Loading Station", 201_155, true),
     /**
      * Level at medium ports on the rocket
      */
-    MEDIUM(312_935, true),
+    MEDIUM("Medium", 312_935, true),
     /**
      * Level at highest ports on the rocket
      */
-    HIGH(614_647, true);
+    HIGH("High", 614_647, true);
 
+    private String name;
     private boolean isElevatorLevel;
     private int setPoint;
 
-    private Mode(boolean isElevatorLevel) {
-      this(-1, isElevatorLevel);
+    private Mode(String name, boolean isElevatorLevel) {
+      this(name, -1, isElevatorLevel);
     }
 
-    private Mode(int setPoint, boolean isElevatorLevel) {
+    private Mode(String name, int setPoint, boolean isElevatorLevel) {
+      this.name = name;
       this.setPoint = setPoint;
       this.isElevatorLevel = isElevatorLevel;
+    }
+
+    public String getName() {
+      return name;
     }
 
     public int getSetPoint() {
