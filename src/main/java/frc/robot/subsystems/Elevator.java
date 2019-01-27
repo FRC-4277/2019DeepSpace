@@ -217,6 +217,18 @@ public class Elevator extends Subsystem {
     LOADING_STATION("Loading Station", 201155, true),
     /**
      * Level at medium ports on the rocket
+     * <p>
+     * Encoder Ticks Calculation w/ Explanation (math can be applied to other positions):
+     * 
+     * The elevator's PVC pipe has a diameter of 3.5", so the circumference of it is about 11".
+     * Therefore one rotation of the PVC moves the elevator 11". The travel distance to MEDIUM 
+     * is 28", so dividing 28" by 11", we'll need ~2.54 rotations of the PVC. The gear box makes
+     * it so 30 turns of the motor is 1 turn of the PVC (30:1 gear ratio), so multiply 2.54 by 
+     * 30 to get about 76 motor rotations needed. Lastly, the CTRE MAG Encoder's position
+     * increases by 4096 per rotation, so multiply 76 by 4096 to get the encoder position needed
+     * in terms of ticks: {@code 4096 * 76 = about 312,000 encoder ticks}.
+     * 
+     * The formula is {@code Encoder Ticks = (Travel Distance / (3.5 * PI) ) * 30 * 4096}.
      */
     MEDIUM("Medium", 312935, true),
     /**
