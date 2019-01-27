@@ -214,15 +214,15 @@ public class Elevator extends Subsystem {
     /**
      * Level at loading station.
      */
-    LOADING_STATION("Loading Station", 201_155, true),
+    LOADING_STATION("Loading Station", 201155, true),
     /**
      * Level at medium ports on the rocket
      */
-    MEDIUM("Medium", 312_935, true),
+    MEDIUM("Medium", 312935, true),
     /**
      * Level at highest ports on the rocket
      */
-    HIGH("High", 614_647, true);
+    HIGH("High", 614647, true);
 
     private String name;
     private boolean isElevatorLevel;
