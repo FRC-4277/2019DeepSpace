@@ -23,4 +23,6 @@ public interface RobotMap {
 	
 	public int getElevatorTalon();
 	public int getElevatorFollowerTalon();
+	public int getHatchPanelId();
+	public int getCargoID();
 }

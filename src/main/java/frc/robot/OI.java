@@ -10,6 +10,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.CargoSystemShoot;
+import frc.robot.commands.HatchPanelGrab;
+import frc.robot.commands.HatchPanelRelease;
 import frc.robot.commands.MoveElevatorCommand;
 import frc.robot.map.XboxControllerMap;
 
@@ -50,7 +53,16 @@ public class OI {
   public static Joystick xboxController = new Joystick(1);
 
   static {
-    Button button = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_A);
-    button.whenPressed(new MoveElevatorCommand(100_000));
+    Button move_elevator = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_A);
+    move_elevator.whenPressed(new MoveElevatorCommand(100_000));
+
+    Button grab_hatch = new JoystickButton(driveStick, 3);
+    grab_hatch.whenPressed(new HatchPanelGrab());
+
+    Button release_hatch = new JoystickButton(driveStick, 5);
+    release_hatch.whenPressed(new HatchPanelRelease());
+
+    Button shoot_ball = new JoystickButton(driveStick, 1);
+    shoot_ball.whenPressed(new CargoSystemShoot());
   }
 }

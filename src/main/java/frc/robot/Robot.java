@@ -40,10 +40,12 @@ public class Robot extends TimedRobot {
   public static RobotMap map;
   public static MecanumDrive mecanumDrive;
   public static Elevator elevator;
+  public static HatchPanelSystem hatchPanelSystem;
+  public static CargoSystem cargoSystem;
 
   public static AHRS navX;
 
-  public UsbCamera cameraOne;
+  public UsbCamera cameraOne, cameraTwo;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -70,6 +72,7 @@ public class Robot extends TimedRobot {
     LiveWindow.addSensor("MecanumDrive", "NavX", navX);
 
     cameraOne = CameraServer.getInstance().startAutomaticCapture(0);
+    cameraTwo = CameraServer.getInstance().startAutomaticCapture(1);
   }
 
   public boolean isClone() {
@@ -91,6 +94,12 @@ public class Robot extends TimedRobot {
     }
     if (elevator == null) {
       elevator = new Elevator(map.getElevatorTalon(), map.getElevatorFollowerTalon());
+    }
+    if (hatchPanelSystem == null) {
+      hatchPanelSystem = new HatchPanelSystem(map.getHatchPanelId());
+    }
+    if (cargoSystem == null) {
+      cargoSystem = new CargoSystem(map.getCargoID());
     }
     if (m_oi == null) {
       m_oi = new OI();

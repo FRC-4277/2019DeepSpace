@@ -41,4 +41,14 @@ public class CloneRobotMap implements RobotMap {
     public int getElevatorFollowerTalon() {
         return 1;
     }
+
+    @Override
+    public int getHatchPanelId() {
+        return 1; // TODO: get ID
+    }
+
+    @Override
+    public int getCargoID() {
+        return 59; // TODO: get ID
+    }
 }
