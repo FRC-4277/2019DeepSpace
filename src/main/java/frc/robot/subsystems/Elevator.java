@@ -115,7 +115,7 @@ public class Elevator extends Subsystem {
    */
   public void goToMode(Mode mode) {
     this.mode = mode;
-    // Check if this mode is an elevator level. The only mode that isn't an elevator mode is MANUAL
+    // Check if this mode is an elevator level. The only mode that isn't an elevator level is MANUAL
     if (mode.isElevatorLevel()) {
       boolean up = mode.getSetPoint() > getSensorPosition();
       // If we need to go UP and we're NOT configured for up, let's configure for UP
