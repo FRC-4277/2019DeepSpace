@@ -28,6 +28,10 @@ public class Elevator extends Subsystem {
    * when using PID to go to a position
    */
   private static final int ENCODER_PID_ERROR_ALLOWANCE = 1000;
+  /**
+   * The timeout for setting config values on the TalonSRX
+   */
+  private static final int TALONSRX_CONFIGURE_TIMEOUT = 50;
   private WPI_TalonSRX mainMotor, followerMotor;
   /**
    * The current mode the elevator is in
@@ -74,12 +78,12 @@ public class Elevator extends Subsystem {
   }
 
   private void configurePID(double p, double i, double d, double f) {
-    mainMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 50);
-    mainMotor.configAllowableClosedloopError(0, ENCODER_PID_ERROR_ALLOWANCE, 50);
-    mainMotor.config_kP(0, p, 50);
-    mainMotor.config_kI(0, i, 50);
-    mainMotor.config_kD(0, d, 50);
-    mainMotor.config_kF(0, f, 50);
+    mainMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.configAllowableClosedloopError(0, ENCODER_PID_ERROR_ALLOWANCE, TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kP(0, p, TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kI(0, i, TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kD(0, d, TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kF(0, f, TALONSRX_CONFIGURE_TIMEOUT);
   }
 
   /**
