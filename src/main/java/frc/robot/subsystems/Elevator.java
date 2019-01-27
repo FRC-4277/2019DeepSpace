@@ -88,7 +88,7 @@ public class Elevator extends Subsystem {
 
   /**
    * Drive elevator manually.
-   * @param power power to set motor to (between -1.0 and 1.0 inclusive)
+   * @param power Power to set motor to (between -1.0 and 1.0 inclusive)
    */
   public void drive(double power) {
     mode = Mode.MANUAL_CONTROL;
@@ -104,8 +104,8 @@ public class Elevator extends Subsystem {
   }
 
   /**
-   * Go to position manually
-   * @param target target position (in encoder ticks)
+   * Go to position manually (call repetitively to approach target)
+   * @param target Position to approach with PID loop (in encoder ticks)
    */
   public void goToPosition(double target) {
     mode = Mode.MANUAL_TARGET;
@@ -115,12 +115,12 @@ public class Elevator extends Subsystem {
   /**
    * Go to a specified mode. If this mode is a level, then it will configure the Talon's PID automatically and go there.
    * (call with this mode repetitively to approach target)
-   * If the mode is not a level (e.g MANUAL mode), then it will just update the current mode.
+   * If the mode is not a level (e.g MANUAL_CONTROL or MANUAL_TARGET mode), then it will just update the current mode.
    * @param mode the mode to set (and if it's a level, go to)
    */
   public void goToMode(Mode mode) {
     this.mode = mode;
-    // Check if this mode is an elevator level. The only mode that isn't an elevator level is MANUAL
+    // Check if this mode is an elevator level. The only modes that aren't an elevator level are MANUAL_CONTROL and MANUAL_TARGET
     if (mode.isElevatorLevel()) {
       boolean up = mode.getSetPoint() > getSensorPosition();
       // If we need to go UP and we're NOT configured for up, let's configure for UP
@@ -202,19 +202,19 @@ public class Elevator extends Subsystem {
     /**
      * This mode is when the elevator is being controlled manually (through controller)
      */
-    MANUAL_CONTROL("Manual Control", false),
+    MANUAL_CONTROL("Manual Control"),
     /**
      * This mode is when a manual value is set for the target position
      */
-    MANUAL_TARGET("Manual Target", false),
+    MANUAL_TARGET("Manual Target"),
     /**
      * Home level, where the elevator starts and to score at lowest hatches and cargo on rocket.
      */
-    HOME("Home", 0, true),
+    HOME("Home", 0),
     /**
      * Level at loading station.
      */
-    LOADING_STATION("Loading Station", 201155, true),
+    LOADING_STATION("Loading Station", 201155),
     /**
      * Level at medium ports on the rocket
      * <p>
@@ -230,24 +230,26 @@ public class Elevator extends Subsystem {
      * 
      * The formula is {@code Encoder Ticks = (Travel Distance / (3.5 * PI) ) * 30 * 4096}.
      */
-    MEDIUM("Medium", 312935, true),
+    MEDIUM("Medium", 312935),
     /**
      * Level at highest ports on the rocket
      */
-    HIGH("High", 614647, true);
+    HIGH("High", 614647);
 
     private String name;
     private boolean isElevatorLevel;
     private int setPoint;
 
-    private Mode(String name, boolean isElevatorLevel) {
-      this(name, -1, isElevatorLevel);
+    private Mode(String name) {
+      this.name = name;
+      this.isElevatorLevel = false;
+      this.setPoint = -1;
     }
 
-    private Mode(String name, int setPoint, boolean isElevatorLevel) {
+    private Mode(String name, int setPoint) {
       this.name = name;
       this.setPoint = setPoint;
-      this.isElevatorLevel = isElevatorLevel;
+      this.isElevatorLevel = true;
     }
 
     public String getName() {
