@@ -192,6 +192,23 @@ public class Elevator extends Subsystem {
   }
 
   /**
+   * Check if the elevator has reached the level
+   * @returns true if the mode isn't a level, false if the elevator isn't in the specified mode,
+   * otherwise returns if the elevator has reached the mode's setpoint
+   * @param mode The mode to check if the elevator is in and has reached
+   */
+  public boolean hasReachedMode(Mode mode) {
+    if (this.mode != mode) {
+      return false;
+    }
+    if (!mode.isElevatorLevel()) {
+      return true;
+    }
+    int error = Math.abs(getSensorPosition() - mode.getSetPoint());
+    return error <= ENCODER_ERROR_ALLOWANCE;
+  }
+
+  /**
    * Reset the TalonSRX's MAG encoder to {@code 0}
    */
   public void resetEncoder() {

@@ -60,16 +60,16 @@ public class OI {
 
   static {
     Button buttonA = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_A);
-    buttonA.whenPressed(new ElevatorMoveToHomeCommand());
+    buttonA.whenPressed(new ElevatorMoveToHomeCommand(true));
 
     Button buttonB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_B);
-    buttonB.whenPressed(new ElevatorMoveToLoadingStationCommand());
+    buttonB.whenPressed(new ElevatorMoveToLoadingStationCommand(true));
 
     Button buttonX = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_X);
-    buttonX.whenPressed(new ElevatorMoveToMediumCommand());
+    buttonX.whenPressed(new ElevatorMoveToMediumCommand(true));
 
     Button buttonY = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_Y);
-    buttonY.whenPressed(new ElevatorMoveToHighCommand());
+    buttonY.whenPressed(new ElevatorMoveToHighCommand(true));
 
     Button buttonBack = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_BACK);
     buttonBack.whenPressed(new ElevatorResetEncoderCommand());
