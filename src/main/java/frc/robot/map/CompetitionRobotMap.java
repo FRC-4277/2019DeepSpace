@@ -34,11 +34,16 @@ public class CompetitionRobotMap implements RobotMap {
 
     @Override
     public int getElevatorTalon() {
-        return -1;
+        return 31;
     }
 
     @Override
     public int getElevatorFollowerTalon() {
-        return -1;
+        return 33;
+    }
+
+    @Override
+    public int getPCMId() {
+        return 1;
     }
 }

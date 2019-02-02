@@ -7,18 +7,28 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-/**
- * Add your docs here.
- */
 public class CargoSystem extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
+
+  private Solenoid solenoid;
+
+  public CargoSystem(int deviceid) {
+    // "1" is the CargoSystem Channel on the PCM (keep it the same)
+    solenoid = new Solenoid(deviceid, 1);
+  }
+
+  public void shootBall() {
+    System.out.println("Ball is shot");
+    solenoid.set(true);
+    Timer.delay(1.5);
+    solenoid.set(false);
+  }
 
   @Override
   public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
+    solenoid.set(false);
   }
 }
