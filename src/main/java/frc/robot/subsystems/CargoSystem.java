@@ -16,15 +16,15 @@ public class CargoSystem extends Subsystem {
   private Solenoid solenoid;
 
   public CargoSystem(int deviceid) {
-    // "1" is the CargoSystem Channel (keep it the same)
+    // "1" is the CargoSystem Channel on the PCM (keep it the same)
     solenoid = new Solenoid(deviceid, 1);
   }
 
   public void shootBall() {
     System.out.println("Ball is shot");
-    // solenoid.set(true);
-    // Timer.delay(1.5);
-    // solenoid.set(false);
+    solenoid.set(true);
+    Timer.delay(1.5);
+    solenoid.set(false);
   }
 
   @Override

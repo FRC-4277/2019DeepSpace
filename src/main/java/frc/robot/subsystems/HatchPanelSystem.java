@@ -18,18 +18,18 @@ public class HatchPanelSystem extends Subsystem {
   public Solenoid solenoid;
 
   public HatchPanelSystem(int deviceid) {
-    // "0" is the HatchPanelSystem Channel (keep it the same)
+    // "0" is the HatchPanelSystem Channel on the PCM (keep it the same)
     solenoid = new Solenoid(deviceid, 0);
   }
 
   public void grabHatch() {
     System.out.println("grabbed");
-    // solenoid.set(true);
+    solenoid.set(false);
   }
 
   public void releaseHatch() {
     System.out.println("Released");
-    // solenoid.set(false);
+    solenoid.set(true);
   }
 
   @Override

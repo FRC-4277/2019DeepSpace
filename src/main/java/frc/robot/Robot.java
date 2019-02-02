@@ -96,10 +96,10 @@ public class Robot extends TimedRobot {
       elevator = new Elevator(map.getElevatorTalon(), map.getElevatorFollowerTalon());
     }
     if (hatchPanelSystem == null) {
-      hatchPanelSystem = new HatchPanelSystem(map.getHatchPanelId());
+      hatchPanelSystem = new HatchPanelSystem(map.getPCMId());
     }
     if (cargoSystem == null) {
-      cargoSystem = new CargoSystem(map.getCargoID());
+      cargoSystem = new CargoSystem(map.getPCMId());
     }
     if (m_oi == null) {
       m_oi = new OI();
