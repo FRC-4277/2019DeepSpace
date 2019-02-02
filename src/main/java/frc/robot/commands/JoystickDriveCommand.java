@@ -12,11 +12,14 @@ public class JoystickDriveCommand extends Command {
 		requires(Robot.mecanumDrive);
 	}
 
+	@Override
 	protected void initialize() {
-
+		super.initialize();
 	}
 
+	@Override
 	protected void execute() {
+		super.execute();
 		if (Robot.getInstance().isClone()) {
 			// Clone robot has no NavX, so only robot oriented driving
 			Robot.mecanumDrive.mecanumDriveJoystick(OI.driveStick);
@@ -36,12 +39,16 @@ public class JoystickDriveCommand extends Command {
 		return false;
 	}
 
+	@Override
 	protected void end() {
+		super.end();
 	}
 
 	// Called when another command which requires one or more of the same
 	// subsystems is scheduled to run
+	@Override
 	protected void interrupted() {
+		super.interrupted();
 	}
 
 }

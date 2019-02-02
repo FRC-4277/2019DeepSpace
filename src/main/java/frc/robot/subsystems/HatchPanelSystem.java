@@ -7,18 +7,33 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
  * Add your docs here.
  */
 public class HatchPanelSystem extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
+
+  public Solenoid solenoid;
+
+  public HatchPanelSystem(int deviceid) {
+    // "0" is the HatchPanelSystem Channel on the PCM (keep it the same)
+    solenoid = new Solenoid(deviceid, 0);
+  }
+
+  public void grabHatch() {
+    System.out.println("grabbed");
+    solenoid.set(false);
+  }
+
+  public void releaseHatch() {
+    System.out.println("Released");
+    solenoid.set(true);
+  }
 
   @Override
   public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
+    grabHatch();
   }
 }

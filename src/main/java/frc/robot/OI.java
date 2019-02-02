@@ -19,6 +19,10 @@ import frc.robot.commands.ElevatorMoveToMediumCommand;
 import frc.robot.commands.ElevatorManualStopCommand;
 import frc.robot.commands.ElevatorManualUpCommand;
 import frc.robot.commands.ElevatorResetEncoderCommand;
+import frc.robot.commands.CargoSystemShoot;
+import frc.robot.commands.HatchPanelGrab;
+import frc.robot.commands.HatchPanelRelease;
+import frc.robot.commands.MoveElevatorCommand;
 import frc.robot.map.XboxControllerMap;
 
 /**
@@ -76,6 +80,12 @@ public class OI {
     Button buttonStart = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_START);
     buttonStart.whenPressed(new ElevatorManualControllerDriveCommand());
 
-    // Left bumper and right bumper for cargo and hatch
+    Button buttonLB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_LB);
+    buttonLB.whenPressed(new HatchPanelGrab());
+
+    // TODO : Add toggle for release hatch panel
+    
+    Button buttonRB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_RB);
+    buttonRB.whenPressed(new CargoSystemShoot());
   }
 }
