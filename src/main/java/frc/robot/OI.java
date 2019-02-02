@@ -10,10 +10,16 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.ElevatorManualControllerDriveCommand;
+import frc.robot.commands.ElevatorManualDownCommand;
+import frc.robot.commands.ElevatorMoveToHighCommand;
+import frc.robot.commands.ElevatorMoveToHomeCommand;
+import frc.robot.commands.ElevatorMoveToLoadingStationCommand;
+import frc.robot.commands.ElevatorMoveToMediumCommand;
+import frc.robot.commands.ElevatorResetEncoderCommand;
 import frc.robot.commands.CargoSystemShoot;
 import frc.robot.commands.HatchPanelGrab;
 import frc.robot.commands.HatchPanelRelease;
-import frc.robot.commands.MoveElevatorCommand;
 import frc.robot.map.XboxControllerMap;
 
 /**
@@ -53,16 +59,30 @@ public class OI {
   public static Joystick xboxController = new Joystick(1);
 
   static {
-    Button move_elevator = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_A);
-    move_elevator.whenPressed(new MoveElevatorCommand(100_000));
+    Button buttonA = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_A);
+    buttonA.whenPressed(new ElevatorMoveToHomeCommand());
 
-    Button grab_hatch = new JoystickButton(driveStick, 3);
-    grab_hatch.whenPressed(new HatchPanelGrab());
+    Button buttonB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_B);
+    buttonB.whenPressed(new ElevatorMoveToLoadingStationCommand());
 
-    Button release_hatch = new JoystickButton(driveStick, 5);
-    release_hatch.whenPressed(new HatchPanelRelease());
+    Button buttonX = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_X);
+    buttonX.whenPressed(new ElevatorMoveToMediumCommand());
 
-    Button shoot_ball = new JoystickButton(driveStick, 1);
-    shoot_ball.whenPressed(new CargoSystemShoot());
+    Button buttonY = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_Y);
+    buttonY.whenPressed(new ElevatorMoveToHighCommand());
+
+    Button buttonBack = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_BACK);
+    buttonBack.whenPressed(new ElevatorResetEncoderCommand());
+
+    Button buttonStart = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_START);
+    buttonStart.whenPressed(new ElevatorManualControllerDriveCommand());
+
+    Button buttonLB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_LB);
+    buttonLB.whenPressed(new HatchPanelGrab());
+
+    // TODO : Add toggle for release hatch panel
+    
+    Button buttonRB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_RB);
+    buttonRB.whenPressed(new CargoSystemShoot());
   }
 }
