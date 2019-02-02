@@ -3,10 +3,10 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class HatchPanelGrab extends Command {
+public class CargoShootCommand extends Command {
 
-    public HatchPanelGrab() {
-        requires(Robot.hatchPanelSystem);
+    public CargoShootCommand() {
+        requires(Robot.cargoSystem);
     }
 
     @Override
@@ -17,7 +17,7 @@ public class HatchPanelGrab extends Command {
     @Override
     protected void execute() {
         super.execute();
-        Robot.hatchPanelSystem.grabHatch();
+        Robot.cargoSystem.shootBall();
     }
 
     @Override
