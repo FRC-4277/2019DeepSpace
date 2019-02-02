@@ -16,6 +16,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import frc.robot.OI;
+import frc.robot.Robot;
+import frc.robot.commands.ElevatorManualControllerDriveCommand;
 
 /**
  * The subsystem for controlling the elevator. 
@@ -27,7 +30,7 @@ public class Elevator extends Subsystem {
    * The allowed error from the target allowed
    * when using PID to go to a position
    */
-  private static final int ENCODER_PID_ERROR_ALLOWANCE = 1000;
+  private static final int ENCODER_ERROR_ALLOWANCE = 1000;
   /**
    * The timeout for setting config values on the TalonSRX
    */
@@ -56,9 +59,28 @@ public class Elevator extends Subsystem {
 
     mainMotor = new WPI_TalonSRX(talonId);
     configureMotorBasics(mainMotor);
-    // Sensor Phase is valid for COMPETITION ROBOT, maybe not clone (but doesn't matter)
-    mainMotor.setSensorPhase(true);
+    // Change sensor phase depending on if clone or competition
+    if (Robot.getInstance().isClone()) {
+      mainMotor.setSensorPhase(false);
+    } else {
+      mainMotor.setSensorPhase(true);
+    }
+    /* UNCOMMENT WHEN LIMIT SWITCHES ARE INSTALLED
+    // Clear position when reverse limit switch is activated
+    mainMotor.configClearPositionOnLimitR(true, TALONSRX_CONFIGURE_TIMEOUT);
+    // Don't clear position when forward (top) limit switch is activated, other code stops motor
+    mainMotor.configClearPositionOnLimitF(false, TALONSRX_CONFIGURE_TIMEOUT);
     
+    */
+    // Set soft limit for bottom
+    mainMotor.configReverseSoftLimitThreshold(0, TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.configReverseSoftLimitEnable(true, TALONSRX_CONFIGURE_TIMEOUT);
+    // Set soft limit for top to 2 inches more than HIGH setpoint
+    // 22351 = (2 / 3.5PI) * 30 * 4096
+    // See comments below in Mode.MEDIUM for calculation explanation
+    mainMotor.configForwardSoftLimitThreshold(
+      Mode.HIGH.getSetPoint() + 22351, TALONSRX_CONFIGURE_TIMEOUT);
+
     followerMotor = new WPI_TalonSRX(followerId);
     configureMotorBasics(followerMotor);
     followerMotor.follow(mainMotor);
@@ -79,11 +101,23 @@ public class Elevator extends Subsystem {
 
   private void configurePID(double p, double i, double d, double f) {
     mainMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, TALONSRX_CONFIGURE_TIMEOUT);
-    mainMotor.configAllowableClosedloopError(0, ENCODER_PID_ERROR_ALLOWANCE, TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.configAllowableClosedloopError(0, ENCODER_ERROR_ALLOWANCE, TALONSRX_CONFIGURE_TIMEOUT);
     mainMotor.config_kP(0, p, TALONSRX_CONFIGURE_TIMEOUT);
     mainMotor.config_kI(0, i, TALONSRX_CONFIGURE_TIMEOUT);
     mainMotor.config_kD(0, d, TALONSRX_CONFIGURE_TIMEOUT);
     mainMotor.config_kF(0, f, TALONSRX_CONFIGURE_TIMEOUT);
+  }
+
+  private boolean checkTopSwitch() {
+    // TEMPORARY UNTIL LIMIT SWITCHES INSTALLED
+    return true;
+
+    /*boolean closed = mainMotor.getSensorCollection().isFwdLimitSwitchClosed();
+    if (closed) {
+      // The top limit switch is closed, set output to 0%
+      mainMotor.set(ControlMode.PercentOutput, 0);
+    }
+    return closed;*/
   }
 
   /**
@@ -92,6 +126,10 @@ public class Elevator extends Subsystem {
    */
   public void drive(double power) {
     mode = Mode.MANUAL_CONTROL;
+    // If top switch is triggered, we must not move
+    if (!checkTopSwitch()) {
+      return;
+    }
     mainMotor.set(ControlMode.PercentOutput, power);
   }
 
@@ -109,6 +147,10 @@ public class Elevator extends Subsystem {
    */
   public void goToPosition(double target) {
     mode = Mode.MANUAL_TARGET;
+    // If top switch is triggered, we must not move
+    if (!checkTopSwitch()) {
+      return;
+    }
     mainMotor.set(ControlMode.Position, target);
   }
 
@@ -122,6 +164,11 @@ public class Elevator extends Subsystem {
     this.mode = mode;
     // Check if this mode is an elevator level. The only modes that aren't an elevator level are MANUAL_CONTROL and MANUAL_TARGET
     if (mode.isElevatorLevel()) {
+      // If top switch is triggered, we must not move
+      if (!checkTopSwitch()) {
+        return;
+      }
+
       boolean up = mode.getSetPoint() > getSensorPosition();
       // If we need to go UP and we're NOT configured for up, let's configure for UP
       if (up && !talonConfiguredForUp) {
@@ -152,7 +199,7 @@ public class Elevator extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    
+    setDefaultCommand(new ElevatorManualControllerDriveCommand());
   }
 
   public int getSensorPosition() {

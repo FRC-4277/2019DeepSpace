@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.ElevatorManualControllerDriveCommand;
 import frc.robot.commands.ElevatorManualDownCommand;
 import frc.robot.commands.ElevatorMoveToHighCommand;
 import frc.robot.commands.ElevatorMoveToHomeCommand;
@@ -57,22 +58,24 @@ public class OI {
   public static Joystick xboxController = new Joystick(1);
 
   static {
+    Button buttonA = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_A);
+    buttonA.whenPressed(new ElevatorMoveToHomeCommand());
+
+    Button buttonB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_B);
+    buttonB.whenPressed(new ElevatorMoveToLoadingStationCommand());
+
     Button buttonX = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_X);
     buttonX.whenPressed(new ElevatorMoveToMediumCommand());
 
     Button buttonY = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_Y);
     buttonY.whenPressed(new ElevatorMoveToHighCommand());
 
-    Button buttonA = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_A);
-    buttonA.whenPressed(new ElevatorMoveToHomeCommand());
+    Button buttonBack = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_BACK);
+    buttonBack.whenPressed(new ElevatorResetEncoderCommand());
 
-    Button buttonB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_B);
-    buttonB.whenPressed(new ElevatorResetEncoderCommand());
+    Button buttonStart = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_START);
+    buttonStart.whenPressed(new ElevatorManualControllerDriveCommand());
 
-    Button buttonRB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_RB);
-    buttonRB.whenPressed(new ElevatorManualStopCommand());
-    
-    Button buttonLB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_LB);
-    buttonLB.whenPressed(new ElevatorMoveToLoadingStationCommand());
+    // Left bumper and right bumper for cargo and hatch
   }
 }
