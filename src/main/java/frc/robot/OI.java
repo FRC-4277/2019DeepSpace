@@ -16,13 +16,10 @@ import frc.robot.commands.ElevatorMoveToHighCommand;
 import frc.robot.commands.ElevatorMoveToHomeCommand;
 import frc.robot.commands.ElevatorMoveToLoadingStationCommand;
 import frc.robot.commands.ElevatorMoveToMediumCommand;
-import frc.robot.commands.ElevatorManualStopCommand;
-import frc.robot.commands.ElevatorManualUpCommand;
 import frc.robot.commands.ElevatorResetEncoderCommand;
 import frc.robot.commands.CargoSystemShoot;
 import frc.robot.commands.HatchPanelGrab;
 import frc.robot.commands.HatchPanelRelease;
-import frc.robot.commands.MoveElevatorCommand;
 import frc.robot.map.XboxControllerMap;
 
 /**
