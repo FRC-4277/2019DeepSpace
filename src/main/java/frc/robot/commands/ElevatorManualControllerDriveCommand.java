@@ -10,6 +10,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.OI;
 import frc.robot.Robot;
+import frc.robot.subsystems.Elevator.Mode;
 
 public class ElevatorManualControllerDriveCommand extends Command {
   private static final double JOYSTICK_THRESHOLD = 0.30;
@@ -21,6 +22,7 @@ public class ElevatorManualControllerDriveCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    Robot.elevator.goToMode(Mode.MANUAL_CONTROL);
   }
 
   // Called repeatedly when this Command is scheduled to run
