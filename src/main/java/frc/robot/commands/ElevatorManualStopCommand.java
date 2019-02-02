@@ -10,8 +10,8 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class ElevatorDownCommand extends Command {
-  public ElevatorDownCommand() {
+public class ElevatorManualStopCommand extends Command {
+  public ElevatorManualStopCommand() {
     requires(Robot.elevator);
   }
 
@@ -23,7 +23,7 @@ public class ElevatorDownCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.elevator.drive(-.25);
+    Robot.elevator.stop();
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -35,7 +35,6 @@ public class ElevatorDownCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.elevator.stop();
   }
 
   // Called when another command which requires one or more of the same
