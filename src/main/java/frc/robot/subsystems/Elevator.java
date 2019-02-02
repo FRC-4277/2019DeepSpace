@@ -80,6 +80,7 @@ public class Elevator extends Subsystem {
     // See comments below in Mode.MEDIUM for calculation explanation
     mainMotor.configForwardSoftLimitThreshold(
       Mode.HIGH.getSetPoint() + 22351, TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.configForwardSoftLimitEnable(true, TALONSRX_CONFIGURE_TIMEOUT);
 
     followerMotor = new WPI_TalonSRX(followerId);
     configureMotorBasics(followerMotor);
