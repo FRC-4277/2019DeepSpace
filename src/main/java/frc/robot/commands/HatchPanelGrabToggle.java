@@ -3,10 +3,10 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class CargoSystemShoot extends Command {
+public class HatchPanelGrabToggle extends Command {
 
-    public CargoSystemShoot() {
-        requires(Robot.cargoSystem);
+    public HatchPanelGrabToggle() {
+        requires(Robot.hatchPanelSystem);
     }
 
     @Override
@@ -17,7 +17,7 @@ public class CargoSystemShoot extends Command {
     @Override
     protected void execute() {
         super.execute();
-        Robot.cargoSystem.shootBall();
+        Robot.hatchPanelSystem.toggle();
     }
 
     @Override
@@ -27,7 +27,7 @@ public class CargoSystemShoot extends Command {
 
     @Override
     protected boolean isFinished() {
-        return false;
+        return true;
     }
 
 }

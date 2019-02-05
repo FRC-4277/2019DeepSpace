@@ -16,8 +16,8 @@ public class CargoSystem extends Subsystem {
   private Solenoid solenoid;
 
   public CargoSystem(int deviceid) {
-    // "1" is the CargoSystem Channel on the PCM (keep it the same)
-    solenoid = new Solenoid(deviceid, 1);
+    // "2" is the CargoSystem Channel on the PCM (keep it the same)
+    solenoid = new Solenoid(deviceid, 2);
   }
 
   public void shootBall() {
