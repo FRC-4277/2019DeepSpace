@@ -21,14 +21,12 @@ import frc.robot.Robot;
 import frc.robot.commands.ElevatorManualControllerDriveCommand;
 
 /**
- * The subsystem for controlling the elevator. 
- * The elevator consists of two TalonSRX's,
- * with one having a CTRE MAG encoder on it.
+ * The subsystem for controlling the elevator. The elevator consists of two
+ * TalonSRX's, with one having a CTRE MAG encoder on it.
  */
 public class Elevator extends Subsystem {
   /**
-   * The allowed error from the target allowed
-   * when using PID to go to a position
+   * The allowed error from the target allowed when using PID to go to a position
    */
   private static final int ENCODER_ERROR_ALLOWANCE = 1000;
   /**
@@ -49,8 +47,8 @@ public class Elevator extends Subsystem {
    */
   private PIDProfile downPID = new PIDProfile(0.008, 0, 0);
   /**
-   * Whether the TalonSRX's PID settings are configured for going up.
-   * If false, the PID is either unconfigured or configured for down.
+   * Whether the TalonSRX's PID settings are configured for going up. If false,
+   * the PID is either unconfigured or configured for down.
    */
   private boolean talonConfiguredForUp = false;
 
@@ -60,26 +58,22 @@ public class Elevator extends Subsystem {
     mainMotor = new WPI_TalonSRX(talonId);
     configureMotorBasics(mainMotor);
     // Change sensor phase depending on if clone or competition
-    if (Robot.getInstance().isClone()) {
-      mainMotor.setSensorPhase(false);
-    } else {
-      mainMotor.setSensorPhase(true);
-    }
-    /* UNCOMMENT WHEN LIMIT SWITCHES ARE INSTALLED
-    // Clear position when reverse limit switch is activated
-    mainMotor.configClearPositionOnLimitR(true, TALONSRX_CONFIGURE_TIMEOUT);
-    // Don't clear position when forward (top) limit switch is activated, other code stops motor
-    mainMotor.configClearPositionOnLimitF(false, TALONSRX_CONFIGURE_TIMEOUT);
-    
-    */
+    mainMotor.setSensorPhase(true);
+    /*
+     * UNCOMMENT WHEN LIMIT SWITCHES ARE INSTALLED // Clear position when reverse
+     * limit switch is activated mainMotor.configClearPositionOnLimitR(true,
+     * TALONSRX_CONFIGURE_TIMEOUT); // Don't clear position when forward (top) limit
+     * switch is activated, other code stops motor
+     * mainMotor.configClearPositionOnLimitF(false, TALONSRX_CONFIGURE_TIMEOUT);
+     * 
+     */
     // Set soft limit for bottom
     mainMotor.configReverseSoftLimitThreshold(0, TALONSRX_CONFIGURE_TIMEOUT);
     mainMotor.configReverseSoftLimitEnable(true, TALONSRX_CONFIGURE_TIMEOUT);
     // Set soft limit for top to 2 inches more than HIGH setpoint
     // 22351 = (2 / 3.5PI) * 30 * 4096
     // See comments below in Mode.MEDIUM for calculation explanation
-    mainMotor.configForwardSoftLimitThreshold(
-      Mode.HIGH.getSetPoint() + 22351, TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.configForwardSoftLimitThreshold(Mode.HIGH.getSetPoint() + 22351, TALONSRX_CONFIGURE_TIMEOUT);
 
     followerMotor = new WPI_TalonSRX(followerId);
     configureMotorBasics(followerMotor);
@@ -112,16 +106,16 @@ public class Elevator extends Subsystem {
     // TEMPORARY UNTIL LIMIT SWITCHES INSTALLED
     return true;
 
-    /*boolean closed = mainMotor.getSensorCollection().isFwdLimitSwitchClosed();
-    if (closed) {
-      // The top limit switch is closed, set output to 0%
-      mainMotor.set(ControlMode.PercentOutput, 0);
-    }
-    return closed;*/
+    /*
+     * boolean closed = mainMotor.getSensorCollection().isFwdLimitSwitchClosed(); if
+     * (closed) { // The top limit switch is closed, set output to 0%
+     * mainMotor.set(ControlMode.PercentOutput, 0); } return closed;
+     */
   }
 
   /**
    * Drive elevator manually.
+   * 
    * @param power Power to set motor to (between -1.0 and 1.0 inclusive)
    */
   public void drive(double power) {
@@ -143,6 +137,7 @@ public class Elevator extends Subsystem {
 
   /**
    * Go to position manually (call repetitively to approach target)
+   * 
    * @param target Position to approach with PID loop (in encoder ticks)
    */
   public void goToPosition(double target) {
@@ -155,14 +150,17 @@ public class Elevator extends Subsystem {
   }
 
   /**
-   * Go to a specified mode. If this mode is a level, then it will configure the Talon's PID automatically and go there.
-   * (call with this mode repetitively to approach target)
-   * If the mode is not a level (e.g MANUAL_CONTROL or MANUAL_TARGET mode), then it will just update the current mode.
+   * Go to a specified mode. If this mode is a level, then it will configure the
+   * Talon's PID automatically and go there. (call with this mode repetitively to
+   * approach target) If the mode is not a level (e.g MANUAL_CONTROL or
+   * MANUAL_TARGET mode), then it will just update the current mode.
+   * 
    * @param mode the mode to set (and if it's a level, go to)
    */
   public void goToMode(Mode mode) {
     this.mode = mode;
-    // Check if this mode is an elevator level. The only modes that aren't an elevator level are MANUAL_CONTROL and MANUAL_TARGET
+    // Check if this mode is an elevator level. The only modes that aren't an
+    // elevator level are MANUAL_CONTROL and MANUAL_TARGET
     if (mode.isElevatorLevel()) {
       // If top switch is triggered, we must not move
       if (!checkTopSwitch()) {
@@ -175,8 +173,8 @@ public class Elevator extends Subsystem {
         // Configure PID for UP
         configurePID(upPID);
         talonConfiguredForUp = true;
-      // If we need to go DOWN and we're configured for UP, let's configure for DOWN
-      } else if (!up && talonConfiguredForUp){
+        // If we need to go DOWN and we're configured for UP, let's configure for DOWN
+      } else if (!up && talonConfiguredForUp) {
         // Configure PID for DOWN
         configurePID(downPID);
         talonConfiguredForUp = false;
@@ -209,7 +207,7 @@ public class Elevator extends Subsystem {
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
-    builder.addDoubleProperty("SensorPosition", this::getSensorPosition, null); 
+    builder.addDoubleProperty("SensorPosition", this::getSensorPosition, null);
     builder.addStringProperty("Mode", new Supplier<String>() {
       public String get() {
         return mode.getName();
@@ -229,6 +227,7 @@ public class Elevator extends Subsystem {
 
     /**
      * Construct a PIDProfile
+     * 
      * @param p Proportional Gain (kP)
      * @param i Integral Gain (kI)
      * @param d Derivative Gain (kD)
@@ -243,11 +242,13 @@ public class Elevator extends Subsystem {
   }
 
   /**
-   * Represents the states of the elevator (manually driven or trying to stay at a certain level).
+   * Represents the states of the elevator (manually driven or trying to stay at a
+   * certain level).
    */
   public enum Mode {
     /**
-     * This mode is when the elevator is being controlled manually (through controller)
+     * This mode is when the elevator is being controlled manually (through
+     * controller)
      */
     MANUAL_CONTROL("Manual Control"),
     /**
@@ -255,7 +256,8 @@ public class Elevator extends Subsystem {
      */
     MANUAL_TARGET("Manual Target"),
     /**
-     * Home level, where the elevator starts and to score at lowest hatches and cargo on rocket.
+     * Home level, where the elevator starts and to score at lowest hatches and
+     * cargo on rocket.
      */
     HOME("Home", 0),
     /**
@@ -265,17 +267,20 @@ public class Elevator extends Subsystem {
     /**
      * Level at medium ports on the rocket
      * <p>
-     * Encoder Ticks Calculation w/ Explanation (math can be applied to other positions):
+     * Encoder Ticks Calculation w/ Explanation (math can be applied to other
+     * positions):
      * 
-     * The elevator's PVC pipe has a diameter of 3.5", so the circumference of it is about 11".
-     * Therefore one rotation of the PVC moves the elevator 11". The travel distance to MEDIUM 
-     * is 28", so dividing 28" by 11", we'll need ~2.54 rotations of the PVC. The gear box makes
-     * it so 30 turns of the motor is 1 turn of the PVC (30:1 gear ratio), so multiply 2.54 by 
-     * 30 to get about 76 motor rotations needed. Lastly, the CTRE MAG Encoder's position
-     * increases by 4096 per rotation, so multiply 76 by 4096 to get the encoder position needed
+     * The elevator's PVC pipe has a diameter of 3.5", so the circumference of it is
+     * about 11". Therefore one rotation of the PVC moves the elevator 11". The
+     * travel distance to MEDIUM is 28", so dividing 28" by 11", we'll need ~2.54
+     * rotations of the PVC. The gear box makes it so 30 turns of the motor is 1
+     * turn of the PVC (30:1 gear ratio), so multiply 2.54 by 30 to get about 76
+     * motor rotations needed. Lastly, the CTRE MAG Encoder's position increases by
+     * 4096 per rotation, so multiply 76 by 4096 to get the encoder position needed
      * in terms of ticks: {@code 4096 * 76 = about 312,000 encoder ticks}.
      * 
-     * The formula is {@code Encoder Ticks = (Travel Distance / (3.5 * PI) ) * 30 * 4096}.
+     * The formula is
+     * {@code Encoder Ticks = (Travel Distance / (3.5 * PI) ) * 30 * 4096}.
      */
     MEDIUM("Medium", 312935),
     /**

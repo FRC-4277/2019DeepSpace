@@ -10,6 +10,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.OI;
 import frc.robot.Robot;
+import frc.robot.subsystems.Elevator.Mode;
 
 public class ElevatorManualControllerDriveCommand extends Command {
   private static final double JOYSTICK_THRESHOLD = 0.30;
@@ -26,9 +27,14 @@ public class ElevatorManualControllerDriveCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    double manualPower = OI.xboxController.getRawAxis(5);
+    // Negative because joystick value is backwards
+    double manualPower = -OI.xboxController.getRawAxis(5);
     if (Math.abs(manualPower) >= JOYSTICK_THRESHOLD) {
+      System.out.println("B");
       Robot.elevator.drive(manualPower);
+    } else if (Robot.elevator.getMode() == Mode.MANUAL_CONTROL) {
+      System.out.println("A");
+      Robot.elevator.drive(0.0);
     }
   }
 
