@@ -67,10 +67,8 @@ public class Robot extends TimedRobot {
     m_cloneChooser.addOption("Clone", true);
     SmartDashboard.putData("Robot", m_cloneChooser);
 
-    if (!isClone()) {
-      navX = new AHRS(SPI.Port.kMXP);
-      navX.reset();
-    }
+    navX = new AHRS(SPI.Port.kMXP);
+    navX.reset();
 
     LiveWindow.addSensor("MecanumDrive", "NavX", navX);
 
