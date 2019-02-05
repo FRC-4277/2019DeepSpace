@@ -30,10 +30,8 @@ public class ElevatorManualControllerDriveCommand extends Command {
     // Negative because joystick value is backwards
     double manualPower = -OI.xboxController.getRawAxis(5);
     if (Math.abs(manualPower) >= JOYSTICK_THRESHOLD) {
-      System.out.println("B");
       Robot.elevator.drive(manualPower);
     } else if (Robot.elevator.getMode() == Mode.MANUAL_CONTROL) {
-      System.out.println("A");
       Robot.elevator.drive(0.0);
     }
   }
