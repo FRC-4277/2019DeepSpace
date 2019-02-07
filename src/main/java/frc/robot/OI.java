@@ -17,6 +17,7 @@ import frc.robot.commands.ElevatorMoveToHomeCommand;
 import frc.robot.commands.ElevatorMoveToLoadingStationCommand;
 import frc.robot.commands.ElevatorMoveToMediumCommand;
 import frc.robot.commands.ElevatorResetEncoderCommand;
+import frc.robot.commands.HatchPanelArmToggle;
 import frc.robot.commands.CargoShootCommand;
 import frc.robot.commands.HatchPanelGrabToggle;
 import frc.robot.map.XboxControllerMap;
@@ -81,5 +82,8 @@ public class OI {
 
     Button buttonRB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_RB);
     buttonRB.whenPressed(new CargoShootCommand());
+  
+    Button buttonJoyLeft = new JoystickButton(xboxController, XboxControllerMap.XBOX_JOY_LEFT_BUTTON);
+    buttonJoyLeft.whenPressed(new HatchPanelArmToggle());
   }
 }

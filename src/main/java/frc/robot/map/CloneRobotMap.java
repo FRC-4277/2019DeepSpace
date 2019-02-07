@@ -19,7 +19,7 @@ public class CloneRobotMap implements RobotMap {
 
     @Override
     public int getBackLeftTalon() {
-        return 59;
+        return 12;
     }
 
     @Override
