@@ -17,7 +17,7 @@ public class HatchPanelGrabToggle extends Command {
     @Override
     protected void execute() {
         super.execute();
-        Robot.hatchPanelSystem.toggle();
+        Robot.hatchPanelSystem.toggleClaw();
     }
 
     @Override

@@ -23,7 +23,7 @@ public class CargoSystem extends Subsystem {
   public void shootBall() {
     System.out.println("Ball is shot");
     solenoid.set(true);
-    Timer.delay(1.5);
+    Timer.delay(0.8);
     solenoid.set(false);
   }
 
