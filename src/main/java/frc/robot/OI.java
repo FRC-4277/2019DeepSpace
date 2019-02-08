@@ -81,9 +81,6 @@ public class OI {
     Button buttonBack = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_BACK);
     buttonBack.whenPressed(new ElevatorResetEncoderCommand());
 
-    Button buttonStart = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_START);
-    buttonStart.whenPressed(new ElevatorManualControllerDriveCommand());
-
     Button buttonLB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_LB);
     buttonLB.whenPressed(new HatchLoadingStationGroup());
 
@@ -100,5 +97,8 @@ public class OI {
 
     Button manualButtonRB = new JoystickButton(xboxController2, XboxControllerMap.XBOX_BUTTON_RB);
     manualButtonRB.whenPressed(new HatchPanelGrabToggle());
+
+    Button manualButtonStart = new JoystickButton(xboxController2, XboxControllerMap.XBOX_BUTTON_START);
+    manualButtonStart.whenPressed(new ElevatorManualControllerDriveCommand());
   }
 }
