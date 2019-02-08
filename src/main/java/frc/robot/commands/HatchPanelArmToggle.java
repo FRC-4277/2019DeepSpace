@@ -2,12 +2,12 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.commands.HatchGroup.HatchPanelExtendArm;
+import frc.robot.commands.HatchGroup.HatchPanelRetractArm;
 
 public class HatchPanelArmToggle extends Command {
 
-    public HatchPanelArmToggle() {
-        requires(Robot.hatchPanelSystem);
-    }
+    private boolean hatch = false;
 
     @Override
     protected void initialize() {
@@ -17,7 +17,13 @@ public class HatchPanelArmToggle extends Command {
     @Override
     protected void execute() {
         super.execute();
-        Robot.hatchPanelSystem.toggleArm();
+        if (hatch) {
+            new HatchPanelExtendArm();
+            hatch = false;
+        } else {
+            new HatchPanelRetractArm();
+            hatch = true;
+        }
     }
 
     @Override

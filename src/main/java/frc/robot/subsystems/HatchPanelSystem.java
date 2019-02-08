@@ -15,8 +15,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class HatchPanelSystem extends Subsystem {
 
-  public Solenoid grabber, arm;
-  private boolean hatch = true;
+  private Solenoid grabber, arm;
 
   public HatchPanelSystem(int deviceid) {
     // "0" is the HatchPanelSystem Channel on the PCM (keep it the same)
@@ -24,48 +23,23 @@ public class HatchPanelSystem extends Subsystem {
     arm = new Solenoid(deviceid, 1);
   }
 
-  public void toggleClaw() {
-    if (hatch) {
-      openClaw();
-    } else {
-      closeClaw();
-    }
-  }
-
-  public void toggleArm() {
-    if (hatch) {
-      extendArm();
-    } else {
-      retractArm();
-    }
-  }
-
   public void retractArm() {
-    System.out.println("grabbed");
-    //grabber.set(true);
     arm.set(false);
-    hatch = true;
   }
 
   public void extendArm() {
-    System.out.println("Released");
-    //grabber.set(false);
     arm.set(true);
-    hatch = false;
   }
 
-  public void openClaw() {
+  public void grabHatch() {
     grabber.set(false);
-    hatch = false;
   }
 
-  public void closeClaw() {
+  public void releaseHatch() {
     grabber.set(true);
-    hatch = true;
   }
 
   @Override
   public void initDefaultCommand() {
-    openClaw();
   }
 }
