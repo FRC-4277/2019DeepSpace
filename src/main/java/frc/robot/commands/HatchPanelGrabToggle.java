@@ -18,10 +18,10 @@ public class HatchPanelGrabToggle extends Command {
     protected void execute() {
         super.execute();
         if (hatch) {
-            new HatchPanelGrabHatch();
+            new HatchPanelGrabHatch().start();
             hatch = false;
         } else {
-            new HatchPanelReleaseHatch();
+            new HatchPanelReleaseHatch().start();
             hatch = true;
         }
     }

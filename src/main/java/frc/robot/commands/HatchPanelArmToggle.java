@@ -18,10 +18,10 @@ public class HatchPanelArmToggle extends Command {
     protected void execute() {
         super.execute();
         if (hatch) {
-            new HatchPanelExtendArm();
+            new HatchPanelExtendArm().start();
             hatch = false;
         } else {
-            new HatchPanelRetractArm();
+            new HatchPanelRetractArm().start();
             hatch = true;
         }
     }
