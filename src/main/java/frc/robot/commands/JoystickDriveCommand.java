@@ -20,11 +20,12 @@ public class JoystickDriveCommand extends Command {
 	@Override
 	protected void execute() {
 		super.execute();
-		// Use both field oriented and robot oriented for COMPETITION ROBOT
-		if (OI.driveStick.getRawAxis(3) > 0)
-			Robot.mecanumDrive.mecanumDriveJoystick(OI.driveStick);
-		else if (OI.driveStick.getRawAxis(3) < 0)
-			Robot.mecanumDrive.fieldOrientedMecanumDriveJoystick(OI.driveStick, Robot.navX.getAngle());
+		// Use both field oriented and robot oriented
+		double slider = OI.driveStick.getRawAxis(3);
+		if (slider >= 0) 
+			Robot.mecanumDrive.mecanumDriveJoystick(OI.driveStick, true);
+		else if (slider < 0)
+			Robot.mecanumDrive.fieldOrientedMecanumDriveJoystick(OI.driveStick, Robot.navX.getAngle(), true);
 	}
 
 	@Override
