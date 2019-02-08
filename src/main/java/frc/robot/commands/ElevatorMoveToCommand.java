@@ -8,39 +8,38 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.subsystems.Elevator.Mode;
 
-public class ElevatorManualControllerDriveCommand extends Command {
-  private static final double JOYSTICK_THRESHOLD = 0.30;
-  
-  public ElevatorManualControllerDriveCommand() {
+public class ElevatorMoveToCommand extends Command {
+  private Mode mode;
+  private boolean runContinuously;
+
+  public ElevatorMoveToCommand(Mode mode, boolean runContinuously) {
     requires(Robot.elevator);
+    this.mode = mode;
+    this.runContinuously = runContinuously;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.elevator.goToMode(Mode.MANUAL_CONTROL);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    // Negative because joystick value is backwards
-    double manualPower = -OI.xboxController1.getRawAxis(5);
-    if (Math.abs(manualPower) >= JOYSTICK_THRESHOLD) {
-      Robot.elevator.drive(manualPower);
-    } else if (Robot.elevator.getMode() == Mode.MANUAL_CONTROL) {
-      Robot.elevator.drive(0.0);
-    }
+    Robot.elevator.goToMode(mode);
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    if (runContinuously) {
+      return false;
+    } else {
+      return Robot.elevator.hasReachedMode(mode);
+    }
   }
 
   // Called once after isFinished returns true

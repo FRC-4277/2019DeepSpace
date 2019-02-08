@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.ElevatorManualControllerDriveCommand;
-import frc.robot.commands.ElevatorManualDownCommand;
 import frc.robot.commands.ElevatorMoveToHighCommand;
 import frc.robot.commands.ElevatorMoveToHomeCommand;
 import frc.robot.commands.ElevatorMoveToLoadingStationCommand;
@@ -58,21 +57,26 @@ public class OI {
   // button.whenReleased(new ExampleCommand());
 
   public static Joystick driveStick = new Joystick(0);
+  // Normal co-pilot controller
   public static Joystick xboxController1 = new Joystick(1);
+  // Manual co-pilot controller
   public static Joystick xboxController2 = new Joystick(2);
 
   static {
+
+    // NORMAL CO-PILOT CONTROLS
+
     Button buttonA = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_A);
-    buttonA.whenPressed(new ElevatorMoveToHomeCommand());
+    buttonA.whenPressed(new ElevatorMoveToHomeCommand(true));
 
     Button buttonB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_B);
-    buttonB.whenPressed(new ElevatorMoveToLoadingStationCommand());
+    buttonB.whenPressed(new ElevatorMoveToLoadingStationCommand(true));
 
     Button buttonX = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_X);
-    buttonX.whenPressed(new ElevatorMoveToMediumCommand());
+    buttonX.whenPressed(new ElevatorMoveToMediumCommand(true));
 
     Button buttonY = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_Y);
-    buttonY.whenPressed(new ElevatorMoveToHighCommand());
+    buttonY.whenPressed(new ElevatorMoveToHighCommand(true));
 
     Button buttonBack = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_BACK);
     buttonBack.whenPressed(new ElevatorResetEncoderCommand());
@@ -81,21 +85,20 @@ public class OI {
     buttonStart.whenPressed(new ElevatorManualControllerDriveCommand());
 
     Button buttonLB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_LB);
-    buttonLB.whenPressed(new HatchPanelGrabToggle());
+    buttonLB.whenPressed(new HatchLoadingStationGroup());
 
     Button buttonRB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_RB);
     buttonRB.whenPressed(new CargoShootCommand());
 
     Button buttonJoyLeft = new JoystickButton(xboxController1, XboxControllerMap.XBOX_JOY_LEFT_BUTTON);
-    buttonJoyLeft.whenPressed(new HatchPanelArmToggle());
+    buttonJoyLeft.whenPressed(new HatchRocketPlaceGroup());
 
-    Button buttonJoyRight = new JoystickButton(xboxController1, XboxControllerMap.XBOX_JOY_RIGHT_BUTTON);
-    buttonJoyRight.whenPressed(new HatchLoadingStationGroup());
+    // MANUAL CO-PILOT CONTROLS
 
-    Button xboxtwoLB = new JoystickButton(xboxController2, XboxControllerMap.XBOX_BUTTON_LB);
-    xboxtwoLB.whenPressed(new HatchLoadingStationGroup());
+    Button manualButtonLB = new JoystickButton(xboxController2, XboxControllerMap.XBOX_BUTTON_LB);
+    manualButtonLB.whenPressed(new HatchPanelArmToggle());
 
-    Button xboctwoRB = new JoystickButton(xboxController2, XboxControllerMap.XBOX_BUTTON_RB);
-    xboctwoRB.whenPressed(new HatchRocketPlaceGroup());
+    Button manualButtonRB = new JoystickButton(xboxController2, XboxControllerMap.XBOX_BUTTON_RB);
+    manualButtonRB.whenPressed(new HatchPanelGrabToggle());
   }
 }
