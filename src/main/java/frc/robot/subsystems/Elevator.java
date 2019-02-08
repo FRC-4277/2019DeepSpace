@@ -16,8 +16,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-import frc.robot.OI;
-import frc.robot.Robot;
 import frc.robot.commands.ElevatorManualControllerDriveCommand;
 
 /**
@@ -57,41 +55,39 @@ public class Elevator extends Subsystem {
   public Elevator(int talonId, int followerId) {
     super("Elevator");
 
+    /* MAIN MOTOR */
     mainMotor = new WPI_TalonSRX(talonId);
     configureMotorBasics(mainMotor);
-    // Change sensor phase depending on if clone or competition
-    if (Robot.getInstance().isClone()) {
-      mainMotor.setSensorPhase(false);
-    } else {
-      mainMotor.setSensorPhase(true);
-    }
-    /* UNCOMMENT WHEN LIMIT SWITCHES ARE INSTALLED
-    // Clear position when reverse limit switch is activated
-    mainMotor.configClearPositionOnLimitR(true, TALONSRX_CONFIGURE_TIMEOUT);
-    // Don't clear position when forward (top) limit switch is activated, other code stops motor
+    // Change sensor phase (may change depending on hardware)
+    mainMotor.setSensorPhase(false);
+    // NEVER clear positions, we're only using limit switches to stop the motors
+    mainMotor.configClearPositionOnLimitR(false, TALONSRX_CONFIGURE_TIMEOUT);
     mainMotor.configClearPositionOnLimitF(false, TALONSRX_CONFIGURE_TIMEOUT);
-    
-    */
     // Set soft limit for bottom
     mainMotor.configReverseSoftLimitThreshold(0, TALONSRX_CONFIGURE_TIMEOUT);
-    mainMotor.configReverseSoftLimitEnable(true, TALONSRX_CONFIGURE_TIMEOUT);
-    // Set soft limit for top to 2 inches more than HIGH setpoint
-    // 22351 = (2 / 3.5PI) * 30 * 4096
-    // See comments below in Mode.MEDIUM for calculation explanation
+    mainMotor.configReverseSoftLimitEnable(true, TALONSRX_CONFIGURE_TIMEOUT); 
+    /* Set soft limit for top to 2 inches more than HIGH setpoint
+    *  22351 = (2 / 3.5PI) * 30 * 4096
+    *  See comments below in Mode.MEDIUM for calculation explanation */
     mainMotor.configForwardSoftLimitThreshold(
       Mode.HIGH.getSetPoint() + 22351, TALONSRX_CONFIGURE_TIMEOUT);
     mainMotor.configForwardSoftLimitEnable(true, TALONSRX_CONFIGURE_TIMEOUT);
 
+    /* FOLLOWER MOTOR */
     followerMotor = new WPI_TalonSRX(followerId);
     configureMotorBasics(followerMotor);
     followerMotor.follow(mainMotor);
 
+    // TODO : Use voltage ramping, current limits?
+
     resetEncoder();
+    // Stop the elevator (shouldn't be necessary as talon configs are cleared but it doesn't hurt)
     stop();
   }
 
   private void configureMotorBasics(WPI_TalonSRX talonSRX) {
     talonSRX.setSubsystem("Elevator");
+    talonSRX.configFactoryDefault();
     talonSRX.setInverted(true);
     talonSRX.setNeutralMode(NeutralMode.Brake);
   }
