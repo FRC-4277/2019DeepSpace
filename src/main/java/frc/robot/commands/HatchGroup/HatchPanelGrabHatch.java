@@ -1,11 +1,11 @@
-package frc.robot.commands;
+package frc.robot.commands.hatchgroup;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class HatchPanelRelease extends Command {
+public class HatchPanelGrabHatch extends Command {
 
-    public HatchPanelRelease() {
+    public HatchPanelGrabHatch() {
         requires(Robot.hatchPanelSystem);
     }
 
@@ -17,17 +17,11 @@ public class HatchPanelRelease extends Command {
     @Override
     protected void execute() {
         super.execute();
-        Robot.hatchPanelSystem.releaseHatch();
-    }
-
-    @Override
-    protected void end() {
-        super.end();
+        Robot.hatchPanelSystem.grabHatch();
     }
 
     @Override
     protected boolean isFinished() {
-        return false;
+        return true;
     }
-
 }

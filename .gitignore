@@ -109,6 +109,11 @@ Temporary Items
 !.vscode/launch.json
 !.vscode/extensions.json
 
+### Intellij IDEA ###
+.idea/*
+2019DeepSpace.iml
+out
+
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db

@@ -11,15 +11,16 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.ElevatorManualControllerDriveCommand;
-import frc.robot.commands.ElevatorManualDownCommand;
 import frc.robot.commands.ElevatorMoveToHighCommand;
 import frc.robot.commands.ElevatorMoveToHomeCommand;
 import frc.robot.commands.ElevatorMoveToLoadingStationCommand;
 import frc.robot.commands.ElevatorMoveToMediumCommand;
 import frc.robot.commands.ElevatorResetEncoderCommand;
-import frc.robot.commands.CargoSystemShoot;
-import frc.robot.commands.HatchPanelGrab;
-import frc.robot.commands.HatchPanelRelease;
+import frc.robot.commands.HatchPanelArmToggle;
+import frc.robot.commands.CargoShootCommand;
+import frc.robot.commands.HatchPanelGrabToggle;
+import frc.robot.commands.hatchcommandgroup.HatchLoadingStationGroup;
+import frc.robot.commands.hatchcommandgroup.HatchRocketPlaceGroup;
 import frc.robot.map.XboxControllerMap;
 
 /**
@@ -56,33 +57,48 @@ public class OI {
   // button.whenReleased(new ExampleCommand());
 
   public static Joystick driveStick = new Joystick(0);
-  public static Joystick xboxController = new Joystick(1);
+  // Normal co-pilot controller
+  public static Joystick xboxController1 = new Joystick(1);
+  // Manual co-pilot controller
+  public static Joystick xboxController2 = new Joystick(2);
 
   static {
-    Button buttonA = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_A);
+
+    // NORMAL CO-PILOT CONTROLS
+
+    Button buttonA = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_A);
     buttonA.whenPressed(new ElevatorMoveToHomeCommand(true));
 
-    Button buttonB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_B);
+    Button buttonB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_B);
     buttonB.whenPressed(new ElevatorMoveToLoadingStationCommand(true));
 
-    Button buttonX = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_X);
+    Button buttonX = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_X);
     buttonX.whenPressed(new ElevatorMoveToMediumCommand(true));
 
-    Button buttonY = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_Y);
+    Button buttonY = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_Y);
     buttonY.whenPressed(new ElevatorMoveToHighCommand(true));
 
-    Button buttonBack = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_BACK);
+    Button buttonBack = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_BACK);
     buttonBack.whenPressed(new ElevatorResetEncoderCommand());
 
-    Button buttonStart = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_START);
+    Button buttonStart = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_START);
     buttonStart.whenPressed(new ElevatorManualControllerDriveCommand());
 
-    Button buttonLB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_LB);
-    buttonLB.whenPressed(new HatchPanelGrab());
+    Button buttonLB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_LB);
+    buttonLB.whenPressed(new HatchLoadingStationGroup());
 
-    // TODO : Add toggle for release hatch panel
-    
-    Button buttonRB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_RB);
-    buttonRB.whenPressed(new CargoSystemShoot());
+    Button buttonRB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_RB);
+    buttonRB.whenPressed(new CargoShootCommand());
+
+    Button buttonJoyLeft = new JoystickButton(xboxController1, XboxControllerMap.XBOX_JOY_LEFT_BUTTON);
+    buttonJoyLeft.whenPressed(new HatchRocketPlaceGroup());
+
+    // MANUAL CO-PILOT CONTROLS
+
+    Button manualButtonLB = new JoystickButton(xboxController2, XboxControllerMap.XBOX_BUTTON_LB);
+    manualButtonLB.whenPressed(new HatchPanelArmToggle());
+
+    Button manualButtonRB = new JoystickButton(xboxController2, XboxControllerMap.XBOX_BUTTON_RB);
+    manualButtonRB.whenPressed(new HatchPanelGrabToggle());
   }
 }

@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.SPI;
 
 /**
@@ -45,6 +46,8 @@ public class Robot extends TimedRobot {
 
   public static AHRS navX;
 
+  public Compressor compressor;
+
   public UsbCamera cameraOne, cameraTwo;
 
   /**
@@ -64,10 +67,8 @@ public class Robot extends TimedRobot {
     m_cloneChooser.addOption("Clone", true);
     SmartDashboard.putData("Robot", m_cloneChooser);
 
-    if (!isClone()) {
-      navX = new AHRS(SPI.Port.kMXP);
-      navX.reset();
-    }
+    navX = new AHRS(SPI.Port.kMXP);
+    navX.reset();
 
     LiveWindow.addSensor("MecanumDrive", "NavX", navX);
 
@@ -100,6 +101,9 @@ public class Robot extends TimedRobot {
     }
     if (cargoSystem == null) {
       cargoSystem = new CargoSystem(map.getPCMId());
+    }
+    if (compressor == null) {
+      compressor = new Compressor(map.getPCMId());
     }
     if (m_oi == null) {
       m_oi = new OI();
@@ -189,6 +193,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
+    compressor.setClosedLoopControl(true);
   }
 
   @Override

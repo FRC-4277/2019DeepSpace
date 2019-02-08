@@ -20,17 +20,11 @@ public class JoystickDriveCommand extends Command {
 	@Override
 	protected void execute() {
 		super.execute();
-		if (Robot.getInstance().isClone()) {
-			// Clone robot has no NavX, so only robot oriented driving
+		// Use both field oriented and robot oriented for COMPETITION ROBOT
+		if (OI.driveStick.getRawAxis(3) > 0)
 			Robot.mecanumDrive.mecanumDriveJoystick(OI.driveStick);
-		} else {
-			// Use both field oriented and robot oriented for COMPETITION ROBOT
-			if (OI.driveStick.getRawAxis(3) > 0)
-				Robot.mecanumDrive.mecanumDriveJoystick(OI.driveStick);
-
-			else if (OI.driveStick.getRawAxis(3) < 0)
-				Robot.mecanumDrive.fieldOrientedMecanumDriveJoystick(OI.driveStick, Robot.navX.getAngle());
-		}
+		else if (OI.driveStick.getRawAxis(3) < 0)
+			Robot.mecanumDrive.fieldOrientedMecanumDriveJoystick(OI.driveStick, Robot.navX.getAngle());
 	}
 
 	@Override

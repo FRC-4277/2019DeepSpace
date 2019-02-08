@@ -1,12 +1,12 @@
-package frc.robot.commands;
+package frc.robot.commands.hatchgroup;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class CargoSystemShoot extends Command {
+public class HatchPanelRetractArm extends Command {
 
-    public CargoSystemShoot() {
-        requires(Robot.cargoSystem);
+    public HatchPanelRetractArm() {
+        requires(Robot.hatchPanelSystem);
     }
 
     @Override
@@ -17,17 +17,11 @@ public class CargoSystemShoot extends Command {
     @Override
     protected void execute() {
         super.execute();
-        Robot.cargoSystem.shootBall();
-    }
-
-    @Override
-    protected void end() {
-        super.end();
+        Robot.hatchPanelSystem.retractArm();
     }
 
     @Override
     protected boolean isFinished() {
-        return false;
+        return true;
     }
-
 }
