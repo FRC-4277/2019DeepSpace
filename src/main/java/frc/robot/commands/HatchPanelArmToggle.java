@@ -2,8 +2,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.commands.HatchGroup.HatchPanelExtendArm;
-import frc.robot.commands.HatchGroup.HatchPanelRetractArm;
+import frc.robot.commands.hatchgroup.HatchPanelExtendArm;
+import frc.robot.commands.hatchgroup.HatchPanelRetractArm;
 
 public class HatchPanelArmToggle extends Command {
 

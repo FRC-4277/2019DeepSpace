@@ -1,4 +1,4 @@
-package frc.robot.commands.HatchGroup;
+package frc.robot.commands.hatchgroup;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;

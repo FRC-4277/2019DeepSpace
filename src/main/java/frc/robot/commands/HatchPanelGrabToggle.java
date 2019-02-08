@@ -2,8 +2,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.commands.HatchGroup.HatchPanelGrabHatch;
-import frc.robot.commands.HatchGroup.HatchPanelReleaseHatch;
+import frc.robot.commands.hatchgroup.HatchPanelGrabHatch;
+import frc.robot.commands.hatchgroup.HatchPanelReleaseHatch;
 
 public class HatchPanelGrabToggle extends Command {
 
