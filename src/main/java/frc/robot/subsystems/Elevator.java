@@ -109,28 +109,12 @@ public class Elevator extends Subsystem {
     mainMotor.config_kF(0, f, TALONSRX_CONFIGURE_TIMEOUT);
   }
 
-  private boolean checkTopSwitch() {
-    // TEMPORARY UNTIL LIMIT SWITCHES INSTALLED
-    return true;
-
-    /*boolean closed = mainMotor.getSensorCollection().isFwdLimitSwitchClosed();
-    if (closed) {
-      // The top limit switch is closed, set output to 0%
-      mainMotor.set(ControlMode.PercentOutput, 0);
-    }
-    return closed;*/
-  }
-
   /**
    * Drive elevator manually.
    * @param power Power to set motor to (between -1.0 and 1.0 inclusive)
    */
   public void drive(double power) {
     mode = Mode.MANUAL_CONTROL;
-    // If top switch is triggered, we must not move
-    if (!checkTopSwitch()) {
-      return;
-    }
     mainMotor.set(ControlMode.PercentOutput, power);
   }
 
@@ -148,10 +132,6 @@ public class Elevator extends Subsystem {
    */
   public void goToPosition(double target) {
     mode = Mode.MANUAL_TARGET;
-    // If top switch is triggered, we must not move
-    if (!checkTopSwitch()) {
-      return;
-    }
     mainMotor.set(ControlMode.Position, target);
   }
 
@@ -165,11 +145,6 @@ public class Elevator extends Subsystem {
     this.mode = mode;
     // Check if this mode is an elevator level. The only modes that aren't an elevator level are MANUAL_CONTROL and MANUAL_TARGET
     if (mode.isElevatorLevel()) {
-      // If top switch is triggered, we must not move
-      if (!checkTopSwitch()) {
-        return;
-      }
-
       boolean up = mode.getSetPoint() > getSensorPosition();
       // If we need to go UP and we're NOT configured for up, let's configure for UP
       if (up && !talonConfiguredForUp) {
