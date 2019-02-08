@@ -20,6 +20,8 @@ import frc.robot.commands.ElevatorResetEncoderCommand;
 import frc.robot.commands.HatchPanelArmToggle;
 import frc.robot.commands.CargoShootCommand;
 import frc.robot.commands.HatchPanelGrabToggle;
+import frc.robot.commands.hatchcommandgroup.HatchLoadingStationGroup;
+import frc.robot.commands.hatchcommandgroup.HatchRocketPlaceGroup;
 import frc.robot.map.XboxControllerMap;
 
 /**
@@ -56,34 +58,44 @@ public class OI {
   // button.whenReleased(new ExampleCommand());
 
   public static Joystick driveStick = new Joystick(0);
-  public static Joystick xboxController = new Joystick(1);
+  public static Joystick xboxController1 = new Joystick(1);
+  public static Joystick xboxController2 = new Joystick(2);
 
   static {
-    Button buttonA = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_A);
+    Button buttonA = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_A);
     buttonA.whenPressed(new ElevatorMoveToHomeCommand());
 
-    Button buttonB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_B);
+    Button buttonB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_B);
     buttonB.whenPressed(new ElevatorMoveToLoadingStationCommand());
 
-    Button buttonX = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_X);
+    Button buttonX = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_X);
     buttonX.whenPressed(new ElevatorMoveToMediumCommand());
 
-    Button buttonY = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_Y);
+    Button buttonY = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_Y);
     buttonY.whenPressed(new ElevatorMoveToHighCommand());
 
-    Button buttonBack = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_BACK);
+    Button buttonBack = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_BACK);
     buttonBack.whenPressed(new ElevatorResetEncoderCommand());
 
-    Button buttonStart = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_START);
+    Button buttonStart = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_START);
     buttonStart.whenPressed(new ElevatorManualControllerDriveCommand());
 
-    Button buttonLB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_LB);
+    Button buttonLB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_LB);
     buttonLB.whenPressed(new HatchPanelGrabToggle());
 
-    Button buttonRB = new JoystickButton(xboxController, XboxControllerMap.XBOX_BUTTON_RB);
+    Button buttonRB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_RB);
     buttonRB.whenPressed(new CargoShootCommand());
-  
-    Button buttonJoyLeft = new JoystickButton(xboxController, XboxControllerMap.XBOX_JOY_LEFT_BUTTON);
+
+    Button buttonJoyLeft = new JoystickButton(xboxController1, XboxControllerMap.XBOX_JOY_LEFT_BUTTON);
     buttonJoyLeft.whenPressed(new HatchPanelArmToggle());
+
+    Button buttonJoyRight = new JoystickButton(xboxController1, XboxControllerMap.XBOX_JOY_RIGHT_BUTTON);
+    buttonJoyRight.whenPressed(new HatchLoadingStationGroup());
+
+    Button xboxtwoLB = new JoystickButton(xboxController2, XboxControllerMap.XBOX_BUTTON_LB);
+    xboxtwoLB.whenPressed(new HatchLoadingStationGroup());
+
+    Button xboctwoRB = new JoystickButton(xboxController2, XboxControllerMap.XBOX_BUTTON_RB);
+    xboctwoRB.whenPressed(new HatchRocketPlaceGroup());
   }
 }

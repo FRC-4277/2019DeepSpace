@@ -112,6 +112,7 @@ Temporary Items
 ### Intellij IDEA ###
 .idea/*
 2019DeepSpace.iml
+out
 
 ### Windows ###
 # Windows thumbnail cache files

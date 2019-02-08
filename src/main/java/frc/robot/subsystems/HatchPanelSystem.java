@@ -41,5 +41,7 @@ public class HatchPanelSystem extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
+    grabHatch();
+    retractArm();
   }
 }
