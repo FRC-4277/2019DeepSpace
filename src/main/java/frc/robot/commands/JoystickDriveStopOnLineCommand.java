@@ -31,11 +31,15 @@ public class JoystickDriveStopOnLineCommand extends Command {
       return;
     }
     Result result = Robot.colorProximitySensor.readAll();
-    if (result.getClear() > 25) {
+    if (result.getClear() > 10) {
       hasReachedLine = true;
       return;
     }
-    Robot.mecanumDrive.mecanumDriveJoystick(OI.driveStick, true);
+    double slider = OI.driveStick.getRawAxis(3);
+		if (slider >= 0) 
+			Robot.mecanumDrive.mecanumDriveJoystick(OI.driveStick, false);
+		else if (slider < 0)
+			Robot.mecanumDrive.fieldOrientedMecanumDriveJoystick(OI.driveStick, Robot.navX.getAngle(), false);
   }
 
   // Make this return true when this Command no longer needs to run execute()

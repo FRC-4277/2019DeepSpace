@@ -257,7 +257,7 @@ public class Elevator extends Subsystem {
     /**
      * Level at loading station.
      */
-    LOADING_STATION("Loading Station", 201155),
+    LOADING_STATION("Loading Station", 268153),
     /**
      * Level at medium ports on the rocket
      * <p>
@@ -276,11 +276,11 @@ public class Elevator extends Subsystem {
      * The formula is
      * {@code Encoder Ticks = (Travel Distance / (3.5 * PI) ) * 30 * 4096}.
      */
-    MEDIUM("Medium", 312935),
+    MEDIUM("Medium", /*312935*/489777),
     /**
      * Level at highest ports on the rocket
      */
-    HIGH("High", 614647);
+    HIGH("High", 944000);
 
     private String name;
     private boolean isElevatorLevel;

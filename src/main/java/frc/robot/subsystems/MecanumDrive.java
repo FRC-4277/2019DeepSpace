@@ -44,7 +44,7 @@ public class MecanumDrive extends Subsystem {
 	public void mecanumDriveJoystick(Joystick driveStick, boolean applyDeadband) {
 		double x = driveStick.getX();
 		double y = driveStick.getY();
-		double twist = driveStick.getTwist();
+		double twist = -driveStick.getTwist();
 		if (applyDeadband) {
 			x = applyDeadband(x);
 			y = applyDeadband(y);
@@ -56,7 +56,7 @@ public class MecanumDrive extends Subsystem {
 	public void fieldOrientedMecanumDriveJoystick(Joystick driveStick, double gyro, boolean applyDeadband) {
 		double x = driveStick.getX();
 		double y = driveStick.getY();
-		double twist = driveStick.getTwist();
+		double twist = -driveStick.getTwist();
 		if (applyDeadband) {
 			x = applyDeadband(x);
 			y = applyDeadband(y);

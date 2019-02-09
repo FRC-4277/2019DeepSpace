@@ -22,12 +22,12 @@ public class HatchRocketPlaceGroup extends CommandGroup {
         // Add Commands here:
         // e.g
         addSequential(new HatchPanelExtendArm());
-        addSequential(new WaitCommand(.5));
+        addSequential(new WaitCommand(.3));
         addSequential(new HatchPanelReleaseHatch());
         addSequential(new WaitCommand(.5));
         addSequential(new HatchPanelRetractArm());
-        addSequential(new WaitCommand(.5));
-        addSequential(new HatchPanelGrabHatch());
+        addSequential(new WaitCommand(.3));
+        //addSequential(new HatchPanelGrabHatch());
 //     addSequential(new Command2());
         // these will run in order.
 
