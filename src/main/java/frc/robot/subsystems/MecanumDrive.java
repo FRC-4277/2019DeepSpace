@@ -14,7 +14,7 @@ import frc.robot.commands.*;
 
 @SuppressWarnings("deprecation")
 public class MecanumDrive extends Subsystem {
-	private static final double DRIVE_JOYSTICK_DEADBAND = 0.9;
+	private static final double DRIVE_JOYSTICK_DEADBAND = 0.5;
 
 	static WPI_TalonSRX FRONT_LEFT_TALON, BACK_LEFT_TALON, FRONT_RIGHT_TALON, BACK_RIGHT_TALON;
 	RobotDrive drive;
@@ -36,8 +36,8 @@ public class MecanumDrive extends Subsystem {
 			FRONT_LEFT_TALON.setInverted(true);
 			BACK_LEFT_TALON.setInverted(true);
 		} else {
-			FRONT_RIGHT_TALON.setInverted(true);
-			BACK_RIGHT_TALON.setInverted(true);
+			FRONT_LEFT_TALON.setInverted(true);
+			BACK_LEFT_TALON.setInverted(true);
 		}
 	}
 
