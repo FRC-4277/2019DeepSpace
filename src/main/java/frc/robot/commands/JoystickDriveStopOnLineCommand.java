@@ -35,7 +35,7 @@ public class JoystickDriveStopOnLineCommand extends Command {
       hasReachedLine = true;
       return;
     }
-    Robot.mecanumDrive.mecanumDriveJoystick(OI.driveStick);
+    Robot.mecanumDrive.mecanumDriveJoystick(OI.driveStick, true);
   }
 
   // Make this return true when this Command no longer needs to run execute()
