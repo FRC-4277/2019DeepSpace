@@ -14,6 +14,7 @@ import frc.robot.commands.*;
 
 @SuppressWarnings("deprecation")
 public class MecanumDrive extends Subsystem {
+	private static final double DRIVE_JOYSTICK_DEADBAND = 0.9;
 
 	static WPI_TalonSRX FRONT_LEFT_TALON, BACK_LEFT_TALON, FRONT_RIGHT_TALON, BACK_RIGHT_TALON;
 	RobotDrive drive;
@@ -40,12 +41,42 @@ public class MecanumDrive extends Subsystem {
 		}
 	}
 
-	public void mecanumDriveJoystick(Joystick driveStick) {
-		drive.mecanumDrive_Cartesian(driveStick.getX(), driveStick.getY(), driveStick.getTwist(), 0);
+	public void mecanumDriveJoystick(Joystick driveStick, boolean applyDeadband) {
+		double x = driveStick.getX();
+		double y = driveStick.getY();
+		double twist = driveStick.getTwist();
+		if (applyDeadband) {
+			x = applyDeadband(x);
+			y = applyDeadband(y);
+			twist = applyDeadband(twist);
+		}
+		drive.mecanumDrive_Cartesian(x, y, twist, 0);
 	}
 
-	public void fieldOrientedMecanumDriveJoystick(Joystick driveStick, Double gyro) {
-		drive.mecanumDrive_Cartesian(driveStick.getX(), driveStick.getY(), driveStick.getTwist(), gyro);
+	public void fieldOrientedMecanumDriveJoystick(Joystick driveStick, double gyro, boolean applyDeadband) {
+		double x = driveStick.getX();
+		double y = driveStick.getY();
+		double twist = driveStick.getTwist();
+		if (applyDeadband) {
+			x = applyDeadband(x);
+			y = applyDeadband(y);
+			twist = applyDeadband(twist);
+		}
+		drive.mecanumDrive_Cartesian(x, y, twist, gyro);
+	}
+
+	/**
+	 * Applies a deadband as defined by {@link MecanumDrive#DRIVE_JOYSTICK_DEADBAND}.
+	 * @param axisValue Axis value from Joystick [-1.0..1.0]
+	 * @return output [-1.0..1.0]
+	 */
+	private double applyDeadband(double axisValue) {
+		if (Math.abs(axisValue) < DRIVE_JOYSTICK_DEADBAND) {
+			// Just return 0.0 as axis value is in the dead zone
+			return 0.0;
+		} else {
+			return axisValue;
+		}
 	}
 
 	public void mecanumDrive(double x, double y, double twist) {
