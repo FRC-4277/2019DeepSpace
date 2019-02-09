@@ -18,10 +18,11 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.SPI;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,6 +46,7 @@ public class Robot extends TimedRobot {
   public static CargoSystem cargoSystem;
 
   public static AHRS navX;
+  public static ColorProximitySensor colorProximitySensor;
 
   public Compressor compressor;
 
@@ -69,6 +71,8 @@ public class Robot extends TimedRobot {
 
     navX = new AHRS(SPI.Port.kMXP);
     navX.reset();
+
+    colorProximitySensor = new ColorProximitySensor(I2C.Port.kOnboard);
 
     LiveWindow.addSensor("MecanumDrive", "NavX", navX);
 
@@ -194,6 +198,10 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
     compressor.setClosedLoopControl(true);
+    SmartDashboard.putNumber("X", navX.getRawGyroX());
+    SmartDashboard.putNumber("Y", navX.getRawGyroY());
+    SmartDashboard.putNumber("Z", navX.getRawGyroZ());
+    SmartDashboard.putNumber("Angle", navX.getAngle());
   }
 
   @Override

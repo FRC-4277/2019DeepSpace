@@ -48,6 +48,14 @@ public class MecanumDrive extends Subsystem {
 		drive.mecanumDrive_Cartesian(driveStick.getX(), driveStick.getY(), driveStick.getTwist(), gyro);
 	}
 
+	public void mecanumDrive(double x, double y, double twist) {
+		mecanumDrive(x, y, twist, 0);
+	}
+
+	public void mecanumDrive(double x, double y, double twist, double gyro) {
+		drive.mecanumDrive_Cartesian(x, y, twist, gyro);
+	}
+
 	@Override
 	protected void initDefaultCommand() {
 		setDefaultCommand(new JoystickDriveCommand());
