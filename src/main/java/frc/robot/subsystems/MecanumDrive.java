@@ -14,7 +14,7 @@ import frc.robot.commands.*;
 
 @SuppressWarnings("deprecation")
 public class MecanumDrive extends Subsystem {
-	private static final double DRIVE_JOYSTICK_DEADBAND = 0.10;
+	private static final double DRIVE_JOYSTICK_DEADBAND = 0.9;
 
 	static WPI_TalonSRX FRONT_LEFT_TALON, BACK_LEFT_TALON, FRONT_RIGHT_TALON, BACK_RIGHT_TALON;
 	RobotDrive drive;
@@ -66,8 +66,7 @@ public class MecanumDrive extends Subsystem {
 	}
 
 	/**
-	 * Applies a transfer function that has a deadband as defined by {@link MecanumDrive#DRIVE_JOYSTICK_DEADBAND}.
-	 * Output will be scaled to between -1.0 to 1.0 to allow full range of motor output regardless of deadband range.
+	 * Applies a deadband as defined by {@link MecanumDrive#DRIVE_JOYSTICK_DEADBAND}.
 	 * @param axisValue Axis value from Joystick [-1.0..1.0]
 	 * @return output [-1.0..1.0]
 	 */
@@ -76,12 +75,7 @@ public class MecanumDrive extends Subsystem {
 			// Just return 0.0 as axis value is in the dead zone
 			return 0.0;
 		} else {
-			/* 
-			 * Scale value to allow for same range of control (-1.0 to 1.0) as if deadband wasn't there
-			 * (This is useful so the motor outputs less than the deadband are still usable)
-			 * Joystick Axis Value -> Motor Power graph: https://www.desmos.com/calculator/nxf9qxgc5d
-			 */
-			return (axisValue - (Math.abs(axisValue) / axisValue * DRIVE_JOYSTICK_DEADBAND)) / (1 - DRIVE_JOYSTICK_DEADBAND);
+			return axisValue;
 		}
 	}
 
