@@ -19,6 +19,8 @@ import frc.robot.commands.ElevatorResetEncoderCommand;
 import frc.robot.commands.HatchPanelArmToggle;
 import frc.robot.commands.CargoShootCommand;
 import frc.robot.commands.HatchPanelGrabToggle;
+import frc.robot.commands.JoystickDriveCommand;
+import frc.robot.commands.JoystickDriveStopOnLineCommand;
 import frc.robot.commands.hatchcommandgroup.HatchLoadingStationGroup;
 import frc.robot.commands.hatchcommandgroup.HatchRocketPlaceGroup;
 import frc.robot.map.XboxControllerMap;
@@ -63,6 +65,12 @@ public class OI {
   public static Joystick xboxController2 = new Joystick(2);
 
   static {
+
+    // DRIVESTICK CONTROLS
+    Button button5 = new JoystickButton(driveStick, 5);
+    button5.whenPressed(new JoystickDriveStopOnLineCommand());
+    Button button3 = new JoystickButton(driveStick, 3);
+    button3.whenPressed(new JoystickDriveCommand());
 
     // NORMAL CO-PILOT CONTROLS
 

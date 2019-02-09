@@ -23,11 +23,11 @@ public class HatchLoadingStationGroup extends CommandGroup {
         // Add Commands here:
         // e.g
         addSequential(new HatchPanelReleaseHatch());
-        addSequential(new WaitCommand(.75));
+        addSequential(new WaitCommand(.5));
         addSequential(new HatchPanelExtendArm());
-        addSequential(new WaitCommand(.75));
+        addSequential(new WaitCommand(.5));
         addSequential(new HatchPanelGrabHatch());
-        addSequential(new WaitCommand(.75));
+        addSequential(new WaitCommand(.5));
         addSequential(new HatchPanelRetractArm());
         // these will run in order.
 
