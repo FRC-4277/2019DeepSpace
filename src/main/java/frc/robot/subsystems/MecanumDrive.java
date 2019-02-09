@@ -14,7 +14,7 @@ import frc.robot.commands.*;
 
 @SuppressWarnings("deprecation")
 public class MecanumDrive extends Subsystem {
-	private static final double DRIVE_JOYSTICK_DEADBAND = 0.5;
+	private static final double DRIVE_JOYSTICK_DEADBAND = 0.1;
 
 	static WPI_TalonSRX FRONT_LEFT_TALON, BACK_LEFT_TALON, FRONT_RIGHT_TALON, BACK_RIGHT_TALON;
 	RobotDrive drive;
