@@ -1,6 +1,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.OI;
@@ -14,6 +15,7 @@ public class JoystickDriveCommand extends Command {
 
 	@Override
 	protected void initialize() {
+		OI.xboxController1.setRumble(RumbleType.kRightRumble, 0.0);
 		JoystickDriveStopOnLineCommand.entry.setBoolean(false);
 	}
 

@@ -8,6 +8,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.OI;
@@ -64,6 +65,7 @@ public class JoystickDriveStopOnLineCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    OI.xboxController1.setRumble(RumbleType.kRightRumble, 1.0);
     Robot.mecanumDrive.mecanumDrive(0, 0, 0, false);
   }
 

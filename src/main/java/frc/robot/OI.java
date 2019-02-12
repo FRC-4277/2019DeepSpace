@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.ElevatorManualControllerDriveCommand;
@@ -60,13 +61,13 @@ public class OI {
 
   public static Joystick driveStick = new Joystick(0);
   // Normal co-pilot controller
-  public static Joystick xboxController1 = new Joystick(1);
+  public static XboxController xboxController1 = new XboxController(1);
   // Manual co-pilot controller
-  public static Joystick xboxController2 = new Joystick(2);
+  //public static Joystick xboxController2 = new Joystick(2);
 
   static {
 
-    // DRIVESTICK CONTROLS
+    /*// DRIVESTICK CONTROLS
     Button button5 = new JoystickButton(driveStick, 5);
     button5.whenPressed(new JoystickDriveStopOnLineCommand());
     Button button3 = new JoystickButton(driveStick, 3);
@@ -108,5 +109,39 @@ public class OI {
 
     Button manualButtonStart = new JoystickButton(xboxController2, XboxControllerMap.XBOX_BUTTON_START);
     manualButtonStart.whenPressed(new ElevatorManualControllerDriveCommand());
+    */
+
+    // CO-PILOT
+    Button buttonLB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_LB);
+    buttonLB.whenPressed(new HatchLoadingStationGroup());
+
+    Button buttonJoyRight = new JoystickButton(xboxController1, XboxControllerMap.XBOX_JOY_RIGHT_BUTTON);
+    buttonJoyRight.whenPressed(new ElevatorManualControllerDriveCommand());
+
+    Button buttonStart = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_START);
+    buttonStart.whenPressed(new ElevatorResetEncoderCommand());
+
+    Button buttonA = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_A);
+    buttonA.whenPressed(new ElevatorMoveToHomeCommand(true));
+
+    Button buttonB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_B);
+    buttonB.whenPressed(new ElevatorMoveToLoadingStationCommand(true));
+
+    Button buttonX = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_X);
+    buttonX.whenPressed(new ElevatorMoveToMediumCommand(true));
+
+    Button buttonY = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_Y);
+    buttonY.whenPressed(new ElevatorMoveToHighCommand(true));
+
+    Button buttonRB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_RB);
+    buttonRB.whenPressed(new HatchRocketPlaceGroup());
+
+    XboxRightTrigger rightTrigger = new XboxRightTrigger(xboxController1);
+    rightTrigger.whenActive(new CargoShootCommand());
+
+    Button buttonBack = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_BACK);
+    buttonBack.whenPressed(new JoystickDriveStopOnLineCommand());
   }
+
+
 }
