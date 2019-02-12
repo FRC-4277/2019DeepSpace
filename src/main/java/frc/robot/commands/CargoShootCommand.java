@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
@@ -22,7 +23,7 @@ public class CargoShootCommand extends Command {
 
     @Override
     protected void end() {
-        super.end();
+        new JoystickDriveCommand().start();
     }
 
     @Override

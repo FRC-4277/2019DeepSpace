@@ -5,16 +5,19 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.robot.Robot;
 import frc.robot.commands.*;
 
 @SuppressWarnings("deprecation")
 public class MecanumDrive extends Subsystem {
-	private static final double DRIVE_JOYSTICK_DEADBAND = 0.1;
+	private static final double DRIVE_JOYSTICK_DEADBAND = 0.05;
 
 	static WPI_TalonSRX FRONT_LEFT_TALON, BACK_LEFT_TALON, FRONT_RIGHT_TALON, BACK_RIGHT_TALON;
 	RobotDrive drive;
@@ -32,13 +35,13 @@ public class MecanumDrive extends Subsystem {
 		FRONT_RIGHT_TALON.setExpiration(1);
 		BACK_RIGHT_TALON.setExpiration(1);
 
-		if (Robot.getInstance().isClone()) {
-			FRONT_LEFT_TALON.setInverted(true);
-			BACK_LEFT_TALON.setInverted(true);
-		} else {
-			FRONT_LEFT_TALON.setInverted(true);
-			BACK_LEFT_TALON.setInverted(true);
-		}
+		FRONT_LEFT_TALON.setNeutralMode(NeutralMode.Brake);
+		BACK_LEFT_TALON.setNeutralMode(NeutralMode.Brake);
+		FRONT_RIGHT_TALON.setNeutralMode(NeutralMode.Brake);
+		BACK_RIGHT_TALON.setNeutralMode(NeutralMode.Brake);	
+
+		FRONT_LEFT_TALON.setInverted(true);
+		BACK_LEFT_TALON.setInverted(true);
 	}
 
 	public void mecanumDriveJoystick(Joystick driveStick, boolean applyDeadband) {
@@ -79,11 +82,16 @@ public class MecanumDrive extends Subsystem {
 		}
 	}
 
-	public void mecanumDrive(double x, double y, double twist) {
-		mecanumDrive(x, y, twist, 0);
+	public void mecanumDrive(double x, double y, double twist, boolean applyDeadband) {
+		mecanumDrive(x, y, twist, 0, applyDeadband);
 	}
 
-	public void mecanumDrive(double x, double y, double twist, double gyro) {
+	public void mecanumDrive(double x, double y, double twist, double gyro, boolean applyDeadband) {
+		if (applyDeadband) {
+			x = applyDeadband(x);
+			y = applyDeadband(y);
+			twist = applyDeadband(twist);
+		}
 		drive.mecanumDrive_Cartesian(x, y, twist, gyro);
 	}
 

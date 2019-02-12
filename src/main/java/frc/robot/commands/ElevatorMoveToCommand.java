@@ -24,6 +24,9 @@ public class ElevatorMoveToCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    if (Robot.elevator.getMode() == Mode.HOME) {
+      Robot.elevator.resetEncoder();
+    }
   }
 
   // Called repeatedly when this Command is scheduled to run

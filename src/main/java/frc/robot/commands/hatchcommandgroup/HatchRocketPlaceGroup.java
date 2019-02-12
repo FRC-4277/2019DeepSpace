@@ -8,9 +8,10 @@
 package frc.robot.commands.hatchcommandgroup;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.StartCommand;
 import edu.wpi.first.wpilibj.command.WaitCommand;
+import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.commands.hatchgroup.HatchPanelExtendArm;
-import frc.robot.commands.hatchgroup.HatchPanelGrabHatch;
 import frc.robot.commands.hatchgroup.HatchPanelReleaseHatch;
 import frc.robot.commands.hatchgroup.HatchPanelRetractArm;
 
@@ -27,6 +28,7 @@ public class HatchRocketPlaceGroup extends CommandGroup {
         addSequential(new WaitCommand(.5));
         addSequential(new HatchPanelRetractArm());
         addSequential(new WaitCommand(.3));
+        addSequential(new StartCommand(new JoystickDriveCommand()));
         //addSequential(new HatchPanelGrabHatch());
 //     addSequential(new Command2());
         // these will run in order.

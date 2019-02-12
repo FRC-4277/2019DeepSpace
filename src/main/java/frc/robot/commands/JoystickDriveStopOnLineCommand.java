@@ -7,12 +7,22 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.ColorProximitySensor.Result;
 
 public class JoystickDriveStopOnLineCommand extends Command {
+  public static NetworkTableEntry entry;
+  static {
+    entry = Shuffleboard.getTab("General")
+		.add("Line Up Mode", false)
+		.withWidget("Boolean Box")
+		.getEntry();
+  }
+  
   private boolean hasReachedLine = false;
 
   public JoystickDriveStopOnLineCommand() {
@@ -22,6 +32,8 @@ public class JoystickDriveStopOnLineCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    Robot.lineUpGyro.reset();
+    entry.setBoolean(true);
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -35,28 +47,29 @@ public class JoystickDriveStopOnLineCommand extends Command {
       hasReachedLine = true;
       return;
     }
-    double slider = OI.driveStick.getRawAxis(3);
-		if (slider >= 0) 
-			Robot.mecanumDrive.mecanumDriveJoystick(OI.driveStick, false);
-		else if (slider < 0)
-			Robot.mecanumDrive.fieldOrientedMecanumDriveJoystick(OI.driveStick, Robot.navX.getAngle(), false);
+    // https://www.desmos.com/calculator/fflssd6tlk
+    double x = OI.driveStick.getX(); 
+    x = (0.8 * Math.pow(x, 1 / 3.0)) - (0.3 * Math.pow(x, 1 / 9.0));
+    double y = OI.driveStick.getY();
+    y *= 0.3;
+    Robot.mecanumDrive.mecanumDrive(x, y, 0, Robot.lineUpGyro.getAngle(), true);
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return hasReachedLine;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.mecanumDrive.mecanumDrive(0, 0, 0, false);
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    hasReachedLine = false;
   }
 }

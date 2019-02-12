@@ -14,7 +14,7 @@ public class JoystickDriveCommand extends Command {
 
 	@Override
 	protected void initialize() {
-		super.initialize();
+		JoystickDriveStopOnLineCommand.entry.setBoolean(false);
 	}
 
 	@Override

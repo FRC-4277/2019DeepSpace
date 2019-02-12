@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Compressor;
 
 /**
@@ -47,6 +48,7 @@ public class Robot extends TimedRobot {
 
   public static AHRS navX;
   public static ColorProximitySensor colorProximitySensor;
+  public static ADXRS450_Gyro lineUpGyro;
 
   public Compressor compressor;
 
@@ -71,6 +73,8 @@ public class Robot extends TimedRobot {
 
     navX = new AHRS(SPI.Port.kMXP);
     navX.reset();
+
+    lineUpGyro = new ADXRS450_Gyro();
 
     colorProximitySensor = new ColorProximitySensor(I2C.Port.kOnboard);
 

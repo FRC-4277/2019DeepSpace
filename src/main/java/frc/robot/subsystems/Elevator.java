@@ -58,8 +58,8 @@ public class Elevator extends Subsystem {
     configureMotorBasics(mainMotor);
     // Change sensor phase (may change depending on hardware)
     mainMotor.setSensorPhase(false);
-    // NEVER clear positions, we're only using limit switches to stop the motors
-    mainMotor.configClearPositionOnLimitR(false, TALONSRX_CONFIGURE_TIMEOUT);
+    // Set position to 0 on bottom limit switch
+    mainMotor.configClearPositionOnLimitR(true, TALONSRX_CONFIGURE_TIMEOUT);
     mainMotor.configClearPositionOnLimitF(false, TALONSRX_CONFIGURE_TIMEOUT);
     // Set soft limit for bottom
     mainMotor.configReverseSoftLimitThreshold(0, TALONSRX_CONFIGURE_TIMEOUT);
@@ -118,7 +118,7 @@ public class Elevator extends Subsystem {
    */
   public void stop() {
     mode = Mode.MANUAL_CONTROL;
-    mainMotor.set(ControlMode.PercentOutput, 0);
+    mainMotor.set(ControlMode.PercentOutput, 0.001);
   }
 
   /**
@@ -257,7 +257,7 @@ public class Elevator extends Subsystem {
     /**
      * Level at loading station.
      */
-    LOADING_STATION("Loading Station", 268153),
+    LOADING_STATION("Loading Station", 201155),
     /**
      * Level at medium ports on the rocket
      * <p>
@@ -276,11 +276,11 @@ public class Elevator extends Subsystem {
      * The formula is
      * {@code Encoder Ticks = (Travel Distance / (3.5 * PI) ) * 30 * 4096}.
      */
-    MEDIUM("Medium", /*312935*/489777),
+    MEDIUM("Medium", 312935),
     /**
      * Level at highest ports on the rocket
      */
-    HIGH("High", 944000);
+    HIGH("High", 614647);
 
     private String name;
     private boolean isElevatorLevel;

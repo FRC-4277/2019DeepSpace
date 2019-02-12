@@ -8,8 +8,10 @@
 package frc.robot.commands.hatchcommandgroup;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.StartCommand;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 import frc.robot.commands.HatchPanelGrabToggle;
+import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.commands.hatchgroup.HatchPanelExtendArm;
 import frc.robot.commands.hatchgroup.HatchPanelGrabHatch;
 import frc.robot.commands.hatchgroup.HatchPanelReleaseHatch;
@@ -22,6 +24,7 @@ public class HatchLoadingStationGroup extends CommandGroup {
     public HatchLoadingStationGroup() {
         // Add Commands here:
         // e.g
+        // TODO : Shorter delays
         addSequential(new HatchPanelReleaseHatch());
         addSequential(new WaitCommand(.5));
         addSequential(new HatchPanelExtendArm());
@@ -29,6 +32,7 @@ public class HatchLoadingStationGroup extends CommandGroup {
         addSequential(new HatchPanelGrabHatch());
         addSequential(new WaitCommand(.5));
         addSequential(new HatchPanelRetractArm());
+        addSequential(new StartCommand(new JoystickDriveCommand()));
         // these will run in order.
 
         // To run multiple commands at the same time,

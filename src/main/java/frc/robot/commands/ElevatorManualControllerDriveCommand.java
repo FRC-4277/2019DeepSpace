@@ -33,7 +33,7 @@ public class ElevatorManualControllerDriveCommand extends Command {
     if (Math.abs(manualPower) >= JOYSTICK_THRESHOLD) {
       Robot.elevator.drive(manualPower);
     } else if (Robot.elevator.getMode() == Mode.MANUAL_CONTROL) {
-      Robot.elevator.drive(0.0);
+      Robot.elevator.stop();
     }
   }
 
