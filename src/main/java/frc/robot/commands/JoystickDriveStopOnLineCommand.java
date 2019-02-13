@@ -33,6 +33,7 @@ public class JoystickDriveStopOnLineCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    hasReachedLine = false;
     Robot.lineUpGyro.reset();
     entry.setBoolean(true);
   }
@@ -45,6 +46,8 @@ public class JoystickDriveStopOnLineCommand extends Command {
     }
     Result result = Robot.colorProximitySensor.readAll();
     if (result.getClear() > 10) {
+      OI.xboxController1.setRumble(RumbleType.kRightRumble, 1.0);
+      Robot.mecanumDrive.mecanumDrive(0, 0, 0, false);
       hasReachedLine = true;
       return;
     }
@@ -65,13 +68,13 @@ public class JoystickDriveStopOnLineCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    OI.xboxController1.setRumble(RumbleType.kRightRumble, 1.0);
-    Robot.mecanumDrive.mecanumDrive(0, 0, 0, false);
+    
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    
   }
 }
