@@ -45,6 +45,7 @@ public class Robot extends TimedRobot {
   public static Elevator elevator;
   public static HatchPanelSystem hatchPanelSystem;
   public static CargoSystem cargoSystem;
+  public static MotionProfile motionProfile;
 
   public static AHRS navX;
   public static ColorProximitySensor colorProximitySensor;
@@ -115,6 +116,9 @@ public class Robot extends TimedRobot {
     }
     if (m_oi == null) {
       m_oi = new OI();
+    }
+    if (motionProfile == null){
+      motionProfile = new MotionProfile();
     }
   }
 

@@ -8,8 +8,6 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -93,6 +91,9 @@ public class MecanumDrive extends Subsystem {
 			twist = applyDeadband(twist);
 		}
 		drive.mecanumDrive_Cartesian(x, y, twist, gyro);
+	}
+	public void mecanumStop(){
+		mecanumDrive(0, 0, 0, false);
 	}
 
 	@Override

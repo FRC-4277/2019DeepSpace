@@ -66,7 +66,7 @@ public class JoystickDriveStopOnLineCommand extends Command {
   @Override
   protected void end() {
     OI.xboxController1.setRumble(RumbleType.kRightRumble, 1.0);
-    Robot.mecanumDrive.mecanumDrive(0, 0, 0, false);
+    Robot.mecanumDrive.mecanumStop();
   }
 
   // Called when another command which requires one or more of the same
