@@ -42,6 +42,7 @@ public class DriveStopOnLineCommand extends Command {
   protected void initialize() {
     Robot.lineUpGyro.reset();
     entry.setBoolean(true);
+    hasReachedLine = false;
   }
 
   // Called repeatedly when this Command is scheduled to run
