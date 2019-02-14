@@ -169,8 +169,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    new HatchPanelGrabHatch();
-    new HatchPanelRetractArm();
+    new HatchPanelGrabHatch().start();
+    new HatchPanelRetractArm().start();
   }
 
   @Override
