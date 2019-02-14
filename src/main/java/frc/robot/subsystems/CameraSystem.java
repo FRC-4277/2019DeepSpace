@@ -25,24 +25,21 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
  */
 public class CameraSystem extends Subsystem {
   private boolean flipCargo, flipHatch;
-  private UsbCamera cargoCamera, hatchCamera;
-  private CvSink cargoVideoSink, hatchVideoSink;
-  private CvSource outputStream;
-  private Mat image = new Mat();
-  private CameraType cameraType = CameraType.HATCH;
+  private volatile CvSource outputStream;
+  private volatile Mat image = new Mat();
+  private volatile CameraType cameraType = CameraType.HATCH;
+  private Thread visionThread;
 
   public CameraSystem(boolean flipCargo, boolean flipHatch) {
     this.flipCargo = flipCargo;
     this.flipHatch = flipHatch;
-    
-    cargoCamera = CameraServer.getInstance().startAutomaticCapture("Cargo", 0);
-    hatchCamera = CameraServer.getInstance().startAutomaticCapture("Hatch", 1);
-
-    cargoVideoSink = CameraServer.getInstance().getVideo(cargoCamera);
-    hatchVideoSink = CameraServer.getInstance().getVideo(hatchCamera);
- 
-    outputStream = CameraServer.getInstance().putVideo("Output", 640, 360);
   
+    // Output Stream
+    outputStream = CameraServer.getInstance().putVideo("Output", 640, 360);
+
+    // Start thread to process camera feeds
+    startVisionThread();
+
     // Add to ShuffleBoard
     Shuffleboard.getTab("General")
     .add(outputStream)
@@ -55,25 +52,50 @@ public class CameraSystem extends Subsystem {
     .withSize(4, 4);
   }
 
-  // TODO : Maybe not process image every single periodic call (every other for 25 FPS?)
-  @Override
-  public void periodic() {
-    // Enable/disable proper video sinks (Sinks pull in video [in this case from USB])
-    cargoVideoSink.setEnabled(cameraType == CameraType.CARGO);
-    hatchVideoSink.setEnabled(cameraType == CameraType.HATCH);
-    CvSink activeSink = cameraType == CameraType.CARGO ? cargoVideoSink : hatchVideoSink;
-    // Pull image from sink into field 'image'
-    activeSink.grabFrame(image);
-    // Check if flipping is required
-    if ((flipCargo && cameraType == CameraType.CARGO) || (flipHatch && cameraType == CameraType.HATCH)) {
-      // 1 means to flip (mirror) around y-axis
-      Core.flip(image, image, 1);
+  public void startVisionThread() {
+    if (visionThread == null || visionThread.isInterrupted()) {
+      visionThread = new Thread(new Runnable(){
+        @Override
+        public void run() {
+          UsbCamera cargoCamera = CameraServer.getInstance().startAutomaticCapture("Cargo", 0);
+          UsbCamera hatchCamera = CameraServer.getInstance().startAutomaticCapture("Hatch", 1);
+      
+          cargoCamera.setResolution(640, 360);
+          hatchCamera.setResolution(640, 360);
+      
+          CvSink cargoVideoSink = CameraServer.getInstance().getVideo(cargoCamera);
+          CvSink hatchVideoSink = CameraServer.getInstance().getVideo(hatchCamera);
+
+          while (!Thread.interrupted()) {
+            // Enable/disable proper video sinks (Sinks pull in video [in this case from USB])
+            cargoVideoSink.setEnabled(cameraType == CameraType.CARGO);
+            hatchVideoSink.setEnabled(cameraType == CameraType.HATCH);
+            CvSink activeSink = cameraType == CameraType.CARGO ? cargoVideoSink : hatchVideoSink;
+            // Pull image from sink into field 'image'
+            activeSink.grabFrame(image);
+            // Check if flipping is required
+            if ((flipCargo && cameraType == CameraType.CARGO) || (flipHatch && cameraType == CameraType.HATCH)) {
+              // 1 means to flip (mirror) around y-axis
+              Core.flip(image, image, 1);
+            }
+            outputStream.putFrame(image);
+          }
+        }
+      }, "Camera Processing");
+      visionThread.start();
     }
-    outputStream.putFrame(image);
   }
 
   public void switchCamera(CameraType type) {
     this.cameraType = type;
+  }
+
+  public CvSource getOutputStream() {
+    return outputStream;
+  }
+
+  public Mat getImage() {
+    return image;
   }
 
   public CameraType getCurrentType() {
