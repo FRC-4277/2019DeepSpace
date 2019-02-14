@@ -26,7 +26,7 @@ public class HatchLoadingStationGroup extends CommandGroup {
         // e.g
         // TODO : Shorter delays
         addSequential(new HatchPanelReleaseHatch());
-        addSequential(new WaitCommand(.5));
+        addSequential(new WaitCommand(.05));
         addSequential(new HatchPanelExtendArm());
         addSequential(new WaitCommand(.5));
         addSequential(new HatchPanelGrabHatch());
