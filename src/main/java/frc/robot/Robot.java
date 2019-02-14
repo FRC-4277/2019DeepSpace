@@ -10,6 +10,8 @@ package frc.robot;
 import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.commands.autonomous.groups.LeftCargoshipHatchCommandGroup;
 import frc.robot.commands.autonomous.groups.RightCargoshipHatchCommandGroup;
+import frc.robot.commands.hatchgroup.HatchPanelGrabHatch;
+import frc.robot.commands.hatchgroup.HatchPanelRetractArm;
 import frc.robot.map.CloneRobotMap;
 import frc.robot.map.CompetitionRobotMap;
 import frc.robot.map.RobotMap;
@@ -167,6 +169,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    new HatchPanelGrabHatch();
+    new HatchPanelRetractArm();
   }
 
   @Override
