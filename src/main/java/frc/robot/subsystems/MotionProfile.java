@@ -5,6 +5,8 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+//Motion Profile: https://www.desmos.com/calculator/rov7zwzt2f
+
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -19,11 +21,11 @@ public class MotionProfile extends Subsystem {
   // here. Call these from Commands.
   
   //feet per second
-  public double maxXSpeed;
+  public double maxXSpeed=100000;// This is high so that we get zero rather than null must be changes to use
   //feet per second
-  public double maxYSpeed = 7.7;
+  public double maxYSpeed = 7.6;
   //degrees per second
-  public double maxZSpeed;
+  public double maxZSpeed;// This is high so that we get zero rather than null must be changes to use
 
 
   @Override
@@ -32,6 +34,7 @@ public class MotionProfile extends Subsystem {
     // setDefaultCommand(new MySpecialCommand());
   }
 
+  //ALL PARAMETERS IN FEET DEGREES OR SECONDS 
   public Double[] calculateLMVelocities(Double distanceX, Double distanceY,Double rotationZ, Double durration, Double startTime) { 
     //this integer controls a switch that will zero the motion profiles if there is no desired movement in a given direction
     //Avoids returning null values

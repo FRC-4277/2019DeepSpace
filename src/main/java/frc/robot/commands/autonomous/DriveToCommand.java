@@ -31,7 +31,7 @@ public class DriveToCommand extends Command {
 
     public DriveToCommand(Double inputDistanceX, Double inputDistanceY, Double inputDegrees, Double inputDurration) {
 
-    	requires(Robot.motionProfile);
+    	requires(Robot.mecanumDrive);
     	
     	if(inputDistanceX < 0) isXNeg = true;
     	if(inputDistanceY < 0) isYNeg = true;

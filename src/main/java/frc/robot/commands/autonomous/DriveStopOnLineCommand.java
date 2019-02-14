@@ -7,25 +7,17 @@
 
 package frc.robot.commands.autonomous;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.Robot;
 import frc.robot.ColorProximitySensor.Result;
-
-//import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-//import frc.robot.OI;
+import frc.robot.commands.JoystickDriveStopOnLineCommand;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import frc.robot.OI;
 
 public class DriveStopOnLineCommand extends Command {
-  public static NetworkTableEntry entry;
   private String direction;
   double x;
-  static {
-    entry = Shuffleboard.getTab("General")
-		.add("Line Up Mode", false)
-		.withWidget("Boolean Box")
-		.getEntry();
-  }
   
   private boolean hasReachedLine = false;
 
@@ -41,7 +33,7 @@ public class DriveStopOnLineCommand extends Command {
   @Override
   protected void initialize() {
     Robot.lineUpGyro.reset();
-    entry.setBoolean(true);
+    JoystickDriveStopOnLineCommand.entry.setBoolean(true);
     hasReachedLine = false;
   }
 
@@ -70,7 +62,7 @@ public class DriveStopOnLineCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    //OI.xboxController1.setRumble(RumbleType.kRightRumble, 1.0);
+    OI.xboxController1.setRumble(RumbleType.kRightRumble, 1.0);
     Robot.mecanumDrive.mecanumStop();
   }
 

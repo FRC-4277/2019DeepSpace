@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import frc.robot.commands.JoystickDriveCommand;
+import frc.robot.commands.autonomous.groups.LeftCargoshipHatchCommandGroup;
+import frc.robot.commands.autonomous.groups.RightCargoshipHatchCommandGroup;
 import frc.robot.map.CloneRobotMap;
 import frc.robot.map.CompetitionRobotMap;
 import frc.robot.map.RobotMap;
@@ -41,6 +44,7 @@ public class Robot extends TimedRobot {
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
   SendableChooser<Boolean> m_cloneChooser = new SendableChooser<>();
+  
 
   public static RobotMap map;
   public static MecanumDrive mecanumDrive;
@@ -68,12 +72,20 @@ public class Robot extends TimedRobot {
 
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
-    SmartDashboard.putData("Auto mode", m_chooser);
 
     // Robot Chooser
     m_cloneChooser.setDefaultOption("Competition", false);
     m_cloneChooser.addOption("Clone", true);
     SmartDashboard.putData("Robot", m_cloneChooser);
+
+    instansiateSubsystems();
+
+     //Autonomous Choose
+     SmartDashboard.putData("Auto mode", m_chooser);
+     m_chooser.setDefaultOption("Driver Control", new JoystickDriveCommand()); // Driver Controlled
+     m_chooser.addOption("Left Hatch Cargoship", new LeftCargoshipHatchCommandGroup()); // Left Cargo Ship Hatch
+     m_chooser.addOption("Right Hatch Cargoship", new RightCargoshipHatchCommandGroup()); // Right Cargo Ship Hatch
+
 
     navX = new AHRS(SPI.Port.kMXP);
     navX.reset();
