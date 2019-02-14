@@ -14,15 +14,17 @@ import edu.wpi.first.wpilibj.buttons.Trigger;
 /**
  * Add your docs here.
  */
-public class XboxRightTrigger extends Trigger {
+public class XboxTrigger extends Trigger {
   private XboxController xboxController;
+  private Hand hand;
 
-  public XboxRightTrigger(XboxController xboxController) {
+  public XboxTrigger(XboxController xboxController, Hand hand) {
     this.xboxController = xboxController;
+    this.hand = hand;
   }
   
   @Override
   public boolean get() {
-    return xboxController.getTriggerAxis(Hand.kRight) > 0.1;
+    return xboxController.getTriggerAxis(hand) > 0.1;
   }
 }

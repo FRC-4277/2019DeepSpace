@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.ElevatorManualControllerDriveCommand;
@@ -18,6 +19,7 @@ import frc.robot.commands.ElevatorMoveToLoadingStationCommand;
 import frc.robot.commands.ElevatorMoveToMediumCommand;
 import frc.robot.commands.ElevatorResetEncoderCommand;
 import frc.robot.XboxPOVTrigger.Direction;
+import frc.robot.commands.CameraToggleCommand;
 import frc.robot.commands.CargoShootCommand;
 import frc.robot.commands.JoystickDriveStopOnLineCommand;
 import frc.robot.commands.hatchcommandgroup.HatchLoadingStationGroup;
@@ -138,7 +140,10 @@ public class OI {
     Button buttonRB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_RB);
     buttonRB.whenPressed(new HatchRocketPlaceGroup());
 
-    XboxRightTrigger rightTrigger = new XboxRightTrigger(xboxController1);
+    XboxTrigger leftTrigger = new XboxTrigger(xboxController1, Hand.kLeft);
+    leftTrigger.whenActive(new CameraToggleCommand());
+
+    XboxTrigger rightTrigger = new XboxTrigger(xboxController1, Hand.kRight);
     rightTrigger.whenActive(new CargoShootCommand());
 
     Button buttonBack = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_BACK);

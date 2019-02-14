@@ -14,7 +14,10 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.robot.commands.ElevatorManualControllerDriveCommand;
 
@@ -50,6 +53,9 @@ public class Elevator extends Subsystem {
    */
   private boolean talonConfiguredForUp = false;
 
+  private Mode lastModeSetForEntry = Mode.MANUAL_CONTROL;
+  private NetworkTableEntry modeEntry, positionEntry;
+
   public Elevator(int talonId, int followerId) {
     super("Elevator");
 
@@ -81,6 +87,22 @@ public class Elevator extends Subsystem {
     resetEncoder();
     // Stop the elevator (shouldn't be necessary as talon configs are cleared but it doesn't hurt)
     stop();
+    
+    /* Add Elevator Mode to ShuffleBoard */
+    modeEntry = Shuffleboard.getTab("General")
+    .add("Elevator Mode", mode)
+    .withWidget(BuiltInWidgets.kTextView)
+    // POSITION & SIZE
+    .withPosition(6, 0)
+    .withSize(1, 1)
+    .getEntry();
+
+    /* Add Elevator Sensor Position */
+    positionEntry = Shuffleboard.getTab("General")
+    .add("Elevator Position", 0)
+    .withPosition(7, 0)
+    .withSize(1, 1)
+    .getEntry();
   }
 
   private void configureMotorBasics(WPI_TalonSRX talonSRX) {
@@ -109,7 +131,7 @@ public class Elevator extends Subsystem {
    * @param power Power to set motor to (between -1.0 and 1.0 inclusive)
    */
   public void drive(double power) {
-    mode = Mode.MANUAL_CONTROL;
+    goToMode(Mode.MANUAL_CONTROL);
     mainMotor.set(ControlMode.PercentOutput, power);
   }
 
@@ -117,7 +139,7 @@ public class Elevator extends Subsystem {
    * Stop elevator manually (set motor power to 0.0).
    */
   public void stop() {
-    mode = Mode.MANUAL_CONTROL;
+    goToMode(Mode.MANUAL_CONTROL);
     mainMotor.set(ControlMode.PercentOutput, 0.001);
   }
 
@@ -127,7 +149,7 @@ public class Elevator extends Subsystem {
    * @param target Position to approach with PID loop (in encoder ticks)
    */
   public void goToPosition(double target) {
-    mode = Mode.MANUAL_TARGET;
+    goToMode(Mode.MANUAL_TARGET);
     mainMotor.set(ControlMode.Position, target);
   }
 
@@ -140,6 +162,11 @@ public class Elevator extends Subsystem {
    * @param mode the mode to set (and if it's a level, go to)
    */
   public void goToMode(Mode mode) {
+    // Update ShuffleBoard entry for mode if needed
+    if (lastModeSetForEntry != mode) {
+      modeEntry.setString(mode.getName());
+      lastModeSetForEntry = mode;
+    }
     this.mode = mode;
     // Check if this mode is an elevator level. The only modes that aren't an
     // elevator level are MANUAL_CONTROL and MANUAL_TARGET
@@ -207,6 +234,11 @@ public class Elevator extends Subsystem {
         return mode.getName();
       }
     }, null);
+  }
+
+  @Override
+  public void periodic() {
+    positionEntry.setNumber(getSensorPosition());
   }
 
   /**

@@ -20,7 +20,10 @@ public class JoystickDriveStopOnLineCommand extends Command {
   static {
     entry = Shuffleboard.getTab("General")
 		.add("Line Up Mode", false)
-		.withWidget("Boolean Box")
+    .withWidget("Boolean Box")
+    // POSITION & SIZE
+    .withPosition(7, 2)
+    .withSize(2, 2)
 		.getEntry();
   }
   

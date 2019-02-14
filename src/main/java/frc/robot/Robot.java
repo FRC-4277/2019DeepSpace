@@ -15,15 +15,17 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,6 +47,7 @@ public class Robot extends TimedRobot {
   public static Elevator elevator;
   public static HatchPanelSystem hatchPanelSystem;
   public static CargoSystem cargoSystem;
+  public static CameraSystem cameraSystem;
   public static MotionProfile motionProfile;
 
   public static AHRS navX;
@@ -53,7 +56,7 @@ public class Robot extends TimedRobot {
 
   public Compressor compressor;
 
-  public UsbCamera cameraOne, cameraTwo;
+  private NetworkTableEntry gameTimeEntry;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -81,8 +84,13 @@ public class Robot extends TimedRobot {
 
     LiveWindow.addSensor("MecanumDrive", "NavX", navX);
 
-    cameraOne = CameraServer.getInstance().startAutomaticCapture(0);
-    cameraTwo = CameraServer.getInstance().startAutomaticCapture(1);
+    gameTimeEntry = Shuffleboard.getTab("General")
+    .add("Game Time", "XXX")
+    .withWidget(BuiltInWidgets.kTextView)
+    // POSITION & SIZE
+    .withPosition(8, 0)
+    .withSize(1, 1)
+    .getEntry();
   }
 
   public boolean isClone() {
@@ -114,6 +122,9 @@ public class Robot extends TimedRobot {
     if (compressor == null) {
       compressor = new Compressor(map.getPCMId());
     }
+    if (cameraSystem == null) {
+      cameraSystem = new CameraSystem(/*Flip Cargo*/ true, /*Flip Hatch*/ true);
+    }
     if (m_oi == null) {
       m_oi = new OI();
     }
@@ -133,6 +144,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    gameTimeEntry.setNumber(DriverStation.getInstance().getMatchTime());
   }
 
   /**
@@ -191,6 +203,8 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     instansiateSubsystems();
     navX.reset();
+    // Switch tab to General
+    Shuffleboard.selectTab("General");
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
