@@ -66,6 +66,8 @@ public class CameraSystem extends Subsystem {
           CvSink cargoVideoSink = CameraServer.getInstance().getVideo(cargoCamera);
           CvSink hatchVideoSink = CameraServer.getInstance().getVideo(hatchCamera);
 
+          CameraServer.getInstance().getServer().setSource(outputStream);
+
           while (!Thread.interrupted()) {
             // Enable/disable proper video sinks (Sinks pull in video [in this case from USB])
             cargoVideoSink.setEnabled(cameraType == CameraType.CARGO);
