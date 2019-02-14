@@ -17,10 +17,15 @@ import frc.robot.commands.ElevatorMoveToHomeCommand;
 import frc.robot.commands.ElevatorMoveToLoadingStationCommand;
 import frc.robot.commands.ElevatorMoveToMediumCommand;
 import frc.robot.commands.ElevatorResetEncoderCommand;
+import frc.robot.XboxPOVTrigger.Direction;
 import frc.robot.commands.CargoShootCommand;
 import frc.robot.commands.JoystickDriveStopOnLineCommand;
 import frc.robot.commands.hatchcommandgroup.HatchLoadingStationGroup;
 import frc.robot.commands.hatchcommandgroup.HatchRocketPlaceGroup;
+import frc.robot.commands.hatchgroup.HatchPanelExtendArm;
+import frc.robot.commands.hatchgroup.HatchPanelGrabHatch;
+import frc.robot.commands.hatchgroup.HatchPanelReleaseHatch;
+import frc.robot.commands.hatchgroup.HatchPanelRetractArm;
 import frc.robot.map.XboxControllerMap;
 
 /**
@@ -138,6 +143,18 @@ public class OI {
 
     Button buttonBack = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_BACK);
     buttonBack.whenPressed(new JoystickDriveStopOnLineCommand());
+
+    XboxPOVTrigger upPOV = new XboxPOVTrigger(xboxController1, Direction.UP);
+    upPOV.whenActive(new HatchPanelExtendArm());
+
+    XboxPOVTrigger downPOV = new XboxPOVTrigger(xboxController1, Direction.DOWN);
+    downPOV.whenActive(new HatchPanelRetractArm());
+
+    XboxPOVTrigger leftPOV = new XboxPOVTrigger(xboxController1, Direction.LEFT);
+    leftPOV.whenActive(new HatchPanelGrabHatch());
+
+    XboxPOVTrigger rightPOV = new XboxPOVTrigger(xboxController1, Direction.RIGHT);
+    rightPOV.whenActive(new HatchPanelReleaseHatch());
   }
 
 
