@@ -51,8 +51,9 @@ public class DriveStopOnLineCommand extends Command {
     if (hasReachedLine) {
       return;
     }
-    Result result = Robot.colorProximitySensor.readAll();
-    if (result.getClear() > 10) {
+    Result result = Robot.cargoColorSensor.readAll();
+    Result result2 = Robot.hatchColorSensor.readAll();
+    if (result.getClear() > 10 || result2.getClear() > 10) {
       hasReachedLine = true;
       return;
     }

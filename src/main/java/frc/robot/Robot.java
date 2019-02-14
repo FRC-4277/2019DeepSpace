@@ -51,7 +51,7 @@ public class Robot extends TimedRobot {
   public static MotionProfile motionProfile;
 
   public static AHRS navX;
-  public static ColorProximitySensor colorProximitySensor;
+  public static ColorProximitySensor hatchColorSensor, cargoColorSensor;
   public static ADXRS450_Gyro lineUpGyro;
 
   public Compressor compressor;
@@ -80,7 +80,8 @@ public class Robot extends TimedRobot {
 
     lineUpGyro = new ADXRS450_Gyro();
 
-    colorProximitySensor = new ColorProximitySensor(I2C.Port.kOnboard);
+    hatchColorSensor = new ColorProximitySensor(I2C.Port.kOnboard);
+    cargoColorSensor = new ColorProximitySensor(I2C.Port.kMXP);
 
     LiveWindow.addSensor("MecanumDrive", "NavX", navX);
 

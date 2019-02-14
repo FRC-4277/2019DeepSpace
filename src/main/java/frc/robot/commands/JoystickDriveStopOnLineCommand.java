@@ -47,8 +47,9 @@ public class JoystickDriveStopOnLineCommand extends Command {
     if (hasReachedLine) {
       return;
     }
-    Result result = Robot.colorProximitySensor.readAll();
-    if (result.getClear() > 10) {
+    Result result = Robot.cargoColorSensor.readAll();
+    Result result2 = Robot.hatchColorSensor.readAll();
+    if (result.getClear() > 10 || result2.getClear() > 10) {
       OI.xboxController1.setRumble(RumbleType.kRightRumble, 1.0);
       Robot.mecanumDrive.mecanumDrive(0, 0, 0, false);
       hasReachedLine = true;
