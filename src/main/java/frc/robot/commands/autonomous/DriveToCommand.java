@@ -90,10 +90,10 @@ public class DriveToCommand extends Command {
     }
     
     if(isYNeg) {
-      driveY = -Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[1];
+      driveY = Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[1];
     }
     else if (!isYNeg) {
-      driveY = Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[1];;
+      driveY = -Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[1];;
     }
     
     if(isThetaNeg) {
