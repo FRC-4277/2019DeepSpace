@@ -22,6 +22,7 @@ import frc.robot.XboxPOVTrigger.Direction;
 import frc.robot.commands.CameraToggleCommand;
 import frc.robot.commands.CargoShootCommand;
 import frc.robot.commands.JoystickDriveStopOnLineCommand;
+import frc.robot.commands.autonomous.groups.LeftCargoshipHatchCommandGroup;
 import frc.robot.commands.hatchcommandgroup.HatchLoadingStationGroup;
 import frc.robot.commands.hatchcommandgroup.HatchRocketPlaceGroup;
 import frc.robot.commands.hatchgroup.HatchPanelExtendArm;
@@ -141,7 +142,7 @@ public class OI {
     buttonRB.whenPressed(new HatchRocketPlaceGroup());
 
     XboxTrigger leftTrigger = new XboxTrigger(xboxController1, Hand.kLeft);
-    leftTrigger.whenActive(new CameraToggleCommand());
+    //leftTrigger.whenActive(new CameraToggleCommand());
 
     XboxTrigger rightTrigger = new XboxTrigger(xboxController1, Hand.kRight);
     rightTrigger.whenActive(new CargoShootCommand());
@@ -160,6 +161,9 @@ public class OI {
 
     XboxPOVTrigger rightPOV = new XboxPOVTrigger(xboxController1, Direction.RIGHT);
     rightPOV.whenActive(new HatchPanelReleaseHatch());
+  
+    Button joyLeft = new JoystickButton(xboxController1, XboxControllerMap.XBOX_JOY_LEFT_BUTTON);
+    joyLeft.whenPressed(new LeftCargoshipHatchCommandGroup());
   }
 
 

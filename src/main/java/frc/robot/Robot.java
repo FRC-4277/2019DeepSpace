@@ -137,9 +137,9 @@ public class Robot extends TimedRobot {
     if (compressor == null) {
       compressor = new Compressor(map.getPCMId());
     }
-    if (cameraSystem == null) {
-      cameraSystem = new CameraSystem(/*Flip Cargo*/ true, /*Flip Hatch*/ true);
-    }
+    //if (cameraSystem == null) {
+    //  cameraSystem = new CameraSystem(/*Flip Cargo*/ true, /*Flip Hatch*/ true);
+    //}
     if (m_oi == null) {
       m_oi = new OI();
     }
