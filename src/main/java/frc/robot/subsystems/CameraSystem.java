@@ -16,6 +16,7 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -24,6 +25,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
  * Add your docs here.
  */
 public class CameraSystem extends Subsystem {
+  private static final int CAMERA_FPS = 10;
+  private static final int CAMERA_WIDTH = 640;
+  private static final int CAMERA_HEIGHT = 360;
   private boolean flipCargo, flipHatch;
   private volatile CvSource outputStream;
   private volatile Mat image = new Mat();
@@ -54,19 +58,17 @@ public class CameraSystem extends Subsystem {
 
   public void startVisionThread() {
     if (visionThread == null || visionThread.isInterrupted()) {
-      visionThread = new Thread(new Runnable(){
+      visionThread = new Thread(new Runnable() {
+        private boolean cargoCamConfigured = false;
+        private boolean hatchCamConfigured = false;
+
         @Override
         public void run() {
-          UsbCamera cargoCamera = CameraServer.getInstance().startAutomaticCapture("Cargo", 0);
-          UsbCamera hatchCamera = CameraServer.getInstance().startAutomaticCapture("Hatch", 1);
-      
-          cargoCamera.setResolution(640, 360);
-          hatchCamera.setResolution(640, 360);
+          UsbCamera cargoCamera = new UsbCamera("Cargo", 0);
+          UsbCamera hatchCamera = new UsbCamera("Hatch", 1);
       
           CvSink cargoVideoSink = CameraServer.getInstance().getVideo(cargoCamera);
           CvSink hatchVideoSink = CameraServer.getInstance().getVideo(hatchCamera);
-
-          CameraServer.getInstance().getServer().setSource(outputStream);
 
           while (!Thread.interrupted()) {
             // Enable/disable proper video sinks (Sinks pull in video [in this case from USB])
@@ -75,6 +77,33 @@ public class CameraSystem extends Subsystem {
             CvSink activeSink = cameraType == CameraType.CARGO ? cargoVideoSink : hatchVideoSink;
             // Pull image from sink into field 'image'
             activeSink.grabFrame(image);
+            // Don't process image if it's empty
+            if (image == null || image.empty() || image.width() == 0 || image.height() == 0) {
+              continue;
+            }
+            // Configure cameras if needed
+            if ((!cargoCamConfigured && cameraType == CameraType.CARGO) || (!hatchCamConfigured && cameraType == CameraType.HATCH)) {
+              try {
+                switch (cameraType) {
+                  case CARGO:
+                    cargoCamera.setFPS(CAMERA_FPS);
+                    cargoCamera.setResolution(CAMERA_WIDTH, CAMERA_HEIGHT);
+                    cargoCamConfigured = true;
+                    break;
+                  case HATCH:
+                    hatchCamera.setFPS(CAMERA_FPS);
+                    hatchCamera.setResolution(CAMERA_WIDTH, CAMERA_HEIGHT);
+                    hatchCamConfigured = true;
+                    break;
+                }
+                // Skip this frame as the next frame will have configuration changes applied
+                continue;
+              } catch (Exception e) {
+                DriverStation.reportWarning(
+                  "Could not configure camera " + cameraType + " but it should still work (but using more bandwidth) => "+ e.getMessage(),
+                   false);
+              }
+            }
             // Check if flipping is required
             if ((flipCargo && cameraType == CameraType.CARGO) || (flipHatch && cameraType == CameraType.HATCH)) {
               // 1 means to flip (mirror) around y-axis
