@@ -90,7 +90,7 @@ public class CameraSystem extends Subsystem {
             }
             CvSink activeSink = cameraType == CameraType.CARGO ? cargoVideoSink : hatchVideoSink;
             // Pull image from sink into field 'image'
-            activeSink.grabFrame(image);
+            activeSink.grabFrame(image, 0.008);
             // Don't process image if it's empty
             if (image == null || image.empty() || image.width() == 0 || image.height() == 0) {
               continue;
@@ -101,7 +101,8 @@ public class CameraSystem extends Subsystem {
                 switch (cameraType) {
                   case CARGO:
                     cargoCamConfigured = true;
-                    //cargoCamera.setFPS(CAMERA_FPS);
+                    //
+                    cargoCamera.setFPS(CAMERA_FPS);
                     cargoCamera.setResolution(CAMERA_WIDTH, CAMERA_HEIGHT);
                     break;
                   case HATCH:
