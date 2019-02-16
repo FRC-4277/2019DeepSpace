@@ -289,7 +289,7 @@ public class Elevator extends Subsystem {
     /**
      * Level at loading station.
      */
-    LOADING_STATION("Loading Station", 201155),
+    LOADING_STATION("Loading Station", 178804),
     /**
      * Level at medium ports on the rocket
      * <p>
