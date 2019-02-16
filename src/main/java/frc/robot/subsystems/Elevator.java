@@ -285,7 +285,7 @@ public class Elevator extends Subsystem {
      * Home level, where the elevator starts and to score at lowest hatches and
      * cargo on rocket.
      */
-    HOME("Home", 0),
+    HOME("Home", -2925),
     /**
      * Level at loading station.
      */
