@@ -192,6 +192,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    navX.reset();
     instansiateSubsystems();
     m_autonomousCommand = m_chooser.getSelected();
 
@@ -219,7 +220,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     instansiateSubsystems();
-    navX.reset();
     // Switch tab to General
     Shuffleboard.selectTab("General");
     // This makes sure that the autonomous stops running when
