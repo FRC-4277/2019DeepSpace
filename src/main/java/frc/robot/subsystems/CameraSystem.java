@@ -90,7 +90,7 @@ public class CameraSystem extends Subsystem {
             }
             CvSink activeSink = cameraType == CameraType.CARGO ? cargoVideoSink : hatchVideoSink;
             // Pull image from sink into field 'image'
-            activeSink.grabFrame(image, 0.008);
+            activeSink.grabFrame(image, 0.05);
             // Don't process image if it's empty
             if (image == null || image.empty() || image.width() == 0 || image.height() == 0) {
               continue;
