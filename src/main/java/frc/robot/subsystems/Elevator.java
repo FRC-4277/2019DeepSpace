@@ -90,7 +90,7 @@ public class Elevator extends Subsystem {
     
     /* Add Elevator Mode to ShuffleBoard */
     modeEntry = Shuffleboard.getTab("General")
-    .add("Elevator Mode", mode)
+    .add("Elevator Mode", mode.getName())
     .withWidget(BuiltInWidgets.kTextView)
     // POSITION & SIZE
     .withPosition(6, 0)
