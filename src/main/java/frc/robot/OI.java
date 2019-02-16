@@ -115,6 +115,13 @@ public class OI {
     Button manualButtonStart = new JoystickButton(xboxController2, XboxControllerMap.XBOX_BUTTON_START);
     manualButtonStart.whenPressed(new ElevatorManualControllerDriveCommand());
     */
+    
+    // DRIVE STICK
+    Button driveButton5 = new JoystickButton(driveStick, 5);
+    driveButton5.whenPressed(new JoystickDriveStopOnLineCommand());
+
+    Button driveButton3 = new JoystickButton(driveStick, 3);
+    driveButton3.whenPressed(new JoystickDriveCommand());
 
     // CO-PILOT
     Button buttonLB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_LB);
