@@ -55,9 +55,8 @@ public class JoystickDriveStopOnLineCommand extends Command {
       hasReachedLine = true;
       return;
     }
-    // https://www.desmos.com/calculator/fflssd6tlk
     double x = OI.driveStick.getX(); 
-    x = (0.8 * Math.pow(x, 1 / 3.0)) - (0.3 * Math.pow(x, 1 / 9.0));
+    x *= 0.5;
     double y = OI.driveStick.getY();
     y *= 0.3;
     Robot.mecanumDrive.mecanumDrive(x, y, 0, Robot.lineUpGyro.getAngle(), true);
