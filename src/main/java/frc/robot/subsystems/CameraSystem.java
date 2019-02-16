@@ -101,12 +101,12 @@ public class CameraSystem extends Subsystem {
                 switch (cameraType) {
                   case CARGO:
                     cargoCamConfigured = true;
-                    cargoCamera.setFPS(CAMERA_FPS);
+                    //cargoCamera.setFPS(CAMERA_FPS);
                     cargoCamera.setResolution(CAMERA_WIDTH, CAMERA_HEIGHT);
                     break;
                   case HATCH:
                     hatchCamConfigured = true;
-                    hatchCamera.setFPS(CAMERA_FPS);
+                    //hatchCamera.setFPS(CAMERA_FPS);
                     hatchCamera.setResolution(CAMERA_WIDTH, CAMERA_HEIGHT);
                     break;
                 }
