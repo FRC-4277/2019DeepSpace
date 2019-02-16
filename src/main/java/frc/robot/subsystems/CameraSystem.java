@@ -16,23 +16,25 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-
 /**
  * Add your docs here.
  */
 public class CameraSystem extends Subsystem {
-  private static final int CAMERA_FPS = 10;
+  private static final int CAMERA_FPS = 30;
   private static final int CAMERA_WIDTH = 640;
   private static final int CAMERA_HEIGHT = 360;
   private boolean flipCargo, flipHatch;
   private volatile CvSource outputStream;
   private volatile Mat image = new Mat();
   private volatile CameraType cameraType = CameraType.HATCH;
+  private volatile CameraType enabledCameraType = null;
   private Thread visionThread;
+  private NetworkTableEntry entry;
 
   public CameraSystem(boolean flipCargo, boolean flipHatch) {
     this.flipCargo = flipCargo;
@@ -40,9 +42,6 @@ public class CameraSystem extends Subsystem {
   
     // Output Stream
     outputStream = CameraServer.getInstance().putVideo("Output", 640, 360);
-
-    // Start thread to process camera feeds
-    startVisionThread();
 
     // Add to ShuffleBoard
     Shuffleboard.getTab("General")
@@ -54,6 +53,17 @@ public class CameraSystem extends Subsystem {
     // POSITION & SIZE
     .withPosition(2, 0)
     .withSize(4, 4);
+  
+    entry = Shuffleboard.getTab("General")
+    .add("Camera", cameraType.name())
+    .withWidget(BuiltInWidgets.kTextView)
+    // POSITION & SIZE
+    .withPosition(6, 1)
+    .withSize(1, 1)
+    .getEntry();
+  
+    // Start thread to process camera feeds
+    startVisionThread();
   }
 
   public void startVisionThread() {
@@ -72,8 +82,12 @@ public class CameraSystem extends Subsystem {
 
           while (!Thread.interrupted()) {
             // Enable/disable proper video sinks (Sinks pull in video [in this case from USB])
-            cargoVideoSink.setEnabled(cameraType == CameraType.CARGO);
-            hatchVideoSink.setEnabled(cameraType == CameraType.HATCH);
+            if (enabledCameraType != cameraType) {
+              cargoVideoSink.setEnabled(cameraType == CameraType.CARGO);
+              hatchVideoSink.setEnabled(cameraType == CameraType.HATCH);            
+              entry.setString(cameraType.name());
+              enabledCameraType = cameraType;
+            }
             CvSink activeSink = cameraType == CameraType.CARGO ? cargoVideoSink : hatchVideoSink;
             // Pull image from sink into field 'image'
             activeSink.grabFrame(image);
