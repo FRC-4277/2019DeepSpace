@@ -69,7 +69,7 @@ public class Elevator extends Subsystem {
     mainMotor.configClearPositionOnLimitF(false, TALONSRX_CONFIGURE_TIMEOUT);
     // Set soft limit for bottom
     mainMotor.configReverseSoftLimitThreshold(0, TALONSRX_CONFIGURE_TIMEOUT);
-    mainMotor.configReverseSoftLimitEnable(true, TALONSRX_CONFIGURE_TIMEOUT); 
+    mainMotor.configReverseSoftLimitEnable(/*true*/false, TALONSRX_CONFIGURE_TIMEOUT); 
     /* Set soft limit for top to 2 inches more than HIGH setpoint
     *  22351 = (2 / 3.5PI) * 30 * 4096
     *  See comments below in Mode.MEDIUM for calculation explanation */
