@@ -18,6 +18,7 @@ import frc.robot.commands.ElevatorMoveToHomeCommand;
 import frc.robot.commands.ElevatorMoveToLoadingStationCommand;
 import frc.robot.commands.ElevatorMoveToMediumCommand;
 import frc.robot.commands.ElevatorResetEncoderCommand;
+import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.XboxPOVTrigger.Direction;
 import frc.robot.commands.CameraToggleCommand;
 import frc.robot.commands.CargoShootCommand;
@@ -160,6 +161,9 @@ public class OI {
 
     XboxPOVTrigger rightPOV = new XboxPOVTrigger(xboxController1, Direction.RIGHT);
     rightPOV.whenActive(new HatchPanelReleaseHatch());
+  
+    Button buttonLeftJoy = new JoystickButton(xboxController1, XboxControllerMap.XBOX_JOY_LEFT_BUTTON);
+    buttonLeftJoy.whenPressed(new JoystickDriveCommand());
   }
 
 
