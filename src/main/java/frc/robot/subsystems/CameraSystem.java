@@ -16,29 +16,66 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import frc.robot.utils.Settings;
+import frc.robot.utils.Settings.ChooserSetting;
+import frc.robot.utils.Settings.Setting;
 
 /**
  * Subsystem to manage switching cameras and streaming them
  */
 public class CameraSystem extends Subsystem {
-  private static final int CAMERA_FPS = 20;
-  private static final int CAMERA_WIDTH = 320;
-  private static final int CAMERA_HEIGHT = 240;
+  private final Setting<Integer> cameraFpsSetting =
+          Settings.createIntField("Camera FPS", true)
+                  .defaultValue(20)
+                  .build();
+  private final Setting<Integer> cameraWidthSetting =
+          Settings.createIntField("Camera Width", true)
+                  .defaultValue(320)
+                  .build();
+  private final Setting<Integer> cameraHeightSetting =
+          Settings.createIntField("Camera Height", true)
+                  .defaultValue(240)
+                  .build();
+  private final ChooserSetting<CameraType> cameraTypeSetting =
+          Settings.createEnumChooser(CameraType.class, "Camera")
+                  .addAll(CameraType.HATCH)
+                  .build();
   private UsbCamera cargoCamera, hatchCamera;
   private VideoSink server;
   private CameraType cameraType = CameraType.HATCH;
   private CameraType enabledCameraType = null;
-  private NetworkTableEntry entry;
+  private NetworkTableEntry cameraTypeDisplay;
 
   public CameraSystem() {
     cargoCamera = CameraServer.getInstance().startAutomaticCapture(0);
-    cargoCamera.setFPS(CAMERA_FPS);
-    cargoCamera.setResolution(CAMERA_WIDTH, CAMERA_HEIGHT);
-    
+    cargoCamera.setFPS(cameraFpsSetting.getValue());
+    cargoCamera.setResolution(cameraWidthSetting.getValue(), cameraHeightSetting.getValue());
+
     hatchCamera = CameraServer.getInstance().startAutomaticCapture(1);
-    hatchCamera.setFPS(CAMERA_FPS);
-    hatchCamera.setResolution(CAMERA_WIDTH, CAMERA_HEIGHT);
-    
+    hatchCamera.setFPS(cameraFpsSetting.getValue());
+    hatchCamera.setResolution(cameraWidthSetting.getValue(), cameraHeightSetting.getValue());
+
+    // Setting Update Listeners
+    cameraFpsSetting.addUpdateListener(fps -> {
+      cargoCamera.setFPS(fps);
+      hatchCamera.setFPS(fps);
+    });
+    cameraWidthSetting.addUpdateListener(width -> {
+      int height = cameraHeightSetting.getValue();
+      cargoCamera.setResolution(width, height);
+      hatchCamera.setResolution(width, height);
+    });
+    cameraHeightSetting.addUpdateListener(height -> {
+      int width = cameraWidthSetting.getValue();
+      cargoCamera.setResolution(width, height);
+      hatchCamera.setResolution(width, height);
+    });
+    cameraTypeSetting.addUpdateListener(type -> {
+      if (type != null) {
+        switchCamera(type);
+      }
+    });
+
     server = CameraServer.getInstance().addSwitchedCamera("Current");
 
     VideoSource serverSource = server.getSource();
@@ -52,23 +89,23 @@ public class CameraSystem extends Subsystem {
 
     /* Add Camera to Shuffleboard */
     Shuffleboard.getTab("General")
-    .add(serverSource)
-    .withWidget(BuiltInWidgets.kCameraStream)
-    .withProperties(
-      Map.of("Show crosshair", true, "Show controls", true)
-    )
-    // POSITION & SIZE
-    .withPosition(2, 0)
-    .withSize(4, 4);
-  
+            .add(serverSource)
+            .withWidget(BuiltInWidgets.kCameraStream)
+            .withProperties(
+                    Map.of("Show crosshair", true, "Show controls", true)
+            )
+            // POSITION & SIZE
+            .withPosition(2, 0)
+            .withSize(4, 4);
+
     /* Add Camera Name to Shuffleboard */
-    entry = Shuffleboard.getTab("General")
-    .add("Camera", cameraType.name())
-    .withWidget(BuiltInWidgets.kTextView)
-    // POSITION & SIZE
-    .withPosition(6, 1)
-    .withSize(1, 1)
-    .getEntry();
+    cameraTypeDisplay = Shuffleboard.getTab("General")
+            .add("Camera", cameraType.name())
+            .withWidget(BuiltInWidgets.kTextView)
+            // POSITION & SIZE
+            .withPosition(6, 1)
+            .withSize(1, 1)
+            .getEntry();
 
     // Default to HATCH camera
     switchCamera(CameraType.HATCH);
@@ -78,7 +115,8 @@ public class CameraSystem extends Subsystem {
     this.cameraType = type;
     if (enabledCameraType != type) {
       server.setSource(type == CameraType.CARGO ? cargoCamera : hatchCamera);
-      entry.setString(type.name());
+      cameraTypeSetting.setValue(type);
+      cameraTypeDisplay.setString(type.name());
       enabledCameraType = type;
     }
   }
