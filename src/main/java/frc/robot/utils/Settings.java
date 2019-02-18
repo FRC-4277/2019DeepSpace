@@ -201,6 +201,26 @@ public class Settings {
             }
             return this;
         }
+
+        public EnumChooserBuilder<T> position(int x, int y) {
+            super.position(x, y);
+            return this;
+        }
+
+        public EnumChooserBuilder<T> size(int x, int y) {
+            super.size(x, y);
+            return this;
+        }
+
+        public EnumChooserBuilder<T> autoPrintValueChange(Function<T, String> stringifier) {
+            super.autoPrintValueChange(stringifier);
+            return this;
+        }
+
+        public EnumChooserBuilder<T> autoPrintValueChange() {
+            super.autoPrintValueChange();
+            return this;
+        }
     }
 
     public static class ChooserBuilder<T> extends SettingBuilder<T> {
@@ -222,6 +242,26 @@ public class Settings {
             ((ChooserSetting<T>) setting).addOption(name, value);
             return this;
         }
+
+        public ChooserBuilder<T> position(int x, int y) {
+            super.position(x, y);
+            return this;
+        }
+
+        public ChooserBuilder<T> size(int x, int y) {
+            super.size(x, y);
+            return this;
+        }
+
+        public ChooserBuilder<T> autoPrintValueChange(Function<T, String> stringifier) {
+            super.autoPrintValueChange(stringifier);
+            return this;
+        }
+
+        public ChooserBuilder<T> autoPrintValueChange() {
+            super.autoPrintValueChange();
+            return this;
+        }
     }
 
     public static class EntrySettingBuilder<T> extends SettingBuilder<T> {
@@ -239,18 +279,40 @@ public class Settings {
             super.build();
             return (EntrySetting<T>) setting;
         }
+
+        public EntrySettingBuilder<T> position(int x, int y) {
+            super.position(x, y);
+            return this;
+        }
+
+        public EntrySettingBuilder<T> size(int x, int y) {
+            super.size(x, y);
+            return this;
+        }
+
+        public EntrySettingBuilder<T> autoPrintValueChange(Function<T, String> stringifier) {
+            super.autoPrintValueChange(stringifier);
+            return this;
+        }
+
+        public EntrySettingBuilder<T> autoPrintValueChange() {
+            super.autoPrintValueChange();
+            return this;
+        }
     }
 
     public static class SettingBuilder<T> {
         Setting<T> setting;
         private boolean built = false;
 
-        public void position(int x, int y) {
-            setting.setPosition(new Point2D.Double(x, y));
+        public SettingBuilder<T> position(int x, int y) {
+            setting.setPosition(x, y);
+            return this;
         }
 
-        public void size(int width, int height) {
-            setting.setSize(new Point2D.Double(width, height));
+        public SettingBuilder<T> size(int width, int height) {
+            setting.setSize(width, height);
+            return this;
         }
 
         public SettingBuilder<T> autoPrintValueChange(Function<T, String> stringifier) {
@@ -277,8 +339,8 @@ public class Settings {
 
         abstract void create();
         abstract void setProperty(String name, Object value);
-        abstract void setPosition(Point2D position);
-        abstract void setSize(Point2D size);
+        abstract void setPosition(int x, int y);
+        abstract void setSize(int x, int y);
         public abstract T getValue();
         public abstract void setValue(T value);
         public abstract void addUpdateListener(Consumer<T> listener);
@@ -287,8 +349,8 @@ public class Settings {
     public static class ChooserSetting<T> extends Setting<T> {
         // OPTIONS before creation
         private WidgetType widgetType;
-        private Point2D position;
-        private Point2D size;
+        private Integer positionX, positionY;
+        private Integer sizeX, sizeY;
         private SendableChooser<T> chooser = new SendableChooser<>();
         private T defaultValue;
         private Map<String, T> options = new HashMap<>();
@@ -314,11 +376,11 @@ public class Settings {
             widget = tab.add(name, chooser);
             widget.withWidget(widgetType);
             widget.withProperties(widgetProperties);
-            if (position != null) {
-                widget.withPosition((int) position.getX(), (int) position.getY());
+            if (positionX != null && positionY != null) {
+                widget.withPosition(positionX, positionY);
             }
-            if (size != null) {
-                widget.withSize((int) size.getX(), (int) size.getY());
+            if (sizeX != null && sizeY != null) {
+                widget.withSize(sizeX, sizeY);
             }
             table = NetworkTableInstance.getDefault()
                     .getTable("Shuffleboard")
@@ -343,13 +405,15 @@ public class Settings {
         }
 
         @Override
-        void setPosition(Point2D position) {
-            this.position = position;
+        void setPosition(int x, int y) {
+            this.positionX = x;
+            this.positionY = y;
         }
 
         @Override
-        void setSize(Point2D size) {
-            this.size = size;
+        void setSize(int x, int y) {
+            this.sizeX = x;
+            this.sizeY = y;
         }
 
         @Override
@@ -398,8 +462,8 @@ public class Settings {
         boolean persistent;
         private WidgetType widgetType;
         private Function<NetworkTableEntry, T> grabber;
-        private Point2D position;
-        private Point2D size;
+        private Integer positionX, positionY;
+        private Integer sizeX, sizeY;
         private Map<String, Object> widgetProperties = new HashMap<>();
         private List<Consumer<T>> entryListeners = new ArrayList<>();
         // After creation
@@ -429,11 +493,11 @@ public class Settings {
             widget = persistent ? tab.addPersistent(name, defaultValue) : tab.add(name, defaultValue);
             widget.withWidget(widgetType);
             widget.withProperties(widgetProperties);
-            if (position != null) {
-                widget.withPosition((int) position.getX(), (int) position.getY());
+            if (positionX != null && positionY != null) {
+                widget.withPosition(positionX, positionY);
             }
-            if (size != null) {
-                widget.withSize((int) size.getX(), (int) size.getY());
+            if (sizeX != null && sizeY != null) {
+                widget.withSize(sizeX, sizeY);
             }
             entry = widget.getEntry();
             entry.addListener(entryNotification ->
@@ -449,13 +513,15 @@ public class Settings {
         }
 
         @Override
-        void setPosition(Point2D position) {
-            this.position = position;
+        void setPosition(int x, int y) {
+            this.positionX = x;
+            this.positionY = y;
         }
 
         @Override
-        void setSize(Point2D size) {
-            this.size = size;
+        void setSize(int x, int y) {
+            this.sizeX = x;
+            this.sizeY = y;
         }
 
         @Override
