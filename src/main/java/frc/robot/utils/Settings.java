@@ -16,7 +16,6 @@ import edu.wpi.first.networktables.TableEntryListener;
 import edu.wpi.first.wpilibj.shuffleboard.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

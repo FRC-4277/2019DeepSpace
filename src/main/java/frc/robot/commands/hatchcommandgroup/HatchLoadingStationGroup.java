@@ -10,7 +10,6 @@ package frc.robot.commands.hatchcommandgroup;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.StartCommand;
 import edu.wpi.first.wpilibj.command.WaitCommand;
-import frc.robot.commands.HatchPanelGrabToggle;
 import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.commands.hatchgroup.HatchPanelExtendArm;
 import frc.robot.commands.hatchgroup.HatchPanelGrabHatch;

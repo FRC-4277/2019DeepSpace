@@ -8,7 +8,6 @@
 package frc.robot.commands.autonomous;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.Robot;
 import frc.robot.ColorProximitySensor.Result;
 import frc.robot.commands.JoystickDriveStopOnLineCommand;
