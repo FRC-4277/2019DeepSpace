@@ -13,4 +13,8 @@ public class ElevatorMoveToHighCommand extends ElevatorMoveToCommand {
   public ElevatorMoveToHighCommand(boolean runContinuously) {
     super(Mode.HIGH, runContinuously);
   }
+
+  public ElevatorMoveToHighCommand(boolean runContinuously, boolean requireElevator) {
+    super(Mode.HIGH, runContinuously, requireElevator);
+  }
 }

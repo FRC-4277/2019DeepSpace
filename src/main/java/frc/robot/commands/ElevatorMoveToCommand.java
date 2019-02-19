@@ -16,7 +16,13 @@ public class ElevatorMoveToCommand extends Command {
   private boolean runContinuously;
 
   public ElevatorMoveToCommand(Mode mode, boolean runContinuously) {
-    requires(Robot.elevator);
+    this(mode, runContinuously, true);
+  }
+
+  public ElevatorMoveToCommand(Mode mode, boolean runContinuously, boolean requireElevator) {
+    if (requireElevator) {
+      requires(Robot.elevator);
+    }
     this.mode = mode;
     this.runContinuously = runContinuously;
   }

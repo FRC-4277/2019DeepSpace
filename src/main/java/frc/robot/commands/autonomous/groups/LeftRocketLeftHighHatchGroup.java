@@ -30,7 +30,8 @@ public class LeftRocketLeftHighHatchGroup extends CommandGroup {
     // Strafe left to line up with line
     addSequential(new DriveStopOnLineCommand(0.4, "left"));
     // Move elevator to high (false makes it so next command runs when elevator reaches height)
-    addSequential(new ElevatorMoveToHighCommand(false));
+    // Also don't require elevator subsystem, so later calls to elevator won't interrupt command group
+    addSequential(new ElevatorMoveToHighCommand(false, false));
     // Now, keep running PID loop to keep elevator at high
     addSequential(new StartCommand(new ElevatorMoveToHighCommand(true)));
     // Place hatch
