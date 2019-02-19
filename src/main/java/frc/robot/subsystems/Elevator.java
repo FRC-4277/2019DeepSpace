@@ -69,7 +69,7 @@ public class Elevator extends Subsystem {
     mainMotor.configClearPositionOnLimitF(false, TALONSRX_CONFIGURE_TIMEOUT);
     // Set soft limit for bottom
     mainMotor.configReverseSoftLimitThreshold(0, TALONSRX_CONFIGURE_TIMEOUT);
-    mainMotor.configReverseSoftLimitEnable(true, TALONSRX_CONFIGURE_TIMEOUT); 
+    mainMotor.configReverseSoftLimitEnable(/*true*/false, TALONSRX_CONFIGURE_TIMEOUT); 
     /* Set soft limit for top to 2 inches more than HIGH setpoint
     *  22351 = (2 / 3.5PI) * 30 * 4096
     *  See comments below in Mode.MEDIUM for calculation explanation */
@@ -90,7 +90,7 @@ public class Elevator extends Subsystem {
     
     /* Add Elevator Mode to ShuffleBoard */
     modeEntry = Shuffleboard.getTab("General")
-    .add("Elevator Mode", mode)
+    .add("Elevator Mode", mode.getName())
     .withWidget(BuiltInWidgets.kTextView)
     // POSITION & SIZE
     .withPosition(6, 0)
@@ -285,11 +285,11 @@ public class Elevator extends Subsystem {
      * Home level, where the elevator starts and to score at lowest hatches and
      * cargo on rocket.
      */
-    HOME("Home", 0),
+    HOME("Home", -2925),
     /**
      * Level at loading station.
      */
-    LOADING_STATION("Loading Station", 201155),
+    LOADING_STATION("Loading Station", 178804),
     /**
      * Level at medium ports on the rocket
      * <p>

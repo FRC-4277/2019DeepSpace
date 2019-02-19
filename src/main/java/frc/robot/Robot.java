@@ -138,7 +138,7 @@ public class Robot extends TimedRobot {
       compressor = new Compressor(map.getPCMId());
     }
     if (cameraSystem == null) {
-      cameraSystem = new CameraSystem(/*Flip Cargo*/ true, /*Flip Hatch*/ true);
+      cameraSystem = new CameraSystem(/* Flip Cargo Cam */ false, /* Flip Hatch Cam */ false);
     }
     if (m_oi == null) {
       m_oi = new OI();
@@ -192,6 +192,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    navX.reset();
     instansiateSubsystems();
     m_autonomousCommand = m_chooser.getSelected();
 
@@ -219,7 +220,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     instansiateSubsystems();
-    navX.reset();
     // Switch tab to General
     Shuffleboard.selectTab("General");
     // This makes sure that the autonomous stops running when

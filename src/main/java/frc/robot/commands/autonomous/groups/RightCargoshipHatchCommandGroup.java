@@ -16,8 +16,8 @@ public class RightCargoshipHatchCommandGroup extends CommandGroup {
    * Add your docs here.
    */
   public RightCargoshipHatchCommandGroup() {
-    addSequential(new DriveToCommand(0.0, 11.25, 0.0, 4.7));
-    addSequential(new DriveStopOnLineCommand(0.1, "left"));
+    addSequential(new DriveToCommand(0.0, 12.15, 0.0, 5.2));
+    addSequential(new DriveStopOnLineCommand(0.4, "left"));
     addSequential(new HatchRocketPlaceGroup());
     // Add Commands here:
     // e.g. addSequential(new Command1());
