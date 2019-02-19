@@ -10,6 +10,7 @@ package frc.robot;
 import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.commands.autonomous.groups.LeftCargoshipHatchCommandGroup;
 import frc.robot.commands.autonomous.groups.RightCargoshipHatchCommandGroup;
+import frc.robot.commands.autonomous.groups.RightRocketRightHighHatchGroup;
 import frc.robot.commands.hatchgroup.HatchPanelGrabHatch;
 import frc.robot.commands.hatchgroup.HatchPanelRetractArm;
 import frc.robot.map.CloneRobotMap;
@@ -82,12 +83,14 @@ public class Robot extends TimedRobot {
 
     instansiateSubsystems();
 
-     //Autonomous Choose
-     SmartDashboard.putData("Auto mode", m_chooser);
-     m_chooser.setDefaultOption("Driver Control", new JoystickDriveCommand()); // Driver Controlled
-     m_chooser.addOption("Left Hatch Cargoship", new LeftCargoshipHatchCommandGroup()); // Left Cargo Ship Hatch
-     m_chooser.addOption("Right Hatch Cargoship", new RightCargoshipHatchCommandGroup()); // Right Cargo Ship Hatch
-
+    // Autonomous Chooser
+    SmartDashboard.putData("Auto mode", m_chooser);
+    m_chooser.setDefaultOption("Driver Control", new JoystickDriveCommand()); // Driver Controlled
+    // -> Cargoship
+    m_chooser.addOption("Left Hatch Cargoship", new LeftCargoshipHatchCommandGroup()); // Left Cargo Ship Hatch
+    m_chooser.addOption("Right Hatch Cargoship", new RightCargoshipHatchCommandGroup()); // Right Cargo Ship Hatch
+    // -> Rocket
+    m_chooser.addOption("Right Rocket Right High Hatch", new RightRocketRightHighHatchGroup()); // Right Rocket Right High Hatch
 
     navX = new AHRS(SPI.Port.kMXP);
     navX.reset();
