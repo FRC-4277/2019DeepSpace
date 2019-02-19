@@ -27,9 +27,11 @@ public class DriveToCommand extends Command {
 	double distanceX;
 	double distanceY;
 	double rotationZ;
-	double durration;
+  double duration;
+  boolean useGyro;
 
-    public DriveToCommand(Double inputDistanceX, Double inputDistanceY, Double inputDegrees, Double inputDurration) {
+    public DriveToCommand(double inputDistanceX, double inputDistanceY,
+     double inputDegrees, double duration, boolean useGyro) {
 
     	requires(Robot.mecanumDrive);
     	
@@ -37,12 +39,12 @@ public class DriveToCommand extends Command {
     	if(inputDistanceY < 0) isYNeg = true;
     	if(inputDegrees < 0) isThetaNeg = true;
     	
-    	distanceX = Math.abs(inputDistanceX);
-    	distanceY = Math.abs(inputDistanceY);
-    	rotationZ = Math.abs(inputDegrees);
+    	this.distanceX = Math.abs(inputDistanceX);
+    	this.distanceY = Math.abs(inputDistanceY);
+    	this.rotationZ = Math.abs(inputDegrees);
       
-         durration = inputDurration;
-    	
+      this.duration = duration;
+    	this.useGyro = useGyro;
     }
 
   // Called just before this Command runs the first time
@@ -55,12 +57,12 @@ public class DriveToCommand extends Command {
   @Override
   protected void execute() {
     	
-    if((RobotController.getFPGATime() - startTime)/1000000 >= durration) {
+    if((RobotController.getFPGATime() - startTime)/1000000 >= duration) {
       finish = true;
     }
     
     normalizeDrive();
-    Robot.mecanumDrive.mecanumDrive(driveX, driveY, driveZ, Robot.navX.getAngle(), false);
+    Robot.mecanumDrive.mecanumDrive(driveX, driveY, driveZ, useGyro ? Robot.navX.getAngle() : 0, false);
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -83,24 +85,26 @@ public class DriveToCommand extends Command {
   protected void normalizeDrive() {
     
     if(isXNeg) {
-      driveX = -Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[0];
+      driveX = -Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, duration, startTime)[0];
     }
     else if(!isXNeg) {
-      driveX = Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[0];
+      driveX = Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, duration, startTime)[0];
     }
     
+    // Y is opposite of other values to account for the
+    // fact that RobotDrive's mecanum methods themselves invert y
     if(isYNeg) {
-      driveY = Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[1];
+      driveY = Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, duration, startTime)[1];
     }
     else if (!isYNeg) {
-      driveY = -Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[1];;
+      driveY = -Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, duration, startTime)[1];;
     }
     
     if(isThetaNeg) {
-      driveZ = -Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[2];
+      driveZ = -Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, duration, startTime)[2];
     }
     else if(!isThetaNeg) {
-      driveZ = Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[2];
+      driveZ = Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, duration, startTime)[2];
     }
   }
 }
