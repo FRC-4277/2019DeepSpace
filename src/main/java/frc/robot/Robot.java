@@ -168,6 +168,7 @@ public class Robot extends TimedRobot {
    * robot is disabled.
    */
   @Override
+  @SuppressWarnings("resource")
   public void disabledInit() {
     new HatchPanelGrabHatch().start();
     new HatchPanelRetractArm().start();

@@ -21,6 +21,7 @@ public class CargoShootCommand extends Command {
     }
 
     @Override
+    @SuppressWarnings("resource")
     protected void end() {
         new JoystickDriveCommand().start();
     }
