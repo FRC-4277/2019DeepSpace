@@ -8,140 +8,117 @@
 package frc.robot.subsystems;
 
 import java.util.Map;
-
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSink;
+import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import frc.robot.utils.Settings;
+import frc.robot.utils.Settings.ChooserSetting;
+import frc.robot.utils.Settings.Setting;
+
 /**
- * Add your docs here.
+ * Subsystem to manage switching cameras and streaming them
  */
 public class CameraSystem extends Subsystem {
-  private static final int CAMERA_FPS = 30;
-  private static final int CAMERA_WIDTH = 640;
-  private static final int CAMERA_HEIGHT = 360;
-  private boolean flipCargo, flipHatch;
-  private volatile CvSource outputStream;
-  private volatile Mat image = new Mat();
-  private volatile CameraType cameraType = CameraType.HATCH;
-  private volatile CameraType enabledCameraType = null;
-  private Thread visionThread;
-  private NetworkTableEntry entry;
+  private final Setting<Integer> cameraFpsSetting =
+          Settings.createIntField("Camera FPS", true)
+                  .defaultValue(20)
+                  .build();
+  private final Setting<Integer> cameraWidthSetting =
+          Settings.createIntField("Camera Width", true)
+                  .defaultValue(320)
+                  .build();
+  private final Setting<Integer> cameraHeightSetting =
+          Settings.createIntField("Camera Height", true)
+                  .defaultValue(240)
+                  .build();
+  private final ChooserSetting<CameraType> cameraTypeSetting =
+          Settings.createEnumChooser(CameraType.class, "Camera")
+                  .addAll(CameraType.HATCH)
+                  .build();
+  private UsbCamera cargoCamera, hatchCamera;
+  private VideoSink server;
+  private CameraType cameraType = CameraType.HATCH;
+  private CameraType enabledCameraType = null;
+  private NetworkTableEntry cameraTypeDisplay;
 
-  public CameraSystem(boolean flipCargo, boolean flipHatch) {
-    this.flipCargo = flipCargo;
-    this.flipHatch = flipHatch;
-  
-    // Output Stream
-    outputStream = CameraServer.getInstance().putVideo("Output", 640, 360);
+  public CameraSystem() {
+    cargoCamera = CameraServer.getInstance().startAutomaticCapture(0);
+    cargoCamera.setFPS(cameraFpsSetting.getValue());
+    cargoCamera.setResolution(cameraWidthSetting.getValue(), cameraHeightSetting.getValue());
 
-    // Add to ShuffleBoard
-    Shuffleboard.getTab("General")
-    .add(outputStream)
-    .withWidget(BuiltInWidgets.kCameraStream)
-    .withProperties(
-      Map.of("Show crosshair", true, "Show controls", true)
-    )
-    // POSITION & SIZE
-    .withPosition(2, 0)
-    .withSize(4, 4);
-  
-    entry = Shuffleboard.getTab("General")
-    .add("Camera", cameraType.name())
-    .withWidget(BuiltInWidgets.kTextView)
-    // POSITION & SIZE
-    .withPosition(6, 1)
-    .withSize(1, 1)
-    .getEntry();
-  
-    // Start thread to process camera feeds
-    startVisionThread();
-  }
+    hatchCamera = CameraServer.getInstance().startAutomaticCapture(1);
+    hatchCamera.setFPS(cameraFpsSetting.getValue());
+    hatchCamera.setResolution(cameraWidthSetting.getValue(), cameraHeightSetting.getValue());
 
-  public void startVisionThread() {
-    if (visionThread == null || visionThread.isInterrupted()) {
-      visionThread = new Thread(new Runnable() {
-        private boolean cargoCamConfigured = false;
-        private boolean hatchCamConfigured = false;
+    // Setting Update Listeners
+    cameraFpsSetting.addUpdateListener(fps -> {
+      cargoCamera.setFPS(fps);
+      hatchCamera.setFPS(fps);
+    });
+    cameraWidthSetting.addUpdateListener(width -> {
+      int height = cameraHeightSetting.getValue();
+      cargoCamera.setResolution(width, height);
+      hatchCamera.setResolution(width, height);
+    });
+    cameraHeightSetting.addUpdateListener(height -> {
+      int width = cameraWidthSetting.getValue();
+      cargoCamera.setResolution(width, height);
+      hatchCamera.setResolution(width, height);
+    });
+    cameraTypeSetting.addUpdateListener(type -> {
+      if (type != null) {
+        switchCamera(type);
+      }
+    });
 
-        @Override
-        public void run() {
-          UsbCamera cargoCamera = new UsbCamera("Cargo", 0);
-          UsbCamera hatchCamera = new UsbCamera("Hatch", 1);
-      
-          CvSink cargoVideoSink = CameraServer.getInstance().getVideo(cargoCamera);
-          CvSink hatchVideoSink = CameraServer.getInstance().getVideo(hatchCamera);
+    server = CameraServer.getInstance().addSwitchedCamera("Current");
 
-          while (!Thread.interrupted()) {
-            // Enable/disable proper video sinks (Sinks pull in video [in this case from USB])
-            if (enabledCameraType != cameraType) {
-              cargoVideoSink.setEnabled(cameraType == CameraType.CARGO);
-              hatchVideoSink.setEnabled(cameraType == CameraType.HATCH);            
-              entry.setString(cameraType.name());
-              enabledCameraType = cameraType;
-            }
-            CvSink activeSink = cameraType == CameraType.CARGO ? cargoVideoSink : hatchVideoSink;
-            // Pull image from sink into field 'image'
-            activeSink.grabFrame(image, 0.05);
-            // Don't process image if it's empty
-            if (image == null || image.empty() || image.width() == 0 || image.height() == 0) {
-              continue;
-            }
-            // Configure cameras if needed
-            if ((!cargoCamConfigured && cameraType == CameraType.CARGO) || (!hatchCamConfigured && cameraType == CameraType.HATCH)) {
-              try {
-                switch (cameraType) {
-                  case CARGO:
-                    cargoCamConfigured = true;
-                    //
-                    cargoCamera.setFPS(CAMERA_FPS);
-                    cargoCamera.setResolution(CAMERA_WIDTH, CAMERA_HEIGHT);
-                    break;
-                  case HATCH:
-                    hatchCamConfigured = true;
-                    //hatchCamera.setFPS(CAMERA_FPS);
-                    hatchCamera.setResolution(CAMERA_WIDTH, CAMERA_HEIGHT);
-                    break;
-                }
-                // Skip this frame as the next frame will have configuration changes applied
-                continue;
-              } catch (Exception e) {
-                DriverStation.reportWarning(
-                  "Could not configure camera " + cameraType + " but it should still work (but using more bandwidth) => "+ e.getMessage(),
-                   false);
-              }
-            }
-            // Check if flipping is required
-            if ((flipCargo && cameraType == CameraType.CARGO) || (flipHatch && cameraType == CameraType.HATCH)) {
-              // 1 means to flip (mirror) around y-axis
-              Core.flip(image, image, 1);
-            }
-            outputStream.putFrame(image);
-          }
-        }
-      }, "Camera Processing");
-      visionThread.start();
+    VideoSource serverSource = server.getSource();
+    // Grab VideoSource named "Current"
+    for (VideoSource source : VideoSource.enumerateSources()) {
+      if (source.getName().equals("Current")) {
+        serverSource = source;
+        break;
+      }
     }
+
+    /* Add Camera to Shuffleboard */
+    Shuffleboard.getTab("General")
+            .add(serverSource)
+            .withWidget(BuiltInWidgets.kCameraStream)
+            .withProperties(
+                    Map.of("Show crosshair", true, "Show controls", true)
+            )
+            // POSITION & SIZE
+            .withPosition(2, 0)
+            .withSize(4, 4);
+
+    /* Add Camera Name to Shuffleboard */
+    cameraTypeDisplay = Shuffleboard.getTab("General")
+            .add("Camera", cameraType.name())
+            .withWidget(BuiltInWidgets.kTextView)
+            // POSITION & SIZE
+            .withPosition(6, 1)
+            .withSize(1, 1)
+            .getEntry();
+
+    // Default to HATCH camera
+    switchCamera(CameraType.HATCH);
   }
 
   public void switchCamera(CameraType type) {
     this.cameraType = type;
-  }
-
-  public CvSource getOutputStream() {
-    return outputStream;
-  }
-
-  public Mat getImage() {
-    return image;
+    if (enabledCameraType != type) {
+      server.setSource(type == CameraType.CARGO ? cargoCamera : hatchCamera);
+      cameraTypeSetting.setValue(type);
+      cameraTypeDisplay.setString(type.name());
+      enabledCameraType = type;
+    }
   }
 
   public CameraType getCurrentType() {
