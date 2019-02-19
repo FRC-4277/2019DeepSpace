@@ -9,6 +9,7 @@ package frc.robot;
 
 import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.commands.autonomous.groups.LeftCargoshipHatchCommandGroup;
+import frc.robot.commands.autonomous.groups.LeftRocketLeftHighHatchGroup;
 import frc.robot.commands.autonomous.groups.RightCargoshipHatchCommandGroup;
 import frc.robot.commands.autonomous.groups.RightRocketRightHighHatchGroup;
 import frc.robot.commands.hatchgroup.HatchPanelGrabHatch;
@@ -90,6 +91,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Left Hatch Cargoship", new LeftCargoshipHatchCommandGroup()); // Left Cargo Ship Hatch
     m_chooser.addOption("Right Hatch Cargoship", new RightCargoshipHatchCommandGroup()); // Right Cargo Ship Hatch
     // -> Rocket
+    m_chooser.addOption("Left Rocket Left High Hatch", new LeftRocketLeftHighHatchGroup()); // Left Rocket Left High Hatch
     m_chooser.addOption("Right Rocket Right High Hatch", new RightRocketRightHighHatchGroup()); // Right Rocket Right High Hatch
 
     navX = new AHRS(SPI.Port.kMXP);
