@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "eclipse"
     id "edu.wpi.first.GradleRIO" version "2019.3.2"
+    id "com.snobot.simulator.plugin.SnobotSimulatorPlugin" version "2019-2.0.0" apply false
 }
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
@@ -43,6 +44,28 @@ repositories {
     mavenCentral()
 }
 
+/////////////////////////////////////////////////////
+// Snobot Sim
+
+apply plugin: com.snobot.simulator.plugin.SnobotSimulatorPlugin
+
+configurations {
+    snobotSimCompile
+}
+
+// If you have your own simulator code, you must tell GradleRio that you want that code compiled.
+// The recommended way to do it is to create a new source set, just for this, and jar it up later
+sourceSets {
+    simulatorExtensions
+    {
+        java {
+            srcDirs += ["src/snobot_sim/java"]
+        }
+    }
+}
+// End Snobot Sim
+/////////////////////////////////////////////////////
+
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 4.
 dependencies {
@@ -50,7 +73,19 @@ dependencies {
     compile wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
-    testCompile 'junit:junit:4.12'
+
+    // This is always required for SnobotSim to run
+    snobotSimCompile snobotSimJava()
+
+    // This is required only if you are adding a custom simulator.
+    simulatorExtensionsCompile snobotSimJava()
+    simulatorExtensionsCompile wpi.deps.wpilib()
+    simulatorExtensionsCompile sourceSets.main.output
+    
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.1.0'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+    testCompile snobotSimJava()
+    testCompile sourceSets.simulatorExtensions.output
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
@@ -60,3 +95,25 @@ jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
 }
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(Test) {
+    systemProperty "java.library.path", "$rootDir/build/tmp/snobotSimJava"
+}
+
+/////////////////////////////////////////////////////
+// Snobot Sim
+
+// You need to jar up the files in order for SnobotSim to know about your special classes. The task name has to be exactly this
+task simulatorExtensionJar(type: Jar) {
+    baseName = "SnobotSimExtensions"
+    from sourceSets.simulatorExtensions.output
+}
+
+// This helps the plugin work easier... Whenever you build your jar, build your extension too (if it is out of date)
+jar.dependsOn simulatorExtensionJar 
+// End Snobot Sim
+/////////////////////////////////////////////////////

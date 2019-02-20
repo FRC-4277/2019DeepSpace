@@ -161,5 +161,6 @@ gradle-app.setting
 .settings/
 bin/
 
+logs/
 
 # End of https://www.gitignore.io/api/c++,java,linux,macos,gradle,windows,visualstudiocode
