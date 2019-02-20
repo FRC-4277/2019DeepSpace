@@ -1,54 +1,77 @@
 !!com.snobot.simulator.config.v1.SimulatorConfigV1
-mAccelerometers: []
-mAnalogIn:
-- mHandle: 0
-  mName: Analog In 0
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiAnalogInWrapper
+mAccelerometers:
+- mHandle: 212
+  mName: SPI NavX X Accel
+  mType: com.snobot.simulator.module_wrapper.BaseAccelerometerWrapper
+- mHandle: 213
+  mName: SPI NavX Y Accel
+  mType: com.snobot.simulator.module_wrapper.BaseAccelerometerWrapper
+- mHandle: 214
+  mName: SPI NavX Z Accel
+  mType: com.snobot.simulator.module_wrapper.BaseAccelerometerWrapper
+mAnalogIn: []
 mAnalogOut: []
-mDefaultI2CWrappers: {}
+mDefaultI2CWrappers:
+  0: TMD3782
+  1: TMD3782
 mDefaultSpiWrappers:
   0: ADXRS450
   4: NavX
-mDigitalIO:
-- mHandle: 0
-  mName: Digital IO 0
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
-- mHandle: 1
-  mName: Digital IO 1
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
-- mHandle: 2
-  mName: Digital IO 2
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
-- mHandle: 3
-  mName: Digital IO 3
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
-mEncoders:
-- mConnectedSpeedControllerHandle: -1
-  mHandle: 0
-  mName: Encoder 0
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiEncoderWrapper
-- mConnectedSpeedControllerHandle: -1
-  mHandle: 1
-  mName: Encoder 1
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiEncoderWrapper
+mDigitalIO: []
+mEncoders: []
 mGyros:
-- mHandle: 0
-  mName: Analog Gyro
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiAnalogGyroWrapper
+- mHandle: 100
+  mName: ADXRS450 Gyro
+  mType: com.snobot.simulator.simulator_components.adx_family.ADXRS450GyroWrapper
+- mHandle: 212
+  mName: SPI NavX Yaw
+  mType: com.snobot.simulator.module_wrapper.BaseGyroWrapper
+- mHandle: 213
+  mName: SPI NavX Pitch
+  mType: com.snobot.simulator.module_wrapper.BaseGyroWrapper
+- mHandle: 214
+  mName: SPI NavX Roll
+  mType: com.snobot.simulator.module_wrapper.BaseGyroWrapper
 mPwm:
-- mHandle: 0
+- mHandle: 121
   mMotorModelConfig: null
   mMotorSimConfig: null
-  mName: Speed Controller 0
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiPwmWrapper
-- mHandle: 1
+  mName: CTRE SC 21
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 122
   mMotorModelConfig: null
   mMotorSimConfig: null
-  mName: Speed Controller 1
-  mType: com.snobot.simulator.module_wrapper.wpi.WpiPwmWrapper
+  mName: CTRE SC 22
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 123
+  mMotorModelConfig: null
+  mMotorSimConfig: null
+  mName: CTRE SC 23
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 124
+  mMotorModelConfig: null
+  mMotorSimConfig: null
+  mName: CTRE SC 24
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 131
+  mMotorModelConfig: null
+  mMotorSimConfig: null
+  mName: CTRE SC 31
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 133
+  mMotorModelConfig: null
+  mMotorSimConfig: null
+  mName: CTRE SC 33
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
 mRelays: []
 mSimulatorComponents: []
 mSolenoids:
-- mHandle: 0
-  mName: Solenoid 0
+- mHandle: 8
+  mName: Grabber
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiSolenoidWrapper
+- mHandle: 9
+  mName: Arm
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiSolenoidWrapper
+- mHandle: 10
+  mName: Shooter
   mType: com.snobot.simulator.module_wrapper.wpi.WpiSolenoidWrapper

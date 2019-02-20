@@ -76,6 +76,7 @@ dependencies {
 
     // This is always required for SnobotSim to run
     snobotSimCompile snobotSimJava()
+    snobotSimCompile sourceSets.simulatorExtensions.output
 
     // This is required only if you are adding a custom simulator.
     simulatorExtensionsCompile snobotSimJava()

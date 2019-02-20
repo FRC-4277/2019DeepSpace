@@ -47,6 +47,11 @@ public class CameraSystem extends Subsystem {
   private NetworkTableEntry cameraTypeDisplay;
 
   public CameraSystem() {
+    try {
+      Class.forName("frc.robot.simulator.StacheSimulator2019");
+      System.out.println("Found simulator");
+      return;
+    } catch (ClassNotFoundException e) {}
     cargoCamera = CameraServer.getInstance().startAutomaticCapture(0);
     cargoCamera.setFPS(cameraFpsSetting.getValue());
     cargoCamera.setResolution(cameraWidthSetting.getValue(), cameraHeightSetting.getValue());
