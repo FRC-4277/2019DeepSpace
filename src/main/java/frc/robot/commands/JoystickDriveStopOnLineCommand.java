@@ -28,9 +28,15 @@ public class JoystickDriveStopOnLineCommand extends Command {
   }
   
   private boolean hasReachedLine = false;
+  private boolean invert; 
 
   public JoystickDriveStopOnLineCommand() {
+    this(false);
+  }
+
+  public JoystickDriveStopOnLineCommand(boolean invert) {
     requires(Robot.mecanumDrive);
+    this.invert = invert;
   }
 
   // Called just before this Command runs the first time
@@ -59,6 +65,10 @@ public class JoystickDriveStopOnLineCommand extends Command {
     x *= 0.5;
     double y = OI.driveStick.getY();
     y *= 0.3;
+    if (invert) {
+      x *= -1;
+      y *= -1;
+    }
     Robot.mecanumDrive.mecanumDrive(x, y, 0, Robot.lineUpGyro.getAngle(), true);
   }
 

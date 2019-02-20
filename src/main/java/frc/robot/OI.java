@@ -124,6 +124,10 @@ public class OI {
     Button driveButton3 = new JoystickButton(driveStick, 3);
     driveButton3.whenPressed(new JoystickDriveCommand());
 
+    Button driveButton6 = new JoystickButton(driveStick, 6);
+    driveButton6.whenPressed(new JoystickDriveStopOnLineCommand(true));
+    
+
     // CO-PILOT
     Button buttonLB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_LB);
     buttonLB.whenPressed(new HatchLoadingStationGroup());
@@ -159,7 +163,7 @@ public class OI {
     buttonBack.whenPressed(new JoystickDriveStopOnLineCommand());
 
     XboxPOVTrigger upPOV = new XboxPOVTrigger(xboxController1, Direction.UP);
-    upPOV.whenActive(new HatchPanelExtendArm());
+    upPOV.whenActive(new JoystickDriveStopOnLineCommand(true));
 
     XboxPOVTrigger downPOV = new XboxPOVTrigger(xboxController1, Direction.DOWN);
     downPOV.whenActive(new HatchPanelRetractArm());
@@ -170,6 +174,9 @@ public class OI {
     XboxPOVTrigger rightPOV = new XboxPOVTrigger(xboxController1, Direction.RIGHT);
     rightPOV.whenActive(new HatchPanelReleaseHatch());
   
+    //XboxPOVTrigger topRightPOV = new XboxPOVTrigger(xboxController1, Direction.TOP_RIGHT);
+    //topRightPOV.whenActive(new JoystickDriveStopOnLineCommand(true));
+
     Button buttonLeftJoy = new JoystickButton(xboxController1, XboxControllerMap.XBOX_JOY_LEFT_BUTTON);
     buttonLeftJoy.whenPressed(new JoystickDriveCommand());
   }
