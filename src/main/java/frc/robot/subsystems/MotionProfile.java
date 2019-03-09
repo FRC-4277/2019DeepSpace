@@ -35,7 +35,7 @@ public class MotionProfile extends Subsystem {
   }
 
   //ALL PARAMETERS IN FEET DEGREES OR SECONDS 
-  public Double[] calculateLMVelocities(Double distanceX, Double distanceY,Double rotationZ, Double durration, Double startTime) { 
+  public Double[] calculateLMVelocities(Double distanceX, Double distanceY,Double rotationZ, Double duration, Double startTime) { 
     //this integer controls a switch that will zero the motion profiles if there is no desired movement in a given direction
     //Avoids returning null values
     int condition = 0;
@@ -44,12 +44,12 @@ public class MotionProfile extends Subsystem {
     Double[] velocityArray = new Double[3];
     
     //calculating the current time from when the robot starts moving.
-    double timeEllapsed = (RobotController.getFPGATime() - startTime)/1000000;
+    double timeElapsed = (RobotController.getFPGATime() - startTime)/1000000;
     
     //calculating constant k that defines the motion of the robot in the x and y direction
-    double kX = Math.log((distanceX*(0.05/(distanceX-0.05))/(distanceX-0.01))-(0.05/(distanceX-0.05)))/(-distanceX*durration);
-    double kY = Math.log((distanceY*(0.05/(distanceY-0.05))/(distanceY-0.01))-(0.05/(distanceY-0.05)))/(-distanceY*durration);
-    double kZ = Math.log((rotationZ*(0.05/(rotationZ-0.05))/(rotationZ-0.01))-(0.05/(rotationZ-0.05)))/(-rotationZ*durration);
+    double kX = Math.log((distanceX*(0.05/(distanceX-0.05))/(distanceX-0.01))-(0.05/(distanceX-0.05)))/(-distanceX*duration);
+    double kY = Math.log((distanceY*(0.05/(distanceY-0.05))/(distanceY-0.01))-(0.05/(distanceY-0.05)))/(-distanceY*duration);
+    double kZ = Math.log((rotationZ*(0.05/(rotationZ-0.05))/(rotationZ-0.01))-(0.05/(rotationZ-0.05)))/(-rotationZ*duration);
 
     //calculates the constant c that defines the initial conditions for the motion profile
     double cX = 0.05 / ((distanceX*kX)-(kX*0.05));
@@ -57,9 +57,9 @@ public class MotionProfile extends Subsystem {
     double cZ = 0.05 / ((rotationZ*kZ)-(kZ*0.05));
 
     //creates the motion profile for the robots motion
-    double xX = (distanceX*kX*cX)/((kX*cX)+Math.pow(Math.E, (-distanceX*kX*timeEllapsed)));
-    double xY = (distanceY*kY*cY)/((kY*cY)+Math.pow(Math.E, (-distanceY*kY*timeEllapsed)));
-    double xZ = (distanceY*kZ*cZ)/((kZ*cZ)+Math.pow(Math.E, (-rotationZ*kZ*timeEllapsed)));
+    double xX = (distanceX*kX*cX)/((kX*cX)+Math.pow(Math.E, (-distanceX*kX*timeElapsed)));
+    double xY = (distanceY*kY*cY)/((kY*cY)+Math.pow(Math.E, (-distanceY*kY*timeElapsed)));
+    double xZ = (distanceY*kZ*cZ)/((kZ*cZ)+Math.pow(Math.E, (-rotationZ*kZ*timeElapsed)));
 
     //creates the velocity motion profile for the robots motion
     double vX = kX*xX*(distanceX - xX);
@@ -128,4 +128,30 @@ public class MotionProfile extends Subsystem {
     return driveValues;
   }
 
+  // Medium & low only
+  public double calculateElevatorLogisticMotion(double height, double duration, double startTime) {
+
+    final double topError = 0.25;
+    final double bottomError = 0.15;
+
+    //calculating the current time from when the robot starts moving.
+    double timeElapsed = (RobotController.getFPGATime() - startTime)/1000000;
+    
+    double k = Math.log((height*(bottomError/(height-bottomError))/(height-topError))-(bottomError/(height-bottomError)))/(-height*duration);
+    double c = bottomError / ((height*k)-(k*bottomError));
+
+    double heightProfile = (height*k*c)/((k*c)+Math.pow(Math.E, (-height*k*timeElapsed)));
+    double heightVelocityProfile = k*heightProfile*(height - heightProfile);
+    
+    return heightVelocityProfile;
+  }
+
+  /**
+   * @param velocity In inches per second
+   */
+  public double getEncoderSetpoint(double velocity) {
+    double rotationsPerSecond = velocity * (1 / (3.5 * Math.PI));
+    // Convert to native sensor ticks, then divide by 10 (1s period -> 100ms period)
+    return (rotationsPerSecond * 4096) / 10;
+  }
 }

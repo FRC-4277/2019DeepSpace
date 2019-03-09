@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import frc.robot.Robot;
 import frc.robot.commands.ElevatorManualControllerDriveCommand;
 
 /**
@@ -187,6 +188,23 @@ public class Elevator extends Subsystem {
       mainMotor.set(ControlMode.Position, mode.getSetPoint());
     }
   }
+
+  /*public void goToPosition(Mode mode, double startTime) {
+    // TODO : Change mode to use inches
+    // TODO : Mode durations
+    // Normalize (add negative when needed)
+    
+    //Have mode.getSetPoint in inches
+    double setPoint = Robot.motionProfile.getEncoderSetpoint(
+      Robot.motionProfile.calculateElevatorLogisticMotion(|mode.getSetPoint()|, 1.5, startTime));
+    
+      // Setpoint is dynamic depending on position (negative if going down)
+    if (mode.getSetPoint() < 0) {
+      setPoint = -Math.abs(setPoint);
+    }
+    
+    mainMotor.set(ControlMode.Velocity, setPoint);
+  }*/
 
   public Mode getMode() {
     return mode;
