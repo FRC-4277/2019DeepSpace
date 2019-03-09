@@ -7,6 +7,11 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -27,23 +32,44 @@ public class Elevator2 extends Subsystem {
     .defaultValue(true)
     .build();
   // Velocity PID settings
-  private Setting<Integer> velocityPSetting = Settings
-    .createIntField("Velocity P", true)
+  private Setting<Double> velocityPSetting = Settings
+    .createDoubleField("Velocity P", true)
     .defaultValue(0.08) // TODO : Change to known working
     .build();
-  private Setting<Integer> velocityPSetting = Settings
-    .createIntField("Velocity I", true)
+  private Setting<Double> velocityISetting = Settings
+    .createDoubleField("Velocity I", true)
     .defaultValue(0.0) // TODO : Change
     .build();
-  private Setting<Integer> velocityPSetting = Settings
-    .createIntField("Velocity D", true)
+  private Setting<Double> velocityDSetting = Settings
+    .createDoubleField("Velocity D", true)
     .defaultValue(0.0) // TODO : Change
     .build();
-  private Setting<Integer> velocityPSetting = Settings
-    .createIntField("Velocity F", true)
+  private Setting<Double> velocityFSetting = Settings
+    .createDoubleField("Velocity F", true)
+    .defaultValue(0.0) // TODO : Change
+    .build();
+    // Position PID settings
+  private Setting<Double> positionPSetting = Settings
+    .createDoubleField("Position P", true)
+    .defaultValue(0.08) // TODO : Change to known working
+    .build();
+  private Setting<Double> positionISetting = Settings
+    .createDoubleField("Position I", true)
+    .defaultValue(0.0) // TODO : Change
+    .build();
+  private Setting<Double> positionDSetting = Settings
+    .createDoubleField("Position D", true)
+    .defaultValue(0.0) // TODO : Change
+    .build();
+  private Setting<Double> positionFSetting = Settings
+    .createDoubleField("Position F", true)
     .defaultValue(0.0) // TODO : Change
     .build();
   private WPI_TalonSRX mainMotor, followerMotor;
+  private Mode runningMode = Mode.MANUAL_CONTROL;
+  private Mode reachedMode = Mode.MANUAL_CONTROL;
+  // The current mode the PID is configured for
+  private Mode pidConfiguredMode = null;
 
   public Elevator2(int talonId, int followerId) {
       super("Elevator");
@@ -68,6 +94,31 @@ public class Elevator2 extends Subsystem {
       followerMotor.follow(mainMotor);
   }
 
+  public void resetEncoder() {
+    mainMotor.setSelectedSensorPosition(0);
+  }
+
+  // Manual Drive
+  public void drive(double power) {
+    runningMode = reachedMode = Mode.MANUAL_CONTROL;
+    mainMotor.set(ControlMode.PercentOutput, power);      
+  }
+
+  // Manual Stop Drive
+  public void stop() {
+    drive(0.0);
+  }
+
+  // == Target VELOCITY
+  public void setTargetVelocity(Mode mode, int velocity) {
+    runningMode = mode;
+    if (pidConfiguredMode != mode) {
+
+    }
+  }
+
+
+
   private void configureMotorBasics(WPI_TalonSRX talonSRX) {
     talonSRX.setSubsystem("Elevator");
     talonSRX.configFactoryDefault();
@@ -75,18 +126,123 @@ public class Elevator2 extends Subsystem {
     talonSRX.setNeutralMode(NeutralMode.Brake);
   }
 
-  public void resetEncoder() {
-    mainMotor.setSelectedSensorPosition(0);
+  private void configureEncoder() {
+    mainMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, TALONSRX_CONFIGURE_TIMEOUT);
   }
 
   private void configureVelocityPID() {
-      talonSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, TALONSRX_CONFIGURE_TIMEOUT);
-      talonSRX.configAllowableClosedloopError(0, ENCODER_ERROR_ALLOWANCE, )
+    configureEncoder();
+    mainMotor.config_kP(0, velocityPSetting.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kI(0, velocityISetting.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kD(0, velocityDSetting.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kF(0, velocityFSetting.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
+  }
+
+  private void configurePositionPID(Mode mode) {
+    if (!mode.isLevel()) {
+      throw new IllegalArgumentException("Mode must be a level");
+    }
+    configureEncoder();
+    mainMotor.config_kP(0, positionPSetting.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kI(0, positionISetting.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kD(0, positionDSetting.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kF(0, positionFSetting.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
   }
 
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
+  }
+    
+  // In inches
+  private static double PVC_DIAMETER = 3.5;
+  private static double PVC_CIRCUMFERENCE = PVC_DIAMETER * Math.PI;
+  // (10 is assuming encoder is in middle stage)
+  private static int GEAR_RATIO = 10;
+  private static int ENCODER_TICKS_PER_ROT = 4096;
+
+  private static int calculatePositionSetpoint(double inches) {
+    return (int) Math.round((inches / PVC_CIRCUMFERENCE) * GEAR_RATIO * ENCODER_TICKS_PER_ROT);
+  }
+
+  public enum PIDConfiguration {
+      VELOCITY((elevator, mode) -> elevator.configureVelocityPID()),
+      POSITION((elevator, mode) -> elevator.configurePositionPID(mode));
+
+      private BiConsumer<Elevator2, Mode> configurator;
+      PIDConfiguration(BiConsumer<Elevator2, Mode> runnable) {
+        this.configurator = configurator;
+      }
+
+      public void configurePID(Elevator2 elevator, Mode mode) {
+        configurator.accept(elevator, mode);
+      }
+  }
+
+  public enum Mode { 
+    MANUAL_CONTROL("Manual Control"),
+    HOME("Home", -0.5),
+    LOADING_STATION("Loading Station", 16),
+    MEDIUM("Medium", 28),
+    HIGH("High", 55);
+
+    private String name;
+    private boolean isLevel;
+    // Position PID setpoint
+    private double inches;
+    private Integer encoderTicks;
+    // Position PID margin of error
+    private double errorMarginInches;
+    private Integer errorMarginTicks;
+
+    private Mode(String name, boolean isLevel, double inches, double errorMarginInches) {
+        this.name = name;
+        this.isLevel = isLevel;
+        this.inches = inches;
+        this.errorMarginInches = errorMarginInches;
+    }
+
+    private Mode(String name, double inches, double errorMarginInches) {
+        this(name, true, inches, errorMarginInches);
+    }
+
+    private Mode(String name, double inches) {
+        this(name, true, inches, 0.0);
+    }
+
+    private Mode(String name) {
+        this(name, false, -1, 0.0);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isLevel() {
+        return isLevel;
+    }
+
+    public double getPositionSetpointInches() {
+        return inches;
+    }
+
+    public int getPositionSetpointTicks() {
+        if (encoderTicks == null) {
+            encoderTicks = calculatePositionSetpoint(inches);
+        }
+        return encoderTicks;
+    }
+
+    public double getPositionErrorMarginInches() {
+        return errorMarginInches;
+    }
+
+    public int getPositionErrorTicks() {
+        if (errorMarginTicks == null) {
+            errorMarginTicks = calculatePositionSetpoint(errorMarginInches);
+        }
+        return errorMarginTicks;
+    }
   }
 }
