@@ -50,7 +50,7 @@ public class Robot extends TimedRobot {
 
   public static RobotMap map;
   public static MecanumDrive mecanumDrive;
-  public static Elevator elevator;
+  public static Elevator2 elevator;
   public static HatchPanelSystem hatchPanelSystem;
   public static CargoSystem cargoSystem;
   public static CameraSystem cameraSystem;
@@ -126,7 +126,7 @@ public class Robot extends TimedRobot {
           map.getBackRightTalon());
     }
     if (elevator == null) {
-      elevator = new Elevator(map.getElevatorTalon(), map.getElevatorFollowerTalon());
+      elevator = new Elevator2(map.getElevatorTalon(), map.getElevatorFollowerTalon());
     }
     if (hatchPanelSystem == null) {
       hatchPanelSystem = new HatchPanelSystem(map.getPCMId());

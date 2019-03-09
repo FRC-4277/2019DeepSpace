@@ -8,7 +8,6 @@
 package frc.robot.subsystems;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -70,28 +69,30 @@ public class Elevator2 extends Subsystem {
   private Mode reachedMode = Mode.MANUAL_CONTROL;
   // The current mode the PID is configured for
   private Mode pidConfiguredMode = null;
+  // The current configuration PID is configured for
+  private PIDConfiguration pidConfiguration = null;
 
   public Elevator2(int talonId, int followerId) {
-      super("Elevator");
+     super("Elevator");
 
-      // Main Motor
-      mainMotor = new WPI_TalonSRX(talonId);
-      configureMotorBasics(mainMotor);
-      // Set sensor phase
-      mainMotor.setSensorPhase(sensorPhaseSetting.getValue());
-      // Set position to 0 on bottom limit switch
-      mainMotor.configClearPositionOnLimitR(true, TALONSRX_CONFIGURE_TIMEOUT);
-      mainMotor.configClearPositionOnLimitF(false, TALONSRX_CONFIGURE_TIMEOUT);
-      // Set soft limit for bottom
-      mainMotor.configReverseSoftLimitThreshold(0, TALONSRX_CONFIGURE_TIMEOUT);
-      mainMotor.configReverseSoftLimitEnable(false, TALONSRX_CONFIGURE_TIMEOUT); 
+     // Main Motor
+     mainMotor = new WPI_TalonSRX(talonId);
+     configureMotorBasics(mainMotor);
+     // Set sensor phase
+     mainMotor.setSensorPhase(sensorPhaseSetting.getValue());
+     // Set position to 0 on bottom limit switch
+     mainMotor.configClearPositionOnLimitR(true, TALONSRX_CONFIGURE_TIMEOUT);
+     mainMotor.configClearPositionOnLimitF(false, TALONSRX_CONFIGURE_TIMEOUT);
+     // Set soft limit for bottom
+     mainMotor.configReverseSoftLimitThreshold(0, TALONSRX_CONFIGURE_TIMEOUT);
+     mainMotor.configReverseSoftLimitEnable(false, TALONSRX_CONFIGURE_TIMEOUT);
 
-      // TODO : Set soft limits
+     // TODO : Set soft limits
     
-      // Follower Motor
-      followerMotor = new WPI_TalonSRX(followerId);
-      configureMotorBasics(followerMotor);
-      followerMotor.follow(mainMotor);
+     // Follower Motor
+     followerMotor = new WPI_TalonSRX(followerId);
+     configureMotorBasics(followerMotor);
+     followerMotor.follow(mainMotor);
   }
 
   public void resetEncoder() {
@@ -110,14 +111,22 @@ public class Elevator2 extends Subsystem {
   }
 
   // == Target VELOCITY
-  public void setTargetVelocity(Mode mode, int velocity) {
+  public void setTargetVelocity(Mode mode, double velocity) {
     runningMode = mode;
-    if (pidConfiguredMode != mode) {
-
-    }
+    // Configure PID if necessary
+    configurePID(PIDConfiguration.VELOCITY, mode);
+    // Set Velocity
+    mainMotor.set(ControlMode.Velocity, velocity);
   }
 
-
+  // == Target POSITION
+  public void setTargetPosition(Mode mode, double position) {
+    runningMode = mode;
+    // Configure PID if necessary
+    configurePID(PIDConfiguration.POSITION, mode);
+    // Set Position
+    mainMotor.set(ControlMode.Position, position);
+  }
 
   private void configureMotorBasics(WPI_TalonSRX talonSRX) {
     talonSRX.setSubsystem("Elevator");
@@ -128,6 +137,16 @@ public class Elevator2 extends Subsystem {
 
   private void configureEncoder() {
     mainMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, TALONSRX_CONFIGURE_TIMEOUT);
+  }
+
+  private void configurePID(PIDConfiguration config, Mode mode) {
+    if (this.pidConfiguredMode != mode || this.pidConfiguration != config) {
+      // Configure
+      config.configurePID(this, mode);
+      // Update fields
+      this.pidConfiguredMode = mode;
+      this.pidConfiguration = config;
+    }
   }
 
   private void configureVelocityPID() {
@@ -156,22 +175,22 @@ public class Elevator2 extends Subsystem {
   }
     
   // In inches
-  private static double PVC_DIAMETER = 3.5;
-  private static double PVC_CIRCUMFERENCE = PVC_DIAMETER * Math.PI;
+  private static final double PVC_DIAMETER = 3.5;
+  private static final double PVC_CIRCUMFERENCE = PVC_DIAMETER * Math.PI;
   // (10 is assuming encoder is in middle stage)
-  private static int GEAR_RATIO = 10;
-  private static int ENCODER_TICKS_PER_ROT = 4096;
+  private static final int GEAR_RATIO = 10;
+  private static final int ENCODER_TICKS_PER_ROT = 4096;
 
-  private static int calculatePositionSetpoint(double inches) {
+  public static int calculateTicks(double inches) {
     return (int) Math.round((inches / PVC_CIRCUMFERENCE) * GEAR_RATIO * ENCODER_TICKS_PER_ROT);
   }
 
   public enum PIDConfiguration {
       VELOCITY((elevator, mode) -> elevator.configureVelocityPID()),
-      POSITION((elevator, mode) -> elevator.configurePositionPID(mode));
+      POSITION(Elevator2::configurePositionPID);
 
       private BiConsumer<Elevator2, Mode> configurator;
-      PIDConfiguration(BiConsumer<Elevator2, Mode> runnable) {
+      PIDConfiguration(BiConsumer<Elevator2, Mode> configurator) {
         this.configurator = configurator;
       }
 
@@ -189,6 +208,8 @@ public class Elevator2 extends Subsystem {
 
     private String name;
     private boolean isLevel;
+    // PID Configuration
+    private PIDConfiguration pidConfiguration;
     // Position PID setpoint
     private double inches;
     private Integer encoderTicks;
@@ -196,22 +217,22 @@ public class Elevator2 extends Subsystem {
     private double errorMarginInches;
     private Integer errorMarginTicks;
 
-    private Mode(String name, boolean isLevel, double inches, double errorMarginInches) {
+    Mode(String name, boolean isLevel, double inches, double errorMarginInches) {
         this.name = name;
         this.isLevel = isLevel;
         this.inches = inches;
         this.errorMarginInches = errorMarginInches;
     }
 
-    private Mode(String name, double inches, double errorMarginInches) {
+    Mode(String name, double inches, double errorMarginInches) {
         this(name, true, inches, errorMarginInches);
     }
 
-    private Mode(String name, double inches) {
+    Mode(String name, double inches) {
         this(name, true, inches, 0.0);
     }
 
-    private Mode(String name) {
+    Mode(String name) {
         this(name, false, -1, 0.0);
     }
 
@@ -229,7 +250,7 @@ public class Elevator2 extends Subsystem {
 
     public int getPositionSetpointTicks() {
         if (encoderTicks == null) {
-            encoderTicks = calculatePositionSetpoint(inches);
+            encoderTicks = calculateTicks(inches);
         }
         return encoderTicks;
     }
@@ -240,7 +261,7 @@ public class Elevator2 extends Subsystem {
 
     public int getPositionErrorTicks() {
         if (errorMarginTicks == null) {
-            errorMarginTicks = calculatePositionSetpoint(errorMarginInches);
+            errorMarginTicks = calculateTicks(errorMarginInches);
         }
         return errorMarginTicks;
     }

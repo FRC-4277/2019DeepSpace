@@ -12,6 +12,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 import edu.wpi.first.wpilibj.RobotController;
+import frc.robot.Robot;
 
 /**
  * Add your docs here.
@@ -142,16 +143,18 @@ public class MotionProfile extends Subsystem {
 
     double heightProfile = (height*k*c)/((k*c)+Math.pow(Math.E, (-height*k*timeElapsed)));
     double heightVelocityProfile = k*heightProfile*(height - heightProfile);
-    
+
     return heightVelocityProfile;
   }
 
   /**
    * @param velocity In inches per second
+   * @return In encoder ticks per 100 ms
    */
   public double getEncoderSetpoint(double velocity) {
-    double rotationsPerSecond = velocity * (1 / (3.5 * Math.PI));
-    // Convert to native sensor ticks, then divide by 10 (1s period -> 100ms period)
-    return (rotationsPerSecond * 4096) / 10;
+    // Convert inches/sec to ticks/sec
+    double ticksPerSecond = Elevator2.calculateTicks(velocity);
+    // Convert ticks/sec to ticks/100ms and RETURN
+    return ticksPerSecond / 10;
   }
 }
