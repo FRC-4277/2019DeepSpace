@@ -22,7 +22,6 @@ public class ElevatorManualControllerDriveCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.elevator.goToMode(Mode.MANUAL_CONTROL);
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -32,7 +31,7 @@ public class ElevatorManualControllerDriveCommand extends Command {
     double manualPower = -OI.xboxController1.getRawAxis(5);
     if (Math.abs(manualPower) >= JOYSTICK_THRESHOLD) {
       Robot.elevator.drive(manualPower);
-    } else if (Robot.elevator.getMode() == Mode.MANUAL_CONTROL) {
+    } else if (Robot.elevator.getRunningMode() == Mode.MANUAL_CONTROL) {
       Robot.elevator.stop();
     }
   }

@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.*;
 import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.commands.autonomous.groups.LeftCargoshipHatchCommandGroup;
 import frc.robot.commands.autonomous.groups.RightCargoshipHatchCommandGroup;
@@ -16,7 +17,6 @@ import frc.robot.map.CloneRobotMap;
 import frc.robot.map.CompetitionRobotMap;
 import frc.robot.map.RobotMap;
 import frc.robot.subsystems.*;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -25,12 +25,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -50,7 +45,7 @@ public class Robot extends TimedRobot {
 
   public static RobotMap map;
   public static MecanumDrive mecanumDrive;
-  public static Elevator2 elevator;
+  public static Elevator elevator;
   public static HatchPanelSystem hatchPanelSystem;
   public static CargoSystem cargoSystem;
   public static CameraSystem cameraSystem;
@@ -103,7 +98,7 @@ public class Robot extends TimedRobot {
     .add("Game Time", "XXX")
     .withWidget(BuiltInWidgets.kTextView)
     // POSITION & SIZE
-    .withPosition(8, 0)
+    .withPosition(9, 0)
     .withSize(1, 1)
     .getEntry();
   }
@@ -126,7 +121,7 @@ public class Robot extends TimedRobot {
           map.getBackRightTalon());
     }
     if (elevator == null) {
-      elevator = new Elevator2(map.getElevatorTalon(), map.getElevatorFollowerTalon());
+      elevator = new Elevator(map.getElevatorTalon(), map.getElevatorFollowerTalon());
     }
     if (hatchPanelSystem == null) {
       hatchPanelSystem = new HatchPanelSystem(map.getPCMId());
@@ -140,11 +135,11 @@ public class Robot extends TimedRobot {
     if (cameraSystem == null) {
       cameraSystem = new CameraSystem();
     }
-    if (m_oi == null) {
-      m_oi = new OI();
-    }
     if (motionProfile == null){
       motionProfile = new MotionProfile();
+    }
+    if (m_oi == null) {
+      m_oi = new OI();
     }
   }
 

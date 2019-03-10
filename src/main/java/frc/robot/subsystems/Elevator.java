@@ -7,7 +7,8 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.Supplier;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -18,92 +19,240 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-import frc.robot.Robot;
 import frc.robot.commands.ElevatorManualControllerDriveCommand;
+import frc.robot.utils.Settings;
+import frc.robot.utils.Settings.Setting;
 
 /**
- * The subsystem for controlling the elevator. The elevator consists of two
- * TalonSRX's, with one having a CTRE MAG encoder on it.
+ * Add your docs here.
  */
 public class Elevator extends Subsystem {
-  /**
-   * The allowed error from the target allowed when using PID to go to a position
-   */
-  private static final int ENCODER_ERROR_ALLOWANCE = 1000;
   /**
    * The timeout for setting config values on the TalonSRX
    */
   private static final int TALONSRX_CONFIGURE_TIMEOUT = 50;
-  private WPI_TalonSRX mainMotor, followerMotor;
-  /**
-   * The current mode the elevator is in
-   */
-  private Mode mode = Mode.MANUAL_CONTROL;
-  /**
-   * The PID profile for moving the elevator UP
-   */
-  private PIDProfile upPID = new PIDProfile(0.014, 0, 0);
-  /**
-   * The PID profile for moving the elevator DOWN
-   */
-  private PIDProfile downPID = new PIDProfile(0.008, 0, 0);
-  /**
-   * Whether the TalonSRX's PID settings are configured for going up. If false,
-   * the PID is either unconfigured or configured for down.
-   */
-  private boolean talonConfiguredForUp = false;
 
-  private Mode lastModeSetForEntry = Mode.MANUAL_CONTROL;
-  private NetworkTableEntry modeEntry, positionEntry;
+  //<editor-fold desc="Settings">
+  private Setting<Boolean> sensorPhaseSetting = Settings
+    .createToggleSwitch("Invert Drive", true)
+    .defaultValue(true)
+    .build();
+  // Velocity PID settings
+  private Setting<Double> velocityPSetting = Settings
+    .createDoubleField("Velocity P", true)
+    .defaultValue(0.08) // TODO : Change to known working
+    .build();
+  private Setting<Double> velocityISetting = Settings
+    .createDoubleField("Velocity I", true)
+    .defaultValue(0.0) // TODO : Change
+    .build();
+  private Setting<Double> velocityDSetting = Settings
+    .createDoubleField("Velocity D", true)
+    .defaultValue(0.0) // TODO : Change
+    .build();
+  private Setting<Double> velocityFSetting = Settings
+    .createDoubleField("Velocity F", true)
+    .defaultValue(0.0) // TODO : Change
+    .build();
+    // Position PID settings
+  private Setting<Double> positionPSetting = Settings
+    .createDoubleField("Position P", true)
+    .defaultValue(0.08) // TODO : Change to known working
+    .build();
+  private Setting<Double> positionISetting = Settings
+    .createDoubleField("Position I", true)
+    .defaultValue(0.0) // TODO : Change
+    .build();
+  private Setting<Double> positionDSetting = Settings
+    .createDoubleField("Position D", true)
+    .defaultValue(0.0) // TODO : Change
+    .build();
+  private Setting<Double> positionFSetting = Settings
+    .createDoubleField("Position F", true)
+    .defaultValue(0.0) // TODO : Change
+    .build();
+  //</editor-fold>
+
+  private WPI_TalonSRX mainMotor, followerMotor;
+  private Mode runningMode = Mode.MANUAL_CONTROL;
+  private Mode reachedMode = Mode.MANUAL_CONTROL;
+  // The current mode the PID is configured for
+  private Mode pidConfiguredMode = null;
+  // The current configuration PID is configured for
+  private PIDConfiguration pidConfiguration = null;
+
+  // ShuffleBoard
+  private Mode lastRunningModeInEntry = Mode.MANUAL_CONTROL;
+  private Mode lastReachedModeInEntry = Mode.MANUAL_CONTROL;
+  private PIDConfiguration lastPIDConfigInEntry = null;
+  private NetworkTableEntry runningModeEntry, reachedModeEntry, pidConfigEntry, velocityEntry, positionEntry;
 
   public Elevator(int talonId, int followerId) {
-    super("Elevator");
+     super("Elevator");
 
-    /* MAIN MOTOR */
-    mainMotor = new WPI_TalonSRX(talonId);
-    configureMotorBasics(mainMotor);
-    // Change sensor phase (may change depending on hardware)
-    mainMotor.setSensorPhase(false);
-    // Set position to 0 on bottom limit switch
-    mainMotor.configClearPositionOnLimitR(true, TALONSRX_CONFIGURE_TIMEOUT);
-    mainMotor.configClearPositionOnLimitF(false, TALONSRX_CONFIGURE_TIMEOUT);
-    // Set soft limit for bottom
-    mainMotor.configReverseSoftLimitThreshold(0, TALONSRX_CONFIGURE_TIMEOUT);
-    mainMotor.configReverseSoftLimitEnable(/*true*/false, TALONSRX_CONFIGURE_TIMEOUT); 
-    /* Set soft limit for top to 2 inches more than HIGH setpoint
-    *  22351 = (2 / 3.5PI) * 30 * 4096
-    *  See comments below in Mode.MEDIUM for calculation explanation */
-    mainMotor.configForwardSoftLimitThreshold(
-      Mode.HIGH.getSetPoint() + 22351, TALONSRX_CONFIGURE_TIMEOUT);
-    mainMotor.configForwardSoftLimitEnable(true, TALONSRX_CONFIGURE_TIMEOUT);
+     // Main Motor
+     mainMotor = new WPI_TalonSRX(talonId);
+     configureMotorBasics(mainMotor);
+     // Set sensor phase
+     mainMotor.setSensorPhase(sensorPhaseSetting.getValue());
+     // Set position to 0 on bottom limit switch
+     mainMotor.configClearPositionOnLimitR(true, TALONSRX_CONFIGURE_TIMEOUT);
+     // *Don't* 0 position at top
+     mainMotor.configClearPositionOnLimitF(false, TALONSRX_CONFIGURE_TIMEOUT);
+     // Set soft limit for bottom
+     mainMotor.configReverseSoftLimitThreshold(0, TALONSRX_CONFIGURE_TIMEOUT);
+     mainMotor.configReverseSoftLimitEnable(false, TALONSRX_CONFIGURE_TIMEOUT);
 
-    /* FOLLOWER MOTOR */
-    followerMotor = new WPI_TalonSRX(followerId);
-    configureMotorBasics(followerMotor);
-    followerMotor.follow(mainMotor);
-
-    // TODO : Use voltage ramping, current limits?
-
-    resetEncoder();
-    // Stop the elevator (shouldn't be necessary as talon configs are cleared but it doesn't hurt)
-    stop();
+     // TODO : Set soft limit for top
     
-    /* Add Elevator Mode to ShuffleBoard */
-    modeEntry = Shuffleboard.getTab("General")
-    .add("Elevator Mode", mode.getName())
-    .withWidget(BuiltInWidgets.kTextView)
-    // POSITION & SIZE
-    .withPosition(6, 0)
-    .withSize(1, 1)
-    .getEntry();
+     // Follower Motor
+     followerMotor = new WPI_TalonSRX(followerId);
+     configureMotorBasics(followerMotor);
+     followerMotor.follow(mainMotor);
 
-    /* Add Elevator Sensor Position */
+     // Reset everything
+     stop();
+     resetEncoder();
+
+    /* Add Elevator Modes to Shuffleboard */
+    runningModeEntry = Shuffleboard.getTab("General")
+      .add("Running Mode", runningMode.name())
+      .withWidget(BuiltInWidgets.kTextView)
+      // POSITION & SIZE
+      .withPosition(6, 0)
+      .withSize(1, 1)
+      .getEntry();
+    reachedModeEntry = Shuffleboard.getTab("General")
+      .add("Reached Mode", reachedMode.name())
+      .withWidget(BuiltInWidgets.kTextView)
+      // POSITION & SIZE
+      .withPosition(7, 0)
+      .withSize(1, 1)
+      .getEntry();
+
+    /* Add PID Config to Shuffleboard */
+    pidConfigEntry = Shuffleboard.getTab("General")
+      .add("PID Config", "None")
+      .withWidget(BuiltInWidgets.kTextView)
+      // POSITION & SIZE
+      .withPosition(8, 0)
+      .withSize(1, 1)
+      .getEntry();
+
+    /* Add Elevator Sensor Info to Shuffleboard */
+    velocityEntry = Shuffleboard.getTab("General")
+      .add("Elevator Velocity", "0 = 0\"")
+      .withPosition(6, 1)
+      .withSize(1, 1)
+      .getEntry();
     positionEntry = Shuffleboard.getTab("General")
-    .add("Elevator Position", 0)
-    .withPosition(7, 0)
-    .withSize(1, 1)
-    .getEntry();
+      .add("Elevator Position", "0 = 0\"")
+      .withPosition(7, 1)
+      .withSize(1, 1)
+      .getEntry();
+  }
+
+  @Override
+  public void periodic() {
+    int velocity = getVelocityTicks();
+    velocityEntry.setString(velocity + " = " + calculateInches(velocity) + "\"");
+    int position = getEncoderTicks();
+    positionEntry.setString(position + " = " + calculateInches(position) + "\"");
+  }
+
+  public void resetEncoder() {
+    mainMotor.setSelectedSensorPosition(0);
+  }
+
+  public int getVelocityTicks() {
+    return mainMotor.getSelectedSensorVelocity();
+  }
+
+  public int getEncoderTicks() {
+      return mainMotor.getSelectedSensorPosition();
+  }
+
+  public double getHeightInches() {
+    return calculateInches(getEncoderTicks());
+  }
+
+  // Manual Drive
+  public void drive(double power) {
+    setRunningMode(Mode.MANUAL_CONTROL);
+    setReachedMode(Mode.MANUAL_CONTROL);
+    mainMotor.set(ControlMode.PercentOutput, power);      
+  }
+
+  // Manual Stop Drive
+  public void stop() {
+    drive(0.0);
+  }
+
+  // == Target VELOCITY
+  public void setTargetVelocity(Mode mode, double velocity) {
+    setRunningMode(mode);
+    // Configure PID if necessary
+    configurePID(PIDConfiguration.VELOCITY, mode);
+    // Set Velocity
+    mainMotor.set(ControlMode.Velocity, velocity);
+  }
+
+  // == Target POSITION
+  public void setTargetPosition(Mode mode, double position) {
+    setReachedMode(mode);
+    // Configure PID if necessary
+    configurePID(PIDConfiguration.POSITION, mode);
+    // Set Position
+    mainMotor.set(ControlMode.Position, position);
+  }
+
+  /**
+   * Check whether the elevator has reached a mode
+   * @param mode The mode to check if the elevator is at
+   * @param setReachedMode Whether to update the reached mode {@see getReachedMode()} if it has reached this mode
+   * @return Whether the elevator has reached the specified mode
+   */
+  public boolean hasReachedMode(Mode mode, boolean setReachedMode) {
+      if (hasReachedPosition(mode.getPositionSetpointTicks(), mode.getPositionErrorTicks())) {
+          // Reached, within margin of error
+          if (setReachedMode) {
+            setReachedMode(mode);
+          }
+          return true;
+      }
+      return false;
+  }
+
+  public boolean hasReachedPosition(int ticks, int errorMargin) {
+    return Math.abs(getEncoderTicks() - ticks) <= errorMargin;
+  }
+
+  public boolean hasReachedPositionInches(double inches, double errorMarginInches) {
+    return hasReachedPosition(calculateTicks(inches), calculateTicks(errorMarginInches));
+  }
+
+  private void setRunningMode(Mode mode) {
+    this.runningMode = mode;
+    if (lastRunningModeInEntry != mode) {
+      runningModeEntry.setString(mode.name());
+      lastReachedModeInEntry = mode;
+    }
+  }
+
+  public Mode getRunningMode() {
+    return runningMode;
+  }
+
+  private void setReachedMode(Mode mode) {
+    this.reachedMode = mode;
+    if (lastReachedModeInEntry != mode) {
+      reachedModeEntry.setString(mode.name);
+      lastReachedModeInEntry = mode;
+    }
+  }
+
+  public Mode getReachedMode() {
+    return reachedMode;
   }
 
   private void configureMotorBasics(WPI_TalonSRX talonSRX) {
@@ -113,251 +262,174 @@ public class Elevator extends Subsystem {
     talonSRX.setNeutralMode(NeutralMode.Brake);
   }
 
-  private void configurePID(PIDProfile profile) {
-    configurePID(profile.p, profile.i, profile.d, profile.f);
-  }
-
-  private void configurePID(double p, double i, double d, double f) {
+  private void configureEncoder() {
     mainMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, TALONSRX_CONFIGURE_TIMEOUT);
-    mainMotor.configAllowableClosedloopError(0, ENCODER_ERROR_ALLOWANCE, TALONSRX_CONFIGURE_TIMEOUT);
-    mainMotor.config_kP(0, p, TALONSRX_CONFIGURE_TIMEOUT);
-    mainMotor.config_kI(0, i, TALONSRX_CONFIGURE_TIMEOUT);
-    mainMotor.config_kD(0, d, TALONSRX_CONFIGURE_TIMEOUT);
-    mainMotor.config_kF(0, f, TALONSRX_CONFIGURE_TIMEOUT);
   }
 
-  /**
-   * Drive elevator manually.
-   * 
-   * @param power Power to set motor to (between -1.0 and 1.0 inclusive)
-   */
-  public void drive(double power) {
-    goToMode(Mode.MANUAL_CONTROL);
-    mainMotor.set(ControlMode.PercentOutput, power);
-  }
-
-  /**
-   * Stop elevator manually (set motor power to 0.0).
-   */
-  public void stop() {
-    goToMode(Mode.MANUAL_CONTROL);
-    mainMotor.set(ControlMode.PercentOutput, 0.001);
-  }
-
-  /**
-   * Go to position manually (call repetitively to approach target)
-   * 
-   * @param target Position to approach with PID loop (in encoder ticks)
-   */
-  public void goToPosition(double target) {
-    goToMode(Mode.MANUAL_TARGET);
-    mainMotor.set(ControlMode.Position, target);
-  }
-
-  /**
-   * Go to a specified mode. If this mode is a level, then it will configure the
-   * Talon's PID automatically and go there. (call with this mode repetitively to
-   * approach target) If the mode is not a level (e.g MANUAL_CONTROL or
-   * MANUAL_TARGET mode), then it will just update the current mode.
-   * 
-   * @param mode the mode to set (and if it's a level, go to)
-   */
-  public void goToMode(Mode mode) {
-    // Update ShuffleBoard entry for mode if needed
-    if (lastModeSetForEntry != mode) {
-      modeEntry.setString(mode.getName());
-      lastModeSetForEntry = mode;
-    }
-    this.mode = mode;
-    // Check if this mode is an elevator level. The only modes that aren't an
-    // elevator level are MANUAL_CONTROL and MANUAL_TARGET
-    if (mode.isElevatorLevel()) {
-      boolean up = mode.getSetPoint() > getSensorPosition();
-      // If we need to go UP and we're NOT configured for up, let's configure for UP
-      if (up && !talonConfiguredForUp) {
-        // Configure PID for UP
-        configurePID(upPID);
-        talonConfiguredForUp = true;
-        // If we need to go DOWN and we're configured for UP, let's configure for DOWN
-      } else if (!up && talonConfiguredForUp) {
-        // Configure PID for DOWN
-        configurePID(downPID);
-        talonConfiguredForUp = false;
+  private void configurePID(PIDConfiguration config, Mode mode) {
+    if (this.pidConfiguredMode != mode || this.pidConfiguration != config) {
+      // Configure
+      config.configurePID(this, mode);
+      // Update fields
+      this.pidConfiguredMode = mode;
+      this.pidConfiguration = config;
+      // Update Shuffleboard
+      if (lastPIDConfigInEntry != config) {
+        pidConfigEntry.setString(config.name());
+        lastPIDConfigInEntry = config;
       }
-      // Tell TalonSRX to go to Setpoint of mode
-      mainMotor.set(ControlMode.Position, mode.getSetPoint());
     }
   }
 
-  /*public void goToPosition(Mode mode, double startTime) {
-    // TODO : Change mode to use inches
-    // TODO : Mode durations
-    // Normalize (add negative when needed)
-    
-    //Have mode.getSetPoint in inches
-    double setPoint = Robot.motionProfile.getEncoderSetpoint(
-      Robot.motionProfile.calculateElevatorLogisticMotion(|mode.getSetPoint()|, 1.5, startTime));
-    
-      // Setpoint is dynamic depending on position (negative if going down)
-    if (mode.getSetPoint() < 0) {
-      setPoint = -Math.abs(setPoint);
-    }
-    
-    mainMotor.set(ControlMode.Velocity, setPoint);
-  }*/
-
-  public Mode getMode() {
-    return mode;
+  private void configureVelocityPID() {
+    configureEncoder();
+    configurePID(velocityPSetting, velocityISetting, velocityDSetting, velocityFSetting);
   }
 
-  /**
-   * Check if the elevator has reached the level
-   * @returns true if the mode isn't a level, false if the elevator isn't in the specified mode,
-   * otherwise returns if the elevator has reached the mode's setpoint
-   * @param mode The mode to check if the elevator is in and has reached
-   */
-  public boolean hasReachedMode(Mode mode) {
-    if (this.mode != mode) {
-      return false;
+  private void configurePositionPID(Mode mode) {
+    if (!mode.isLevel()) {
+      throw new IllegalArgumentException("Mode must be a level");
     }
-    if (!mode.isElevatorLevel()) {
-      return true;
-    }
-    int error = Math.abs(getSensorPosition() - mode.getSetPoint());
-    return error <= ENCODER_ERROR_ALLOWANCE;
+    configureEncoder();
+    mainMotor.configAllowableClosedloopError(0, mode.getPositionErrorTicks(), TALONSRX_CONFIGURE_TIMEOUT);
+    configurePID(positionPSetting, positionISetting, positionDSetting, positionFSetting);
   }
 
-  /**
-   * Reset the TalonSRX's MAG encoder to {@code 0}
-   */
-  public void resetEncoder() {
-    mainMotor.setSelectedSensorPosition(0);
+  private void configurePID(Setting<Double> p, Setting<Double> i, Setting<Double> d, Setting<Double> f) {
+    mainMotor.config_kP(0, p.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kI(0, i.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kD(0, d.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kF(0, f.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
   }
 
   @Override
   public void initDefaultCommand() {
+    // Set the default command for a subsystem here.
+    // setDefaultCommand(new MySpecialCommand());
     setDefaultCommand(new ElevatorManualControllerDriveCommand());
   }
+    
+  // In inches
+  private static final double PVC_DIAMETER = 3.5;
+  private static final double PVC_CIRCUMFERENCE = PVC_DIAMETER * Math.PI;
+  // (10 is assuming encoder is in middle stage)
+  private static final int GEAR_RATIO = 10;
+  private static final int ENCODER_TICKS_PER_ROTATION = 4096;
 
-  public int getSensorPosition() {
-    return mainMotor.getSelectedSensorPosition();
+  public static int calculateTicks(double inches) {
+    return (int) Math.round((inches / PVC_CIRCUMFERENCE) * GEAR_RATIO * ENCODER_TICKS_PER_ROTATION);
   }
 
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
-    builder.addDoubleProperty("SensorPosition", this::getSensorPosition, null);
-    builder.addStringProperty("Mode", new Supplier<String>() {
-      public String get() {
-        return mode.getName();
+  public static double calculateInches(int ticks) {
+    return (((double) ticks / GEAR_RATIO) / ENCODER_TICKS_PER_ROTATION) * (PVC_CIRCUMFERENCE);
+  }
+
+  public enum PIDConfiguration {
+      VELOCITY((elevator, mode) -> elevator.configureVelocityPID()),
+      POSITION(Elevator::configurePositionPID);
+
+      private BiConsumer<Elevator, Mode> configurator;
+      PIDConfiguration(BiConsumer<Elevator, Mode> configurator) {
+        this.configurator = configurator;
       }
-    }, null);
+
+      public void configurePID(Elevator elevator, Mode mode) {
+        configurator.accept(elevator, mode);
+      }
   }
 
-  @Override
-  public void periodic() {
-    positionEntry.setNumber(getSensorPosition());
-  }
-
-  /**
-   * Represents the constants in a PIDF closed loop
-   */
-  public class PIDProfile {
-    public double p, i, d, f;
-
-    public PIDProfile(double p, double i, double d) {
-      this(p, i, d, 0);
-    }
-
-    /**
-     * Construct a PIDProfile
-     * 
-     * @param p Proportional Gain (kP)
-     * @param i Integral Gain (kI)
-     * @param d Derivative Gain (kD)
-     * @param f Feed-Forward (kF)
-     */
-    public PIDProfile(double p, double i, double d, double f) {
-      this.p = p;
-      this.i = i;
-      this.d = d;
-      this.f = f;
-    }
-  }
-
-  /**
-   * Represents the states of the elevator (manually driven or trying to stay at a
-   * certain level).
-   */
   public enum Mode {
+    // TODO : Tune durations
     /**
-     * This mode is when the elevator is being controlled manually (through
-     * controller)
+     * Mode where elevator is controlled with joystick
      */
     MANUAL_CONTROL("Manual Control"),
     /**
-     * This mode is when a manual value is set for the target position
+     * Level where we're at the lowest and hitting the limit switch.
+     * Also where we're placing cargo or hatches on rocket low ports.
+     * Also where we're taking hatches from loading station.
+     *
+     * Duration Function Explanation:
+     *    Duration going to home level is 30% more than going up to that level from home
      */
-    MANUAL_TARGET("Manual Target"),
+    HOME("Home", -0.75,
+            (mode) -> mode.name().equals("HOME") ? 0.25 : (mode.getDuration(Mode.valueOf("HOME")) * 1.3)),
     /**
-     * Home level, where the elevator starts and to score at lowest hatches and
-     * cargo on rocket.
+     * Level where we're shooting cargo into cargo ship or taking a cargo from loading station
      */
-    HOME("Home", -2925),
+    LOADING_STATION("Loading Station", 16, (mode) -> 0.7),
     /**
-     * Level at loading station.
+     * Level where we're placing cargo or hatches on rocket middle ports
      */
-    LOADING_STATION("Loading Station", 178804),
+    MEDIUM("Medium", 28, (mode) -> 1.1),
     /**
-     * Level at medium ports on the rocket
-     * <p>
-     * Encoder Ticks Calculation w/ Explanation (math can be applied to other
-     * positions):
-     * 
-     * The elevator's PVC pipe has a diameter of 3.5", so the circumference of it is
-     * about 11". Therefore one rotation of the PVC moves the elevator 11". The
-     * travel distance to MEDIUM is 28", so dividing 28" by 11", we'll need ~2.54
-     * rotations of the PVC. The gear box makes it so 30 turns of the motor is 1
-     * turn of the PVC (30:1 gear ratio), so multiply 2.54 by 30 to get about 76
-     * motor rotations needed. Lastly, the CTRE MAG Encoder's position increases by
-     * 4096 per rotation, so multiply 76 by 4096 to get the encoder position needed
-     * in terms of ticks: {@code 4096 * 76 = about 312,000 encoder ticks}.
-     * 
-     * The formula is
-     * {@code Encoder Ticks = (Travel Distance / (3.5 * PI) ) * 30 * 4096}.
+     * Level where we're placing cargo or hatches on rocket high ports
      */
-    MEDIUM("Medium", 312935),
-    /**
-     * Level at highest ports on the rocket
-     */
-    HIGH("High", 614647);
+    HIGH("High", 55, (mode) -> 1.5);
 
     private String name;
-    private boolean isElevatorLevel;
-    private int setPoint;
+    private boolean isLevel;
+    // Position PID setpoint
+    private double inches;
+    private Integer encoderTicks;
+    // Position PID margin of error
+    private double errorMarginInches;
+    private Integer errorMarginTicks;
+    // Function that tells a duration, starting at a specific mode (we're starting at home for all modes)
+    private Function<Mode, Double> profileDuration;
 
-    private Mode(String name) {
-      this.name = name;
-      this.isElevatorLevel = false;
-      this.setPoint = -1;
+    Mode(String name, boolean isLevel, double inches, double errorMarginInches, Function<Mode, Double> profileDuration) {
+        this.name = name;
+        this.isLevel = isLevel;
+        this.inches = inches;
+        this.errorMarginInches = errorMarginInches;
+        this.profileDuration = profileDuration;
     }
 
-    private Mode(String name, int setPoint) {
-      this.name = name;
-      this.setPoint = setPoint;
-      this.isElevatorLevel = true;
+    Mode(String name, double inches, double errorMarginInches, Function<Mode, Double> profileDuration) {
+        this(name, true, inches, errorMarginInches, profileDuration);
+    }
+
+    Mode(String name, double inches, Function<Mode, Double> profileDuration) {
+        this(name, true, inches, 0.0, profileDuration);
+    }
+
+    Mode(String name) {
+        this(name, false, -1, 0.0, null);
     }
 
     public String getName() {
-      return name;
+        return name;
     }
 
-    public int getSetPoint() {
-      return setPoint;
+    public boolean isLevel() {
+        return isLevel;
     }
 
-    public boolean isElevatorLevel() {
-      return isElevatorLevel;
+    public double getPositionSetpointInches() {
+        return inches;
+    }
+
+    public int getPositionSetpointTicks() {
+        if (encoderTicks == null) {
+            encoderTicks = calculateTicks(inches);
+        }
+        return encoderTicks;
+    }
+
+    public double getPositionErrorMarginInches() {
+        return errorMarginInches;
+    }
+
+    public int getPositionErrorTicks() {
+        if (errorMarginTicks == null) {
+            errorMarginTicks = calculateTicks(errorMarginInches);
+        }
+        return errorMarginTicks;
+    }
+
+    public double getDuration(Mode startingMode) {
+      return profileDuration.apply(startingMode);
     }
   }
 }

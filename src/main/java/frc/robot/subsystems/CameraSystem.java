@@ -16,6 +16,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import frc.robot.Robot;
 import frc.robot.utils.Settings;
 import frc.robot.utils.Settings.ChooserSetting;
 import frc.robot.utils.Settings.Setting;
@@ -48,12 +49,16 @@ public class CameraSystem extends Subsystem {
 
   public CameraSystem() {
     cargoCamera = CameraServer.getInstance().startAutomaticCapture(0);
-    cargoCamera.setFPS(cameraFpsSetting.getValue());
-    cargoCamera.setResolution(cameraWidthSetting.getValue(), cameraHeightSetting.getValue());
+    if (Robot.isReal()) {
+      cargoCamera.setFPS(cameraFpsSetting.getValue());
+      cargoCamera.setResolution(cameraWidthSetting.getValue(), cameraHeightSetting.getValue());
+    }
 
     hatchCamera = CameraServer.getInstance().startAutomaticCapture(1);
-    hatchCamera.setFPS(cameraFpsSetting.getValue());
-    hatchCamera.setResolution(cameraWidthSetting.getValue(), cameraHeightSetting.getValue());
+    if (Robot.isReal()) {
+      hatchCamera.setFPS(cameraFpsSetting.getValue());
+      hatchCamera.setResolution(cameraWidthSetting.getValue(), cameraHeightSetting.getValue());
+    }
 
     // Setting Update Listeners
     cameraFpsSetting.addUpdateListener(fps -> {
@@ -103,7 +108,7 @@ public class CameraSystem extends Subsystem {
             .add("Camera", cameraType.name())
             .withWidget(BuiltInWidgets.kTextView)
             // POSITION & SIZE
-            .withPosition(6, 1)
+            .withPosition(9, 1)
             .withSize(1, 1)
             .getEntry();
 
