@@ -352,8 +352,18 @@ public class Elevator extends Subsystem {
      * Duration Function Explanation:
      *    Duration going to home level is 30% more than going up to that level from home
      */
-    HOME("Home", -0.75,
-            (mode) -> mode.name().equals("HOME") ? 0.25 : (mode.getDuration(Mode.valueOf("HOME")) * 1.3)),
+    //(mode) -> mode.name().equals("HOME") ? 0.25 : (mode.getDuration(Mode.valueOf("HOME")) * 1.3))
+    HOME("Home", -0.75, mode -> {
+      // If we're at home, and we're trying to go home:
+      if (mode.name().equals("HOME")) {
+        return 0.25;
+        // If we're at high and trying to go home:
+      } else if (mode.name.equals("HIGH")) {
+        return 1.5;
+      }
+      // If we're at a different level and trying to go home, make the duration 30% more than going up
+      return mode.getDuration(Mode.valueOf("HOME")) * 1.3;
+    }),
     /**
      * Level where we're shooting cargo into cargo ship or taking a cargo from loading station
      */

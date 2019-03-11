@@ -162,11 +162,10 @@ public class MotionProfile extends Subsystem {
   /**
    * Refer to https://www.desmos.com/calculator/hvgzmv6exl (look at v_elocity(x) for velocity)
    *
-   * @param duration  In seconds (try 1.5)
    * @param startTime In seconds
    * @return Velocity in inches/second (always positive)
    */
-  public double calculateElevatorHighMotion(double duration, double startTime) {
+  public double calculateElevatorHighMotion(double startTime) {
     double timeElapsed = RobotTime.getFPGASeconds() - startTime;
     return ((9750.510515 * Math.pow(timeElapsed, 6)) / 6)
             + ((-37226.71326 * Math.pow(timeElapsed, 5)) / 5)

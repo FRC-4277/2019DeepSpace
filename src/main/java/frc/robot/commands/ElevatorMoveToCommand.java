@@ -63,7 +63,7 @@ public class ElevatorMoveToCommand extends Command {
         // If we're going up to HIGH or we're going down to HOME from HIGH
         if (mode == Mode.HIGH || (Robot.elevator.getReachedMode() == Mode.HIGH && mode == Mode.HOME)) {
           // == Use high's special profile
-          inchesPerSec = Robot.motionProfile.calculateElevatorHighMotion(duration, startTime);
+          inchesPerSec = Robot.motionProfile.calculateElevatorHighMotion(startTime);
         } else {
           // == Use logistic profile
 
