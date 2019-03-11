@@ -312,8 +312,8 @@ public class Elevator extends Subsystem {
   // In inches
   private static final double PVC_DIAMETER = 3.5;
   private static final double PVC_CIRCUMFERENCE = PVC_DIAMETER * Math.PI;
-  // (10 is assuming encoder is in middle stage)
-  private static final int GEAR_RATIO = 10;
+  // Gear ratio from encoder to elevator
+  private static final int GEAR_RATIO = 3;
   private static final int ENCODER_TICKS_PER_ROTATION = 4096;
 
   public static int calculateTicks(double inches) {
@@ -321,7 +321,7 @@ public class Elevator extends Subsystem {
   }
 
   public static double calculateInches(int ticks) {
-    return (((double) ticks / GEAR_RATIO) / ENCODER_TICKS_PER_ROTATION) * (PVC_CIRCUMFERENCE);
+    return ((((double) ticks) / GEAR_RATIO) / ENCODER_TICKS_PER_ROTATION) * (PVC_CIRCUMFERENCE);
   }
 
   public enum PIDConfiguration {
