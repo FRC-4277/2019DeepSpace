@@ -10,7 +10,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.OI;
 import frc.robot.Robot;
-import frc.robot.subsystems.Elevator.Mode;
+import frc.robot.subsystems.elevator.Mode;
 
 public class ElevatorManualControllerDriveCommand extends Command {
   private static final double JOYSTICK_THRESHOLD = 0.30;

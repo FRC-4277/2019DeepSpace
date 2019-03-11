@@ -2,7 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.Elevator.Mode;
+import frc.robot.subsystems.elevator.Mode;
 
 public class ElevatorStayAtCommand extends Command {
   private Mode mode;

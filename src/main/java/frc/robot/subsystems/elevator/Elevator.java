@@ -5,10 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems;
-
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+package frc.robot.subsystems.elevator;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -27,50 +24,30 @@ import frc.robot.utils.Settings.Setting;
  * Add your docs here.
  */
 public class Elevator extends Subsystem {
+  // In inches
+  private static final double PVC_DIAMETER = 3.5;
+  private static final double PVC_CIRCUMFERENCE = PVC_DIAMETER * Math.PI;
+  // Gear ratio from encoder to elevator
+  private static final int GEAR_RATIO = 3;
+  private static final int ENCODER_TICKS_PER_ROTATION = 4096;
+
   /**
    * The timeout for setting config values on the TalonSRX
    */
   private static final int TALONSRX_CONFIGURE_TIMEOUT = 50;
 
   //<editor-fold desc="Settings">
-  private Setting<Boolean> sensorPhaseSetting = Settings
-    .createToggleSwitch("Invert Drive", true)
-    .defaultValue(true)
-    .build();
+  private Setting<Boolean> sensorPhaseSetting;
   // Velocity PID settings
-  private Setting<Double> velocityPSetting = Settings
-    .createDoubleField("Velocity P", true)
-    .defaultValue(0.08) // TODO : Change to known working
-    .build();
-  private Setting<Double> velocityISetting = Settings
-    .createDoubleField("Velocity I", true)
-    .defaultValue(0.0) // TODO : Change
-    .build();
-  private Setting<Double> velocityDSetting = Settings
-    .createDoubleField("Velocity D", true)
-    .defaultValue(0.0) // TODO : Change
-    .build();
-  private Setting<Double> velocityFSetting = Settings
-    .createDoubleField("Velocity F", true)
-    .defaultValue(0.0) // TODO : Change
-    .build();
-    // Position PID settings
-  private Setting<Double> positionPSetting = Settings
-    .createDoubleField("Position P", true)
-    .defaultValue(0.08) // TODO : Change to known working
-    .build();
-  private Setting<Double> positionISetting = Settings
-    .createDoubleField("Position I", true)
-    .defaultValue(0.0) // TODO : Change
-    .build();
-  private Setting<Double> positionDSetting = Settings
-    .createDoubleField("Position D", true)
-    .defaultValue(0.0) // TODO : Change
-    .build();
-  private Setting<Double> positionFSetting = Settings
-    .createDoubleField("Position F", true)
-    .defaultValue(0.0) // TODO : Change
-    .build();
+  private Setting<Double> velocityPSetting;
+  private Setting<Double> velocityISetting;
+  private Setting<Double> velocityDSetting;
+  private Setting<Double> velocityFSetting;
+  // Position PID settings
+  private Setting<Double> positionPSetting;
+  private Setting<Double> positionISetting;
+  private Setting<Double> positionDSetting;
+  private Setting<Double> positionFSetting;
   //</editor-fold>
 
   private WPI_TalonSRX mainMotor, followerMotor;
@@ -82,10 +59,18 @@ public class Elevator extends Subsystem {
   private PIDConfiguration pidConfiguration = null;
 
   // ShuffleBoard
-  private Mode lastRunningModeInEntry = Mode.MANUAL_CONTROL;
-  private Mode lastReachedModeInEntry = Mode.MANUAL_CONTROL;
+  private Mode lastEntryRunningMode = Mode.MANUAL_CONTROL;
+  private Mode lastEntryReachedMode = Mode.MANUAL_CONTROL;
   private PIDConfiguration lastPIDConfigInEntry = null;
   private NetworkTableEntry runningModeEntry, reachedModeEntry, pidConfigEntry, velocityEntry, positionEntry;
+
+  public static int calculateTicks(double inches) {
+    return (int) Math.round((inches / PVC_CIRCUMFERENCE) * GEAR_RATIO * ENCODER_TICKS_PER_ROTATION);
+  }
+
+  public static double calculateInches(int ticks) {
+    return (((double) ticks) / (GEAR_RATIO * ENCODER_TICKS_PER_ROTATION)) * (PVC_CIRCUMFERENCE);
+  }
 
   public Elevator(int talonId, int followerId) {
      super("Elevator");
@@ -99,12 +84,11 @@ public class Elevator extends Subsystem {
      mainMotor.configClearPositionOnLimitR(true, TALONSRX_CONFIGURE_TIMEOUT);
      // *Don't* 0 position at top
      mainMotor.configClearPositionOnLimitF(false, TALONSRX_CONFIGURE_TIMEOUT);
-     // Set soft limit for bottom
-     mainMotor.configReverseSoftLimitThreshold(0, TALONSRX_CONFIGURE_TIMEOUT);
-     mainMotor.configReverseSoftLimitEnable(false, TALONSRX_CONFIGURE_TIMEOUT);
 
-     // TODO : Set soft limit for top
-    
+     // Set top soft limit to 4" above top levle
+     mainMotor.configForwardSoftLimitThreshold(Mode.HIGH.getPositionSetpointTicks() + calculateTicks(4.0), TALONSRX_CONFIGURE_TIMEOUT);
+     mainMotor.configForwardSoftLimitEnable(true, TALONSRX_CONFIGURE_TIMEOUT);
+
      // Follower Motor
      followerMotor = new WPI_TalonSRX(followerId);
      configureMotorBasics(followerMotor);
@@ -113,6 +97,50 @@ public class Elevator extends Subsystem {
      // Reset everything
      stop();
      resetEncoder();
+
+    addShuffleboardEntries();
+
+    // TODO : Move settings and shuffleboard to private methods
+  }
+
+  private void addShuffleboardEntries() {
+    sensorPhaseSetting = Settings
+      .createToggleSwitch("Sensor Phase", true)
+      .defaultValue(true)
+      .build();
+    velocityPSetting = Settings
+      .createDoubleField("Velocity P", true)
+      .defaultValue(0.0000330815)
+      .build();
+    velocityISetting = Settings
+      .createDoubleField("Velocity I", true)
+      .defaultValue(0.0)
+      .build();
+    velocityDSetting = Settings
+      .createDoubleField("Velocity D", true)
+      .defaultValue(0.0)
+      .build();
+    velocityFSetting = Settings
+      .createDoubleField("Velocity F", true)
+      .defaultValue(0.0)
+      .build();
+    positionPSetting = Settings
+      .createDoubleField("Position P", true)
+      .defaultValue(0.0000330815)
+      .build();
+    positionISetting = Settings
+      .createDoubleField("Position I", true)
+      .defaultValue(0.0)
+      .build();
+    positionDSetting = Settings
+      .createDoubleField("Position D", true)
+      .defaultValue(0.0)
+      .build();
+    positionFSetting = Settings
+      .createDoubleField("Position F", true)
+      .defaultValue(0.0)
+      .build();
+    
 
     /* Add Elevator Modes to Shuffleboard */
     runningModeEntry = Shuffleboard.getTab("General")
@@ -141,15 +169,15 @@ public class Elevator extends Subsystem {
 
     /* Add Elevator Sensor Info to Shuffleboard */
     velocityEntry = Shuffleboard.getTab("General")
-      .add("Elevator Velocity", "0 = 0\"")
-      .withPosition(6, 1)
-      .withSize(1, 1)
-      .getEntry();
+       .add("Elevator Velocity", "0 = 0\"")
+       .withPosition(6, 1)
+       .withSize(1, 1)
+       .getEntry();
     positionEntry = Shuffleboard.getTab("General")
-      .add("Elevator Position", "0 = 0\"")
-      .withPosition(7, 1)
-      .withSize(1, 1)
-      .getEntry();
+       .add("Elevator Position", "0 = 0\"")
+       .withPosition(7, 1)
+       .withSize(1, 1)
+       .getEntry();
   }
 
   @Override
@@ -184,6 +212,7 @@ public class Elevator extends Subsystem {
   }
 
   // Manual Stop Drive
+  // TODO : Change manual stop to 0 PID
   public void stop() {
     drive(0.0);
   }
@@ -199,7 +228,7 @@ public class Elevator extends Subsystem {
 
   // == Target POSITION
   public void setTargetPosition(Mode mode, double position) {
-    setReachedMode(mode);
+    setRunningMode(mode);
     // Configure PID if necessary
     configurePID(PIDConfiguration.POSITION, mode);
     // Set Position
@@ -233,9 +262,9 @@ public class Elevator extends Subsystem {
 
   private void setRunningMode(Mode mode) {
     this.runningMode = mode;
-    if (lastRunningModeInEntry != mode) {
-      runningModeEntry.setString(mode.name());
-      lastReachedModeInEntry = mode;
+    if (lastEntryRunningMode != mode) {
+      runningModeEntry.setString(mode.getName());
+      lastEntryRunningMode = mode;
     }
   }
 
@@ -245,9 +274,9 @@ public class Elevator extends Subsystem {
 
   private void setReachedMode(Mode mode) {
     this.reachedMode = mode;
-    if (lastReachedModeInEntry != mode) {
-      reachedModeEntry.setString(mode.name);
-      lastReachedModeInEntry = mode;
+    if (lastEntryReachedMode != mode) {
+      reachedModeEntry.setString(mode.getName());
+      lastEntryReachedMode = mode;
     }
   }
 
@@ -281,12 +310,12 @@ public class Elevator extends Subsystem {
     }
   }
 
-  private void configureVelocityPID() {
+  public void configureVelocityPID() {
     configureEncoder();
     configurePID(velocityPSetting, velocityISetting, velocityDSetting, velocityFSetting);
   }
 
-  private void configurePositionPID(Mode mode) {
+  public void configurePositionPID(Mode mode) {
     if (!mode.isLevel()) {
       throw new IllegalArgumentException("Mode must be a level");
     }
@@ -306,140 +335,8 @@ public class Elevator extends Subsystem {
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
+    // TODO : Change?
     setDefaultCommand(new ElevatorManualControllerDriveCommand());
   }
-    
-  // In inches
-  private static final double PVC_DIAMETER = 3.5;
-  private static final double PVC_CIRCUMFERENCE = PVC_DIAMETER * Math.PI;
-  // Gear ratio from encoder to elevator
-  private static final int GEAR_RATIO = 3;
-  private static final int ENCODER_TICKS_PER_ROTATION = 4096;
 
-  public static int calculateTicks(double inches) {
-    return (int) Math.round((inches / PVC_CIRCUMFERENCE) * GEAR_RATIO * ENCODER_TICKS_PER_ROTATION);
-  }
-
-  public static double calculateInches(int ticks) {
-    return ((((double) ticks) / GEAR_RATIO) / ENCODER_TICKS_PER_ROTATION) * (PVC_CIRCUMFERENCE);
-  }
-
-  public enum PIDConfiguration {
-      VELOCITY((elevator, mode) -> elevator.configureVelocityPID()),
-      POSITION(Elevator::configurePositionPID);
-
-      private BiConsumer<Elevator, Mode> configurator;
-      PIDConfiguration(BiConsumer<Elevator, Mode> configurator) {
-        this.configurator = configurator;
-      }
-
-      public void configurePID(Elevator elevator, Mode mode) {
-        configurator.accept(elevator, mode);
-      }
-  }
-
-  public enum Mode {
-    // TODO : Tune durations
-    /**
-     * Mode where elevator is controlled with joystick
-     */
-    MANUAL_CONTROL("Manual Control"),
-    /**
-     * Level where we're at the lowest and hitting the limit switch.
-     * Also where we're placing cargo or hatches on rocket low ports.
-     * Also where we're taking hatches from loading station.
-     *
-     * Duration Function Explanation:
-     *    Duration going to home level is 30% more than going up to that level from home
-     */
-    //(mode) -> mode.name().equals("HOME") ? 0.25 : (mode.getDuration(Mode.valueOf("HOME")) * 1.3))
-    HOME("Home", -0.75, mode -> {
-      // If we're at home, and we're trying to go home:
-      if (mode.name().equals("HOME")) {
-        return 0.25;
-        // If we're at high and trying to go home:
-      } else if (mode.name.equals("HIGH")) {
-        return 1.5;
-      }
-      // If we're at a different level and trying to go home, make the duration 30% more than going up
-      return mode.getDuration(Mode.valueOf("HOME")) * 1.3;
-    }),
-    /**
-     * Level where we're shooting cargo into cargo ship or taking a cargo from loading station
-     */
-    LOADING_STATION("Loading Station", 16, (mode) -> 0.7),
-    /**
-     * Level where we're placing cargo or hatches on rocket middle ports
-     */
-    MEDIUM("Medium", 28, (mode) -> 1.1),
-    /**
-     * Level where we're placing cargo or hatches on rocket high ports
-     */
-    HIGH("High", 55, (mode) -> 1.5);
-
-    private String name;
-    private boolean isLevel;
-    // Position PID setpoint
-    private double inches;
-    private Integer encoderTicks;
-    // Position PID margin of error
-    private double errorMarginInches;
-    private Integer errorMarginTicks;
-    // Function that tells a duration, starting at a specific mode (we're starting at home for all modes)
-    private Function<Mode, Double> profileDuration;
-
-    Mode(String name, boolean isLevel, double inches, double errorMarginInches, Function<Mode, Double> profileDuration) {
-        this.name = name;
-        this.isLevel = isLevel;
-        this.inches = inches;
-        this.errorMarginInches = errorMarginInches;
-        this.profileDuration = profileDuration;
-    }
-
-    Mode(String name, double inches, double errorMarginInches, Function<Mode, Double> profileDuration) {
-        this(name, true, inches, errorMarginInches, profileDuration);
-    }
-
-    Mode(String name, double inches, Function<Mode, Double> profileDuration) {
-        this(name, true, inches, 0.0, profileDuration);
-    }
-
-    Mode(String name) {
-        this(name, false, -1, 0.0, null);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public boolean isLevel() {
-        return isLevel;
-    }
-
-    public double getPositionSetpointInches() {
-        return inches;
-    }
-
-    public int getPositionSetpointTicks() {
-        if (encoderTicks == null) {
-            encoderTicks = calculateTicks(inches);
-        }
-        return encoderTicks;
-    }
-
-    public double getPositionErrorMarginInches() {
-        return errorMarginInches;
-    }
-
-    public int getPositionErrorTicks() {
-        if (errorMarginTicks == null) {
-            errorMarginTicks = calculateTicks(errorMarginInches);
-        }
-        return errorMarginTicks;
-    }
-
-    public double getDuration(Mode startingMode) {
-      return profileDuration.apply(startingMode);
-    }
-  }
 }

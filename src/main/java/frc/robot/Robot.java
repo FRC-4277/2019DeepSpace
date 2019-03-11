@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import frc.robot.subsystems.elevator.Elevator;
 
 /**
  * The VM is configured to automatically run this class, and to call the

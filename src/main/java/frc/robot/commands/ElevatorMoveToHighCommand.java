@@ -1,10 +1,10 @@
 package frc.robot.commands;
 
-import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.elevator.Mode;
 
 public class ElevatorMoveToHighCommand extends ElevatorMoveToCommand {
   public ElevatorMoveToHighCommand(EndOption endOption) {
-    super(Elevator.Mode.HIGH, endOption);
+    super(Mode.HIGH, endOption);
   }
 
   public ElevatorMoveToHighCommand() {
