@@ -17,6 +17,9 @@ import frc.robot.map.CloneRobotMap;
 import frc.robot.map.CompetitionRobotMap;
 import frc.robot.map.RobotMap;
 import frc.robot.subsystems.*;
+import frc.robot.utils.Settings;
+import frc.robot.utils.Settings.Setting;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -41,8 +44,6 @@ public class Robot extends TimedRobot {
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
-  SendableChooser<Boolean> m_cloneChooser = new SendableChooser<>();
-  
 
   public static RobotMap map;
   public static MecanumDrive mecanumDrive;
@@ -59,6 +60,11 @@ public class Robot extends TimedRobot {
   public Compressor compressor;
 
   private NetworkTableEntry gameTimeEntry;
+  // Setting for whether robot is the clone robot
+  private Setting<Boolean> cloneSetting = Settings
+    .createToggleSwitch("Clone", true)
+    .defaultValue(false)
+    .build();
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -70,11 +76,6 @@ public class Robot extends TimedRobot {
 
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
-
-    // Robot Chooser
-    m_cloneChooser.setDefaultOption("Competition", false);
-    m_cloneChooser.addOption("Clone", true);
-    SmartDashboard.putData("Robot", m_cloneChooser);
 
     instansiateSubsystems();
 
@@ -105,7 +106,7 @@ public class Robot extends TimedRobot {
   }
 
   public boolean isClone() {
-    return m_cloneChooser.getSelected();
+    return cloneSetting.getValue();
   }
 
   public RobotMap updateMap() {
