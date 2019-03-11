@@ -217,6 +217,14 @@ public class Elevator extends Subsystem {
     drive(0.0);
   }
 
+  // Manual Stay At Level
+  public void stayAtLevel() {
+    setReachedMode(Mode.MANUAL_CONTROL);
+    setRunningMode(Mode.MANUAL_CONTROL);
+    configureVelocityPID();
+    mainMotor.set(ControlMode.Velocity, 0);
+  }
+
   // == Target VELOCITY
   public void setTargetVelocity(Mode mode, double velocity) {
     setRunningMode(mode);

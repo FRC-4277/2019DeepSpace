@@ -13,7 +13,7 @@ import frc.robot.Robot;
 import frc.robot.subsystems.elevator.Mode;
 
 public class ElevatorManualControllerDriveCommand extends Command {
-  private static final double JOYSTICK_THRESHOLD = 0.30;
+  private static final double JOYSTICK_THRESHOLD = 0.11;
   
   public ElevatorManualControllerDriveCommand() {
     requires(Robot.elevator);
@@ -32,7 +32,7 @@ public class ElevatorManualControllerDriveCommand extends Command {
     if (Math.abs(manualPower) >= JOYSTICK_THRESHOLD) {
       Robot.elevator.drive(manualPower);
     } else if (Robot.elevator.getRunningMode() == Mode.MANUAL_CONTROL) {
-      Robot.elevator.stop();
+      Robot.elevator.stayAtLevel();
     }
   }
 
