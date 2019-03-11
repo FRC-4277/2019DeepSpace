@@ -110,7 +110,7 @@ public class Elevator extends Subsystem {
       .build();
     velocityPSetting = Settings
       .createDoubleField("Velocity P", true)
-      .defaultValue(0.0000330815)
+      .defaultValue(0.0001601614688)
       .build();
     velocityISetting = Settings
       .createDoubleField("Velocity I", true)
