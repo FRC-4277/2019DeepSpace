@@ -59,6 +59,7 @@ public class ElevatorMoveToCommand extends Command {
         // === Run the motion profile
 
         double inchesPerSec;
+        boolean negative = false;
         // If we're going up to HIGH or we're going down to HOME from HIGH
         if (mode == Mode.HIGH || (Robot.elevator.getReachedMode() == Mode.HIGH && mode == Mode.HOME)) {
           // == Use high's special profile
@@ -71,6 +72,10 @@ public class ElevatorMoveToCommand extends Command {
           if (mode == Mode.HOME) {
             Mode reached = Robot.elevator.getReachedMode();
             inches = reached.isLevel() ? reached.getPositionSetpointInches() : Robot.elevator.getHeightInches();
+            negative = true;
+          }
+          if (inches < 0) {
+            negative = true;
           }
           inchesPerSec = Robot.motionProfile.calculateElevatorLogisticMotion(Math.abs(inches), duration, startTime);
         }
@@ -78,8 +83,8 @@ public class ElevatorMoveToCommand extends Command {
         // Convert to ticks per 100ms
         double ticksPer100ms = Robot.motionProfile.getEncoderSetpoint(inchesPerSec);
 
-        // @ Add negative sign if we're going down (going to HOME)
-        if (mode == Mode.HOME) {
+        // @ Add negative sign if needed
+        if (negative) {
           ticksPer100ms *= -1;
         }
 
