@@ -78,6 +78,7 @@ public class Elevator extends Subsystem {
      // Main Motor
      mainMotor = new WPI_TalonSRX(talonId);
      configureMotorBasics(mainMotor);
+     addShuffleboardEntries();
      // Set sensor phase
      mainMotor.setSensorPhase(sensorPhaseSetting.getValue());
      // Set position to 0 on bottom limit switch
@@ -98,7 +99,6 @@ public class Elevator extends Subsystem {
      stop();
      resetEncoder();
 
-    addShuffleboardEntries();
 
     // TODO : Move settings and shuffleboard to private methods
   }
