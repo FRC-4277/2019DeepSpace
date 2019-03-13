@@ -9,7 +9,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.motionprofiles.LogisticMotionProfile;
@@ -41,24 +40,24 @@ public class MotionProfile extends Subsystem {
   //In this example they will be linear and percentages. The important thing is that drive values are calculated using a 
   //calibrated transfer function 
 
-  public Double[] calculateDriveValues(LogisticMotionProfile profile, Double startTime) {
+  public Double[] calculateDriveValues(LogisticMotionProfile xProfile,LogisticMotionProfile yProfile,LogisticMotionProfile rProfile, Double startTime) {
     Double[] driveValues = new Double[3];
 
     //The following three lines calculate the percentages that will plugged into a standard mecanumDrive commmand
-    driveValues[0] = profile.calculateXVelocity(startTime) / maxXSpeed;
-    driveValues[1] = profile.calculateYVelocity(startTime) / maxYSpeed;
-    driveValues[2] = profile.calculateRotationalVelocity(startTime) / maxZSpeed;
+    driveValues[0] = xProfile.calculateVelocity(startTime) / maxXSpeed;
+    driveValues[1] = yProfile.calculateVelocity(startTime) / maxYSpeed;
+    driveValues[2] = rProfile.calculateVelocity(startTime) / maxZSpeed;
 
     return driveValues;
   }
 
-  public Double[] calculateDriveValuesRotation(LogisticMotionProfile profile, Double startTime, Double delay) {
+  public Double[] calculateDriveValuesRotation(LogisticMotionProfile xProfile,LogisticMotionProfile yProfile,LogisticMotionProfile rProfile, Double startTime, Double delay) {
     Double[] driveValues = new Double[3];
 
     //The following three lines calculate the percentages that will plugged into a standard mecanumDrive commmand
-    driveValues[0] = profile.calculateXVelocity(startTime) / maxXSpeed;
-    driveValues[1] = profile.calculateYVelocity(startTime) / maxYSpeed;
-    driveValues[2] = profile.calculateRotationalVelocity(startTime, delay) / maxZSpeed;
+    driveValues[0] = xProfile.calculateVelocity(startTime) / maxXSpeed;
+    driveValues[1] = yProfile.calculateVelocity(startTime) / maxYSpeed;
+    driveValues[2] = rProfile.calculateDelayedVelocity(startTime, delay) / maxZSpeed;
 
     return driveValues;
   }
