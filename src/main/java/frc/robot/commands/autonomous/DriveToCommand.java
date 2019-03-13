@@ -10,6 +10,7 @@ package frc.robot.commands.autonomous;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
+import frc.robot.subsystems.motionprofiles.LogisticMotionProfile;
 
 public class DriveToCommand extends Command {
 
@@ -27,11 +28,25 @@ public class DriveToCommand extends Command {
 	double distanceX;
 	double distanceY;
 	double rotationZ;
-	double durration;
+  double duration;
+  double delay;
+  double timeFromStart;
+  
+  LogisticMotionProfile[] rotations;
+  Double[] delayArray;
+  boolean[] isThetaNegativeArray;
+
+  LogisticMotionProfile mainProfile;
+  LogisticMotionProfile rotationalProfile;
+
+  int n;
+  int counter;
 
     public DriveToCommand(Double inputDistanceX, Double inputDistanceY, Double inputDegrees, Double inputDurration) {
 
-    	requires(Robot.mecanumDrive);
+      requires(Robot.mecanumDrive);
+      
+      n = 0;
     	
     	if(inputDistanceX < 0) isXNeg = true;
     	if(inputDistanceY < 0) isYNeg = true;
@@ -41,24 +56,63 @@ public class DriveToCommand extends Command {
     	distanceY = Math.abs(inputDistanceY);
     	rotationZ = Math.abs(inputDegrees);
       
-         durration = inputDurration;
+      duration = inputDurration;
+
+      mainProfile = new LogisticMotionProfile(inputDistanceX, inputDistanceY, inputDegrees, duration);
+      rotationalProfile = new LogisticMotionProfile(0.0, 0.0);
     	
+    }
+
+    public DriveToCommand(Double inputDistanceX, Double inputDistanceY, Double duration, Double[]...rotationTargetsWithDurationsAndDelay){
+
+      requires(Robot.mecanumDrive);
+
+      n = rotationTargetsWithDurationsAndDelay.length;
+
+      rotations = new LogisticMotionProfile[n];
+      delayArray = new Double[n];
+      isThetaNegativeArray = new boolean[n];
+    	
+    	if(inputDistanceX < 0) isXNeg = true;
+      if(inputDistanceY < 0) isYNeg = true;
+      
+      distanceX = Math.abs(inputDistanceX);
+    	distanceY = Math.abs(inputDistanceY);
+      
+      this.duration = duration;
+
+      for(int i = 0; i <= n; i++){
+        rotations[i] = new LogisticMotionProfile(Math.abs(rotationTargetsWithDurationsAndDelay[i][0]), rotationTargetsWithDurationsAndDelay[i][1]);
+        delayArray[i] = rotationTargetsWithDurationsAndDelay[i][2];
+        isThetaNegativeArray[i] = rotationTargetsWithDurationsAndDelay[i][0] < 0 ? true : false;
+      }
+
+      mainProfile = new LogisticMotionProfile(distanceX, distanceY, this.duration);
+      rotationalProfile = rotations[0];
+      isThetaNeg = isThetaNegativeArray[0];
     }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
     startTime = RobotController.getFPGATime();
+    counter = 0;
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    	
-    if((RobotController.getFPGATime() - startTime)/1000000 >= durration) {
+
+    if(timeFromStart >= duration) {
       finish = true;
     }
+
+    timeFromStart = (RobotController.getFPGATime() - startTime)/1000000;
     
+    if(n>0){
+      determineRotationalProfile();
+    }
+
     normalizeDrive();
     Robot.mecanumDrive.mecanumDrive(driveX, driveY, driveZ, Robot.navX.getAngle(), false);
   }
@@ -79,28 +133,41 @@ public class DriveToCommand extends Command {
   protected void interrupted() {
     Robot.mecanumDrive.mecanumStop();
   }
+
+  protected void determineRotationalProfile(){
+
+    if(timeFromStart < delayArray[counter+1]){
+      rotationalProfile = rotations[counter];
+      isThetaNeg = isThetaNegativeArray[counter];
+    }
+    else if(timeFromStart >= delayArray[counter+1]){
+      counter++;
+      rotationalProfile = rotations[counter];
+      isThetaNeg = isThetaNegativeArray[counter];
+    }
+  }
   
   protected void normalizeDrive() {
     
     if(isXNeg) {
-      driveX = -Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[0];
+      driveX = -Robot.motionProfile.calculateDriveValues(mainProfile, startTime)[0];
     }
     else if(!isXNeg) {
-      driveX = Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[0];
+      driveX = Robot.motionProfile.calculateDriveValues(mainProfile,startTime)[0];
     }
     
     if(isYNeg) {
-      driveY = Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[1];
+      driveY = Robot.motionProfile.calculateDriveValues(mainProfile, startTime)[1];
     }
     else if (!isYNeg) {
-      driveY = -Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[1];;
+      driveY = -Robot.motionProfile.calculateDriveValues(mainProfile, startTime)[1];;
     }
     
     if(isThetaNeg) {
-      driveZ = -Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[2];
+      driveZ = -Robot.motionProfile.calculateDriveValuesRotation(rotationalProfile, startTime, delay)[2];
     }
     else if(!isThetaNeg) {
-      driveZ = Robot.motionProfile.calculateDriveValues(distanceX, distanceY, rotationZ, durration, startTime)[2];
+      driveZ = Robot.motionProfile.calculateDriveValuesRotation(rotationalProfile, startTime, delay)[2];
     }
   }
 }
