@@ -328,6 +328,8 @@ public class Elevator extends Subsystem {
 
   public void configureVelocityPID() {
     configureEncoder();
+    // No error threshold, we want it to get as close to target velocity as possible
+    mainMotor.configAllowableClosedloopError(0, 0, TALONSRX_CONFIGURE_TIMEOUT);
     //configurePID(velocityPSetting, velocityISetting, velocityDSetting, velocityFSetting);
     mainMotor.config_kP(0, velocityP);
     mainMotor.config_kI(0, velocityI);
