@@ -177,12 +177,12 @@ public class Elevator extends Subsystem {
 
     /* Add Elevator Sensor Info to Shuffleboard */
     velocityEntry = Shuffleboard.getTab("General")
-       .add("Elevator Velocity", "0 = 0\"")
+       .add("Elevator Velocity", 0.0)
        .withPosition(6, 1)
        .withSize(1, 1)
        .getEntry();
     positionEntry = Shuffleboard.getTab("General")
-       .add("Elevator Position", "0 = 0\"")
+       .add("Elevator Position", 0.0)
        .withPosition(7, 1)
        .withSize(1, 1)
        .getEntry();
