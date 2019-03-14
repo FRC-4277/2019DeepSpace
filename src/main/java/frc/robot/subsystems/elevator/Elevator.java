@@ -24,6 +24,13 @@ import frc.robot.utils.Settings.Setting;
  * Add your docs here.
  */
 public class Elevator extends Subsystem {
+  private static final double velocityP = 0.00033;
+  private static final double velocityI = 0.00015;
+  private static final double positionP = 0.018;
+  private static final double positionI = 0.0;
+  
+  
+  
   // In inches
   private static final double PVC_DIAMETER = 3.5;
   private static final double PVC_CIRCUMFERENCE = PVC_DIAMETER * Math.PI;
@@ -65,7 +72,7 @@ public class Elevator extends Subsystem {
   private NetworkTableEntry runningModeEntry, reachedModeEntry, pidConfigEntry, velocityEntry, positionEntry;
 
   public static int calculateTicks(double inches) {
-    return (int) Math.round((inches / PVC_CIRCUMFERENCE) * GEAR_RATIO * ENCODER_TICKS_PER_ROTATION);
+    return (int) ((inches / PVC_CIRCUMFERENCE) * GEAR_RATIO * ENCODER_TICKS_PER_ROTATION);
   }
 
   public static double calculateInches(int ticks) {
@@ -80,7 +87,8 @@ public class Elevator extends Subsystem {
      configureMotorBasics(mainMotor);
      addShuffleboardEntries();
      // Set sensor phase
-     mainMotor.setSensorPhase(sensorPhaseSetting.getValue());
+     //mainMotor.setSensorPhase(sensorPhaseSetting.getValue());
+     mainMotor.setSensorPhase(true);
      // Set position to 0 on bottom limit switch
      mainMotor.configClearPositionOnLimitR(true, TALONSRX_CONFIGURE_TIMEOUT);
      // *Don't* 0 position at top
@@ -104,7 +112,7 @@ public class Elevator extends Subsystem {
   }
 
   private void addShuffleboardEntries() {
-    sensorPhaseSetting = Settings
+    /*sensorPhaseSetting = Settings
       .createToggleSwitch("Sensor Phase", true)
       .defaultValue(true)
       .build();
@@ -139,7 +147,7 @@ public class Elevator extends Subsystem {
     positionFSetting = Settings
       .createDoubleField("Position F", true)
       .defaultValue(0.0)
-      .build();
+      .build();*/
     
 
     /* Add Elevator Modes to Shuffleboard */
@@ -183,9 +191,9 @@ public class Elevator extends Subsystem {
   @Override
   public void periodic() {
     int velocity = getVelocityTicks();
-    velocityEntry.setString(velocity + " = " + calculateInches(velocity) + "\"");
+    velocityEntry.setDouble(velocity);
     int position = getEncoderTicks();
-    positionEntry.setString(position + " = " + calculateInches(position) + "\"");
+    positionEntry.setDouble(position);
   }
 
   public void resetEncoder() {
@@ -320,7 +328,9 @@ public class Elevator extends Subsystem {
 
   public void configureVelocityPID() {
     configureEncoder();
-    configurePID(velocityPSetting, velocityISetting, velocityDSetting, velocityFSetting);
+    //configurePID(velocityPSetting, velocityISetting, velocityDSetting, velocityFSetting);
+    mainMotor.config_kP(0, velocityP);
+    mainMotor.config_kI(0, velocityI);
   }
 
   public void configurePositionPID(Mode mode) {
@@ -329,7 +339,9 @@ public class Elevator extends Subsystem {
     }
     configureEncoder();
     mainMotor.configAllowableClosedloopError(0, mode.getPositionErrorTicks(), TALONSRX_CONFIGURE_TIMEOUT);
-    configurePID(positionPSetting, positionISetting, positionDSetting, positionFSetting);
+    //configurePID(positionPSetting, positionISetting, positionDSetting, positionFSetting);
+    mainMotor.config_kP(0, positionP);
+    mainMotor.config_kI(0, positionI);
   }
 
   private void configurePID(Setting<Double> p, Setting<Double> i, Setting<Double> d, Setting<Double> f) {
@@ -344,7 +356,7 @@ public class Elevator extends Subsystem {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
     // TODO : Change?
-    setDefaultCommand(new ElevatorManualControllerDriveCommand());
+    //setDefaultCommand(new ElevatorManualControllerDriveCommand());
   }
 
 }

@@ -30,6 +30,7 @@ public class ElevatorMoveToCommand extends Command {
 
   @Override
   protected void initialize() {
+    invalid = false;
     Mode reachedMode = Robot.elevator.getReachedMode();
     // If we're in a manual mode and we're trying to go anywhere but home and we're not at home, disallow it
     if (!reachedMode.isLevel() && mode != Mode.HOME && !Robot.elevator.hasReachedPositionInches(0, 5)) {
@@ -43,6 +44,7 @@ public class ElevatorMoveToCommand extends Command {
       duration = mode.getDuration(reachedMode);
     }
 
+    motionProfileFinished = false;
     startTime = RobotTime.getFPGASeconds();
   }
 
@@ -64,6 +66,9 @@ public class ElevatorMoveToCommand extends Command {
         if (mode == Mode.HIGH || (Robot.elevator.getReachedMode() == Mode.HIGH && mode == Mode.HOME)) {
           // == Use high's special profile
           inchesPerSec = Robot.motionProfile.calculateElevatorHighMotion(startTime);
+          if (mode == Mode.HOME) {
+            negative = true;
+          }
         } else {
           // == Use logistic profile
 
