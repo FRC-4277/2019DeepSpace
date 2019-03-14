@@ -25,7 +25,7 @@ public enum Mode {
     if (mode.name().equals("HOME")) {
       return 0.25;
       // If we're at high and trying to go home:
-    } else if (mode.name.equals("HIGH")) {
+    } else if (mode.name().equals("HIGH")) {
       return 1.5;
     }
     // If we're at a different level and trying to go home, make the duration 30% more than going up
