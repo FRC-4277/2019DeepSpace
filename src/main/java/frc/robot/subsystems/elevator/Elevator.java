@@ -58,8 +58,8 @@ public class Elevator extends Subsystem {
   //</editor-fold>
 
   private WPI_TalonSRX mainMotor, followerMotor;
-  private Mode runningMode = Mode.MANUAL_CONTROL;
-  private Mode reachedMode = Mode.MANUAL_CONTROL;
+  public Mode runningMode = Mode.MANUAL_CONTROL;
+  public Mode reachedMode = Mode.MANUAL_CONTROL;
   // The current mode the PID is configured for
   private Mode pidConfiguredMode = null;
   // The current configuration PID is configured for
@@ -351,6 +351,14 @@ public class Elevator extends Subsystem {
     mainMotor.config_kI(0, i.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
     mainMotor.config_kD(0, d.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
     mainMotor.config_kF(0, f.getValue(), TALONSRX_CONFIGURE_TIMEOUT);
+  }
+
+  public void clearPID() {
+    mainMotor.configAllowableClosedloopError(0, 0, TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kP(0, 0, TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kI(0, 0, TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kD(0, 0, TALONSRX_CONFIGURE_TIMEOUT);
+    mainMotor.config_kF(0, 0, TALONSRX_CONFIGURE_TIMEOUT);
   }
 
   @Override

@@ -64,9 +64,10 @@ public class ElevatorMoveToCommand extends Command {
         boolean negative = false;
         // If we're going up to HIGH or we're going down to HOME from HIGH
         if (mode == Mode.HIGH || (Robot.elevator.getReachedMode() == Mode.HIGH && mode == Mode.HOME)) {
+          boolean goingDown = mode == Mode.HOME;
           // == Use high's special profile
-          inchesPerSec = Robot.motionProfile.calculateElevatorHighMotion(startTime);
-          if (mode == Mode.HOME) {
+          inchesPerSec = Robot.motionProfile.calculateElevatorHighMotion(startTime, goingDown);
+          if (goingDown) {
             negative = true;
           }
         } else {
@@ -126,6 +127,12 @@ public class ElevatorMoveToCommand extends Command {
     if (endOption == EndOption.CONTINUOUS_STAY_COMMAND) {
       new ElevatorStayAtCommand(mode).start();
     }
+  }
+
+  @Override
+  protected void interrupted() {
+    Robot.elevator.reachedMode = Robot.elevator.runningMode;
+    Robot.elevator.clearPID();
   }
 
   public enum EndOption {
