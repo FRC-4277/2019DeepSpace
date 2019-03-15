@@ -65,10 +65,18 @@ public class ElevatorMoveToCommand extends Command {
         // If we're going up to HIGH or we're going down to HOME from HIGH
         if (mode == Mode.HIGH || (Robot.elevator.getReachedMode() == Mode.HIGH && mode == Mode.HOME)) {
           boolean goingDown = mode == Mode.HOME;
-          // == Use high's special profile
-          inchesPerSec = Robot.motionProfile.calculateElevatorHighMotion(startTime, goingDown);
           if (goingDown) {
             negative = true;
+            if (elapsedTime <= 0.7) {
+              // We're going to use flipped high profile
+              inchesPerSec = Robot.motionProfile.calculateElevatorHighMotion(startTime, true);
+            } else {
+              // We're going to use logistic
+              inchesPerSec = Robot.motionProfile.calculateElevatorLogisticMotion(Mode.MEDIUM.getPositionSetpointInches(), 2.6, startTime);
+            }
+          } else {
+            // == Use high's special profile
+            inchesPerSec = Robot.motionProfile.calculateElevatorHighMotion(startTime, false);
           }
         } else {
           // == Use logistic profile
