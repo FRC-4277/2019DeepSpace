@@ -31,12 +31,8 @@ public class JoystickDriveStopOnLineCommand extends Command {
   private boolean invert; 
 
   public JoystickDriveStopOnLineCommand() {
-    this(false);
-  }
-
-  public JoystickDriveStopOnLineCommand(boolean invert) {
     requires(Robot.mecanumDrive);
-    this.invert = invert;
+    invert = false;
   }
 
   // Called just before this Command runs the first time
@@ -45,6 +41,9 @@ public class JoystickDriveStopOnLineCommand extends Command {
     hasReachedLine = false;
     Robot.lineUpGyro.reset();
     entry.setBoolean(true);
+
+    double navXRadians = Robot.navX.getAngle() * Math.PI / 180;
+    if(Math.cos(navXRadians) < -0.2) invert = true;
   }
 
   // Called repeatedly when this Command is scheduled to run

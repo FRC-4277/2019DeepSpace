@@ -17,6 +17,7 @@ import frc.robot.commands.ElevatorMoveToCommand.EndOption;
 import frc.robot.XboxPOVTrigger.Direction;
 import frc.robot.commands.hatchcommandgroup.HatchLoadingStationGroup;
 import frc.robot.commands.hatchcommandgroup.HatchRocketPlaceGroup;
+import frc.robot.commands.hatchgroup.HatchPanelExtendArm;
 import frc.robot.commands.hatchgroup.HatchPanelGrabHatch;
 import frc.robot.commands.hatchgroup.HatchPanelReleaseHatch;
 import frc.robot.commands.hatchgroup.HatchPanelRetractArm;
@@ -115,10 +116,6 @@ public class OI {
     Button driveButton3 = new JoystickButton(driveStick, 3);
     driveButton3.whenPressed(new JoystickDriveCommand());
 
-    Button driveButton6 = new JoystickButton(driveStick, 6);
-    driveButton6.whenPressed(new JoystickDriveStopOnLineCommand(true));
-    
-
     // CO-PILOT
     Button buttonLB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_LB);
     buttonLB.whenPressed(new HatchLoadingStationGroup());
@@ -154,7 +151,7 @@ public class OI {
     buttonBack.whenPressed(new JoystickDriveStopOnLineCommand());
 
     XboxPOVTrigger upPOV = new XboxPOVTrigger(xboxController1, Direction.UP);
-    upPOV.whenActive(new JoystickDriveStopOnLineCommand(true));
+    upPOV.whenActive(new HatchPanelExtendArm());
 
     XboxPOVTrigger downPOV = new XboxPOVTrigger(xboxController1, Direction.DOWN);
     downPOV.whenActive(new HatchPanelRetractArm());
