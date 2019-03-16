@@ -24,8 +24,8 @@ import frc.robot.utils.Settings.Setting;
  * Add your docs here.
  */
 public class Elevator extends Subsystem {
-  private static final double velocityP = 0.00063;
-  private static final double velocityI = 0.00030;
+  private static final double velocityP = 0.00053;
+  private static final double velocityI = 0.00021;
   private static final double positionP = 0.018;
   private static final double positionI = 0.0;
   
