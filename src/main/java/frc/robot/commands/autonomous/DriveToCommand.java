@@ -61,9 +61,9 @@ public class DriveToCommand extends Command {
       
       this.duration = duration;
 
-      xProfile = new LogisticMotionProfile(inputDistanceX, this.duration);
-      yProfile = new LogisticMotionProfile(inputDistanceY, this.duration);
-      rotationalProfile = new LogisticMotionProfile(inputDegrees, this.duration);
+      xProfile = new LogisticMotionProfile(distanceX, this.duration);
+      yProfile = new LogisticMotionProfile(distanceY, this.duration);
+      rotationalProfile = new LogisticMotionProfile(rotationZ, this.duration);
     	
     }
 
@@ -116,7 +116,9 @@ public class DriveToCommand extends Command {
     }
     
     if(n>0){
+      if (counter <= n-1){
       determineRotationalProfile();
+      }
     }
 
     normalizeDrive();
@@ -141,15 +143,21 @@ public class DriveToCommand extends Command {
   }
 
   protected void determineRotationalProfile(){
-
-    if(timeFromStart < delayArray[counter+1]){
+    if(counter == n-1){
       rotationalProfile = rotations[counter];
       isThetaNeg = isThetaNegativeArray[counter];
+      delay = delayArray[counter];
     }
     else if(timeFromStart >= delayArray[counter+1]){
       counter++;
       rotationalProfile = rotations[counter];
       isThetaNeg = isThetaNegativeArray[counter];
+      delay = delayArray[counter];
+    }
+    else if (timeFromStart < delayArray[counter+1]){
+      rotationalProfile = rotations[counter];
+      isThetaNeg = isThetaNegativeArray[counter];
+      delay = delayArray[counter];
     }
   }
   

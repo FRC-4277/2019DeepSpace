@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.RobotController;
 public class LogisticMotionProfile {
 
     private double distance = 0;
-    private double rotationTarget = 0;
     private double duration = 0;
 
     private double upperError;
@@ -60,21 +59,24 @@ public class LogisticMotionProfile {
     public Double calculateDelayedVelocity(double startTime, double delaySeconds){
 
         //zeros the profile if we dont want to move in X direction
-        if (rotationTarget == 0.0) return 0.0;
+        if (distance == 0.0) return 0.0;
         //Calculate the current time relative to the start of the function
         double timeElapsed = ((RobotController.getFPGATime() - startTime) / 1000000) - delaySeconds;
         //Calculate constant k 
-        double kR = Math.log((rotationTarget * (lowerError / (rotationTarget - lowerError)) / (rotationTarget - upperError)) - (lowerError / (rotationTarget - lowerError))) / (-rotationTarget * duration);
+        double kR = Math.log((distance * (lowerError / (distance - lowerError)) / (distance - upperError)) - (lowerError / (distance - lowerError))) / (-distance * duration);
         //Calculate constant c
-        double cR = lowerError / ((rotationTarget * kR) - (kR * lowerError));
+        double cR = lowerError / ((distance * kR) - (kR * lowerError));
         //calculate the position graph of the profile
-        double xR = (rotationTarget * kR * cR) / ((kR * cR) + Math.pow(Math.E, (-rotationTarget * kR * timeElapsed)));
+        double xR = (distance * kR * cR) / ((kR * cR) + Math.pow(Math.E, (-distance * kR * timeElapsed)));
         //Calculates velocity
-        double vR = kR * xR * (rotationTarget - xR);
+        double vR = kR * xR * (distance - xR);
 
         return vR;
     }
 
+    public double getSetpoint(){
+        return distance;
+    }
 
 
     
