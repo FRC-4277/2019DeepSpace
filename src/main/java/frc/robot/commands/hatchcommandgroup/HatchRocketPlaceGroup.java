@@ -19,7 +19,7 @@ public class HatchRocketPlaceGroup extends CommandGroup {
     /**
      * Add your docs here.
      */
-    public HatchRocketPlaceGroup() {
+    public HatchRocketPlaceGroup(boolean joystickDriveAtEnd) {
         // Add Commands here:
         // e.g
         addSequential(new HatchPanelExtendArm());
@@ -28,7 +28,9 @@ public class HatchRocketPlaceGroup extends CommandGroup {
         addSequential(new WaitCommand(.5));
         addSequential(new HatchPanelRetractArm());
         addSequential(new WaitCommand(.3));
-        addSequential(new StartCommand(new JoystickDriveCommand()));
+        if (joystickDriveAtEnd) {
+            addSequential(new StartCommand(new JoystickDriveCommand()));
+        }
         //addSequential(new HatchPanelGrabHatch());
 //     addSequential(new Command2());
         // these will run in order.

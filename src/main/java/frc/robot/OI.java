@@ -142,7 +142,7 @@ public class OI {
     buttonY.whenPressed(new ElevatorMoveToHighCommand(EndOption.CONTINUOUS_STAY));
 
     Button buttonRB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_RB);
-    buttonRB.whenPressed(new HatchRocketPlaceGroup());
+    buttonRB.whenPressed(new HatchRocketPlaceGroup(true));
 
     XboxTrigger leftTrigger = new XboxTrigger(xboxController1, Hand.kLeft);
     leftTrigger.whenActive(new CameraToggleCommand());
