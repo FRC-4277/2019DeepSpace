@@ -43,7 +43,7 @@ public class JoystickDriveStopOnLineCommand extends Command {
     entry.setBoolean(true);
 
     double navXRadians = Robot.navX.getAngle() * Math.PI / 180;
-    if(Math.cos(navXRadians) < -0.2) invert = true;
+    invert = Math.cos(navXRadians) < -0.2;
   }
 
   // Called repeatedly when this Command is scheduled to run
