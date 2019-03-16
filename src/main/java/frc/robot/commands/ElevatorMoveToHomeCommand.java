@@ -1,16 +1,13 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.commands;
 
-import frc.robot.subsystems.Elevator.Mode;
+import frc.robot.subsystems.elevator.Mode;
 
 public class ElevatorMoveToHomeCommand extends ElevatorMoveToCommand {
-  public ElevatorMoveToHomeCommand(boolean runContinuously) {
-    super(Mode.HOME, runContinuously);
+  public ElevatorMoveToHomeCommand(EndOption endOption) {
+    super(Mode.HOME, endOption);
+  }
+
+  public ElevatorMoveToHomeCommand() {
+    this(EndOption.END);
   }
 }

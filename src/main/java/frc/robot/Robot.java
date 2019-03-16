@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.*;
 import frc.robot.commands.JoystickDriveCommand;
 import frc.robot.commands.autonomous.groups.LeftCargoshipHatchCommandGroup;
 import frc.robot.commands.autonomous.groups.RightCargoshipHatchCommandGroup;
@@ -16,6 +17,8 @@ import frc.robot.map.CloneRobotMap;
 import frc.robot.map.CompetitionRobotMap;
 import frc.robot.map.RobotMap;
 import frc.robot.subsystems.*;
+import frc.robot.utils.Settings;
+import frc.robot.utils.Settings.Setting;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -25,12 +28,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.subsystems.elevator.Elevator;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,8 +44,6 @@ public class Robot extends TimedRobot {
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
-  SendableChooser<Boolean> m_cloneChooser = new SendableChooser<>();
-  
 
   public static RobotMap map;
   public static MecanumDrive mecanumDrive;
@@ -59,10 +56,16 @@ public class Robot extends TimedRobot {
   public static AHRS navX;
   public static ColorProximitySensor hatchColorSensor, cargoColorSensor;
   public static ADXRS450_Gyro lineUpGyro;
+  public static DigitalInput proximitySensorHatch;
 
   public Compressor compressor;
 
   private NetworkTableEntry gameTimeEntry;
+  // Setting for whether robot is the clone robot
+  private Setting<Boolean> cloneSetting = Settings
+    .createToggleSwitch("Clone", true)
+    .defaultValue(false)
+    .build();
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -74,11 +77,6 @@ public class Robot extends TimedRobot {
 
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
-
-    // Robot Chooser
-    m_cloneChooser.setDefaultOption("Competition", false);
-    m_cloneChooser.addOption("Clone", true);
-    SmartDashboard.putData("Robot", m_cloneChooser);
 
     instansiateSubsystems();
 
@@ -94,6 +92,8 @@ public class Robot extends TimedRobot {
 
     lineUpGyro = new ADXRS450_Gyro();
 
+    proximitySensorHatch = new DigitalInput(0);
+
     hatchColorSensor = new ColorProximitySensor(I2C.Port.kOnboard);
     cargoColorSensor = new ColorProximitySensor(I2C.Port.kMXP);
 
@@ -103,13 +103,13 @@ public class Robot extends TimedRobot {
     .add("Game Time", "XXX")
     .withWidget(BuiltInWidgets.kTextView)
     // POSITION & SIZE
-    .withPosition(8, 0)
+    .withPosition(9, 0)
     .withSize(1, 1)
     .getEntry();
   }
 
   public boolean isClone() {
-    return m_cloneChooser.getSelected();
+    return cloneSetting.getValue();
   }
 
   public RobotMap updateMap() {
@@ -140,11 +140,11 @@ public class Robot extends TimedRobot {
     if (cameraSystem == null) {
       cameraSystem = new CameraSystem();
     }
-    if (m_oi == null) {
-      m_oi = new OI();
-    }
     if (motionProfile == null){
       motionProfile = new MotionProfile();
+    }
+    if (m_oi == null) {
+      m_oi = new OI();
     }
   }
 

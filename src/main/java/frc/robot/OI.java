@@ -12,20 +12,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import frc.robot.commands.ElevatorManualControllerDriveCommand;
-import frc.robot.commands.ElevatorMoveToHighCommand;
-import frc.robot.commands.ElevatorMoveToHomeCommand;
-import frc.robot.commands.ElevatorMoveToLoadingStationCommand;
-import frc.robot.commands.ElevatorMoveToMediumCommand;
-import frc.robot.commands.ElevatorResetEncoderCommand;
-import frc.robot.commands.JoystickDriveCommand;
+import frc.robot.commands.*;
+import frc.robot.commands.ElevatorMoveToCommand.EndOption;
 import frc.robot.XboxPOVTrigger.Direction;
-import frc.robot.commands.CameraToggleCommand;
-import frc.robot.commands.CargoShootCommand;
-import frc.robot.commands.JoystickDriveStopOnLineCommand;
 import frc.robot.commands.hatchcommandgroup.HatchLoadingStationGroup;
 import frc.robot.commands.hatchcommandgroup.HatchRocketPlaceGroup;
-import frc.robot.commands.hatchgroup.HatchPanelExtendArm;
 import frc.robot.commands.hatchgroup.HatchPanelGrabHatch;
 import frc.robot.commands.hatchgroup.HatchPanelReleaseHatch;
 import frc.robot.commands.hatchgroup.HatchPanelRetractArm;
@@ -139,16 +130,16 @@ public class OI {
     buttonStart.whenPressed(new ElevatorResetEncoderCommand());
 
     Button buttonA = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_A);
-    buttonA.whenPressed(new ElevatorMoveToHomeCommand(true));
+    buttonA.whenPressed(new ElevatorMoveToHomeCommand(EndOption.CONTINUOUS_STAY));
 
     Button buttonB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_B);
-    buttonB.whenPressed(new ElevatorMoveToLoadingStationCommand(true));
+    buttonB.whenPressed(new ElevatorMoveToLoadingStationCommand(EndOption.CONTINUOUS_STAY));
 
     Button buttonX = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_X);
-    buttonX.whenPressed(new ElevatorMoveToMediumCommand(true));
+    buttonX.whenPressed(new ElevatorMoveToMediumCommand(EndOption.CONTINUOUS_STAY));
 
     Button buttonY = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_Y);
-    buttonY.whenPressed(new ElevatorMoveToHighCommand(true));
+    buttonY.whenPressed(new ElevatorMoveToHighCommand(EndOption.CONTINUOUS_STAY));
 
     Button buttonRB = new JoystickButton(xboxController1, XboxControllerMap.XBOX_BUTTON_RB);
     buttonRB.whenPressed(new HatchRocketPlaceGroup());
