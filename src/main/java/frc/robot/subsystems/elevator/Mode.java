@@ -42,7 +42,7 @@ public enum Mode {
   /**
    * Level where we're placing cargo or hatches on rocket high ports
    */
-  HIGH("High", 55, 2.0, (mode) -> 1.5);
+  HIGH("High", 49, 2.0, (mode) -> 1.3);
 
   private String name;
   private boolean isLevel;

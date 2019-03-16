@@ -88,7 +88,7 @@ public class Elevator extends Subsystem {
      addShuffleboardEntries();
      // Set sensor phase
      //mainMotor.setSensorPhase(sensorPhaseSetting.getValue());
-     mainMotor.setSensorPhase(true);
+     mainMotor.setSensorPhase(false);
      // Set position to 0 on bottom limit switch
      mainMotor.configClearPositionOnLimitR(true, TALONSRX_CONFIGURE_TIMEOUT);
      // *Don't* 0 position at top
