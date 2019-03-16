@@ -57,6 +57,7 @@ public class Robot extends TimedRobot {
   public static AHRS navX;
   public static ColorProximitySensor hatchColorSensor, cargoColorSensor;
   public static ADXRS450_Gyro lineUpGyro;
+  public static DigitalInput proximitySensorHatch;
 
   public Compressor compressor;
 
@@ -91,6 +92,8 @@ public class Robot extends TimedRobot {
     navX.reset();
 
     lineUpGyro = new ADXRS450_Gyro();
+
+    proximitySensorHatch = new DigitalInput(0);
 
     hatchColorSensor = new ColorProximitySensor(I2C.Port.kOnboard);
     cargoColorSensor = new ColorProximitySensor(I2C.Port.kMXP);

@@ -94,8 +94,11 @@ public class MotionProfile extends Subsystem {
    * @param startTime In seconds
    * @return Velocity in inches/second (always positive)
    */
-  public double calculateElevatorHighMotion(double startTime) {
+  public double calculateElevatorHighMotion(double startTime, boolean down) {
     double timeElapsed = RobotTime.getFPGASeconds() - startTime;
+    if (down) {
+      timeElapsed = 1.5 - timeElapsed;
+    }
     return ((9750.510515 * Math.pow(timeElapsed, 6)) / 6)
             + ((-37226.71326 * Math.pow(timeElapsed, 5)) / 5)
             + ((49867.42227 * Math.pow(timeElapsed, 4)) / 4)
