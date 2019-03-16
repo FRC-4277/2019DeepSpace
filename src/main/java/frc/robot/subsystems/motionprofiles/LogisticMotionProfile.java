@@ -16,27 +16,39 @@ import edu.wpi.first.wpilibj.RobotController;
 public class LogisticMotionProfile {
 
     private double distance = 0;
-    //private double distanceY = 0;
     private double rotationTarget = 0;
     private double duration = 0;
 
-    public LogisticMotionProfile(Double distance, Double duration){
+    private double upperError;
+    private double lowerError;
+
+    public LogisticMotionProfile(double distance, double duration){
         this.distance = distance;
         this.duration = duration;
+
+        this.upperError = 0.01;
+        this.lowerError = 0.05;
     }
     
+    public LogisticMotionProfile(double distance, double duration, double upperError, double lowerError){
+        this.distance = distance;
+        this.duration = duration;
+
+        this.upperError = upperError;
+        this.lowerError = lowerError;
+    }
     //TODO: MAKE ERROR MARGINS CHANGEABLE
     //Calculate the X component of the motion profile
-    public Double calculateVelocity(Double startTime){
+    public Double calculateVelocity(double startTime){
 
         //zeros the profile if we dont want to move in X direction
         if (distance == 0.0) return 0.0;
         //Calculate the current time relative to the start of the function
         double timeElapsed = (RobotController.getFPGATime() - startTime) / 1000000;
         //Calculate constant k 
-        double k = Math.log((distance * (0.05 / (distance - 0.05)) / (distance - 0.01)) - (0.05 / (distance - 0.05))) / (-distance * duration);
+        double k = Math.log((distance * (lowerError / (distance - lowerError)) / (distance - upperError)) - (lowerError / (distance - lowerError))) / (-distance * duration);
         //Calculate constant c
-        double c = 0.05 / ((distance * k) - (k * 0.05));
+        double c = lowerError / ((distance * k) - (k * lowerError));
         //calculate the position graph of the profile
         double x = (distance * k * c) / ((k * c) + Math.pow(Math.E, (-distance * k * timeElapsed)));
         //Calculates velocity
@@ -45,16 +57,16 @@ public class LogisticMotionProfile {
         return v;
     }
 
-    public Double calculateDelayedVelocity(Double startTime, Double delaySeconds){
+    public Double calculateDelayedVelocity(double startTime, double delaySeconds){
 
         //zeros the profile if we dont want to move in X direction
         if (rotationTarget == 0.0) return 0.0;
         //Calculate the current time relative to the start of the function
         double timeElapsed = ((RobotController.getFPGATime() - startTime) / 1000000) - delaySeconds;
         //Calculate constant k 
-        double kR = Math.log((rotationTarget * (0.05 / (rotationTarget - 0.05)) / (rotationTarget - 0.01)) - (0.05 / (rotationTarget - 0.05))) / (-rotationTarget * duration);
+        double kR = Math.log((rotationTarget * (lowerError / (rotationTarget - lowerError)) / (rotationTarget - upperError)) - (lowerError / (rotationTarget - lowerError))) / (-rotationTarget * duration);
         //Calculate constant c
-        double cR = 0.05 / ((rotationTarget * kR) - (kR * 0.05));
+        double cR = lowerError / ((rotationTarget * kR) - (kR * lowerError));
         //calculate the position graph of the profile
         double xR = (rotationTarget * kR * cR) / ((kR * cR) + Math.pow(Math.E, (-rotationTarget * kR * timeElapsed)));
         //Calculates velocity

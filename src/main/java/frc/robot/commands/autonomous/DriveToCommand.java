@@ -10,6 +10,7 @@ package frc.robot.commands.autonomous;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Robot;
+import frc.robot.subsystems.motionprofiles.CurveParameters;
 import frc.robot.subsystems.motionprofiles.LogisticMotionProfile;
 
 public class DriveToCommand extends Command {
@@ -33,7 +34,7 @@ public class DriveToCommand extends Command {
   double timeFromStart;
   
   LogisticMotionProfile[] rotations;
-  Double[] delayArray;
+  double[] delayArray;
   boolean[] isThetaNegativeArray;
 
   LogisticMotionProfile xProfile;
@@ -43,7 +44,7 @@ public class DriveToCommand extends Command {
   int n;
   int counter;
 
-    public DriveToCommand(Double inputDistanceX, Double inputDistanceY, Double inputDegrees, Double duration) {
+    public DriveToCommand(double inputDistanceX, double inputDistanceY, double inputDegrees, double duration) {
 
       requires(Robot.mecanumDrive);
       
@@ -66,14 +67,14 @@ public class DriveToCommand extends Command {
     	
     }
 
-    public DriveToCommand(Double inputDistanceX, Double inputDistanceY, Double duration, Double[]...rotationTargetsWithDurationsAndDelay){
+    public DriveToCommand(double inputDistanceX, double inputDistanceY, double duration, CurveParameters...rotationTargetsWithDurationsAndDelay){
 
       requires(Robot.mecanumDrive);
 
       n = rotationTargetsWithDurationsAndDelay.length;
 
       rotations = new LogisticMotionProfile[n];
-      delayArray = new Double[n];
+      delayArray = new double[n];
       isThetaNegativeArray = new boolean[n];
     	
     	if(inputDistanceX < 0) isXNeg = true;
@@ -84,13 +85,15 @@ public class DriveToCommand extends Command {
       
       this.duration = duration;
 
-      for(int i = 0; i <= n; i++){
-        rotations[i] = new LogisticMotionProfile(Math.abs(rotationTargetsWithDurationsAndDelay[i][0]), rotationTargetsWithDurationsAndDelay[i][1]);
-        delayArray[i] = rotationTargetsWithDurationsAndDelay[i][2];
-        isThetaNegativeArray[i] = rotationTargetsWithDurationsAndDelay[i][0] < 0 ? true : false;
+      for(int i = 0; i < n; i++){
+        rotations[i] = new LogisticMotionProfile(Math.abs(rotationTargetsWithDurationsAndDelay[i].getRotationTarget()), rotationTargetsWithDurationsAndDelay[i].getDuration(), 1, 1);
+        delayArray[i] = rotationTargetsWithDurationsAndDelay[i].getDelay();
+        isThetaNegativeArray[i] = rotationTargetsWithDurationsAndDelay[i].getRotationTarget() < 0 ? true : false;
       }
 
       xProfile = new LogisticMotionProfile(distanceX, this.duration);
+      yProfile = new LogisticMotionProfile(distanceY, this.duration);
+      
       rotationalProfile = rotations[0];
       isThetaNeg = isThetaNegativeArray[0];
     }
@@ -106,11 +109,11 @@ public class DriveToCommand extends Command {
   @Override
   protected void execute() {
 
+    timeFromStart = (RobotController.getFPGATime() - startTime)/1000000;
+
     if(timeFromStart >= duration) {
       finish = true;
     }
-
-    timeFromStart = (RobotController.getFPGATime() - startTime)/1000000;
     
     if(n>0){
       determineRotationalProfile();
