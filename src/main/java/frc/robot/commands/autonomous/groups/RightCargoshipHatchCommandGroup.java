@@ -11,14 +11,14 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.commands.autonomous.*;
 import frc.robot.commands.hatchcommandgroup.HatchRocketPlaceGroup;
 
-public class RightCargoshipHatchCommandGroup extends CommandGroup {
+public class RightCargoshipHatchCommandGroup extends CommandGroup implements AutonomousConstantsInterface {
   /**
    * Add your docs here.
    */
   public RightCargoshipHatchCommandGroup() {
-    addSequential(new DriveToCommand(0.0, 12.15, 0.0, 5.2));
-    addSequential(new DriveStopOnLineCommand(0.4, "left"));
-    addSequential(new DriveDistanceCorrectionCommand(0.25));
+    addSequential(new DriveToCommand(0.0, CARGOSHIP_DISTANCE, 0.0, CARGOSHIP_DURATION, true));
+    addSequential(new DriveStopOnLineCommand(LINE_UP_STRAFE_SPEED, "left"));
+    addSequential(new DriveDistanceCorrectionCommand(DISTANCE_CORRECTION_SPEED));
     addSequential(new HatchRocketPlaceGroup(true));
     // Add Commands here:
     // e.g. addSequential(new Command1());
