@@ -100,7 +100,7 @@ public class CameraSystem extends Subsystem {
                     Map.of("Show crosshair", true, "Show controls", true)
             )
             // POSITION & SIZE
-            .withPosition(2, 0)
+            .withPosition(0, 0)
             .withSize(4, 4);
 
     /* Add Camera Name to Shuffleboard */
@@ -108,7 +108,7 @@ public class CameraSystem extends Subsystem {
             .add("Camera", cameraType.name())
             .withWidget(BuiltInWidgets.kTextView)
             // POSITION & SIZE
-            .withPosition(9, 1)
+            .withPosition(7, 1)
             .withSize(1, 1)
             .getEntry();
 

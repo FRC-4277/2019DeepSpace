@@ -104,7 +104,7 @@ public class Robot extends TimedRobot {
     .add("Game Time", "XXX")
     .withWidget(BuiltInWidgets.kTextView)
     // POSITION & SIZE
-    .withPosition(9, 0)
+    .withPosition(7, 0)
     .withSize(1, 1)
     .getEntry();
   }
