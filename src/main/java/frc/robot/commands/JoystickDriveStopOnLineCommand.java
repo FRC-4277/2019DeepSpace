@@ -7,6 +7,8 @@
 
 package frc.robot.commands;
 
+import java.util.Map;
+
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.command.Command;
@@ -16,15 +18,27 @@ import frc.robot.Robot;
 import frc.robot.ColorProximitySensor.Result;
 
 public class JoystickDriveStopOnLineCommand extends Command {
-  public static NetworkTableEntry entry;
+  public static NetworkTableEntry entry, linedUpEntry;
   static {
     entry = Shuffleboard.getTab("General")
 		.add("Line Up Mode", false)
     .withWidget("Boolean Box")
     // POSITION & SIZE
-    .withPosition(7, 2)
+    .withPosition(6, 2)
     .withSize(2, 2)
-		.getEntry();
+    .getEntry();
+
+    linedUpEntry = Shuffleboard.getTab("General")
+    .add("**Lined** Up Mode", false)
+    .withWidget("Boolean Box")
+    .withProperties(Map.of(
+      "Color when false", "#ffffff", // White when false
+      "Color when true", "#0004ff" // Blue when true
+    ))
+    // POSITION & SIZE
+    .withPosition(8, 2)
+    .withSize(2, 2)
+    .getEntry();
   }
   
   private boolean hasReachedLine = false;
@@ -45,6 +59,7 @@ public class JoystickDriveStopOnLineCommand extends Command {
     hasReachedLine = false;
     Robot.lineUpGyro.reset();
     entry.setBoolean(true);
+    linedUpEntry.setBoolean(false);
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -59,6 +74,7 @@ public class JoystickDriveStopOnLineCommand extends Command {
       OI.xboxController1.setRumble(RumbleType.kRightRumble, 1.0);
       Robot.mecanumDrive.mecanumDrive(0, 0, 0, false);
       hasReachedLine = true;
+      linedUpEntry.setBoolean(true);
       return;
     }
     double x = OI.driveStick.getX(); 
@@ -81,13 +97,13 @@ public class JoystickDriveStopOnLineCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    
+    linedUpEntry.setBoolean(false);
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    
+    end();
   }
 }

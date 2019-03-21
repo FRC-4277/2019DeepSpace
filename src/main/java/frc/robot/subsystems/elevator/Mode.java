@@ -17,7 +17,7 @@ public enum Mode {
    *    Duration going to home level is 30% more than going up to that level from home
    */
   //(mode) -> mode.name().equals("HOME") ? 0.25 : (mode.getDuration(Mode.valueOf("HOME")) * 1.3))
-  HOME("Home", -0.75, 5.0, mode -> {
+  HOME("Home", -2, 0.5, mode -> {
     if (!mode.isLevel()) {
       return 0.0;
     }
@@ -42,7 +42,7 @@ public enum Mode {
   /**
    * Level where we're placing cargo or hatches on rocket high ports
    */
-  HIGH("High", 55, 2.0, (mode) -> 1.5);
+  HIGH("High", 49, 2.0, (mode) -> 1.3);
 
   private String name;
   private boolean isLevel;
