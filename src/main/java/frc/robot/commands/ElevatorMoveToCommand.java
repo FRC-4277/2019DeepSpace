@@ -47,6 +47,9 @@ public class ElevatorMoveToCommand extends Command {
 
     if (!invalid) {
       duration = mode.getDuration(reachedMode);
+      if (mode == Mode.HOME && reachedMode == Mode.HIGH) {
+        duration = 0.7 + 1.43;
+      }
     }
 
     motionProfileFinished = false;
@@ -77,7 +80,7 @@ public class ElevatorMoveToCommand extends Command {
               inchesPerSec = Robot.motionProfile.calculateElevatorHighMotion(startTime, true);
             } else {
               // We're going to use logistic
-              inchesPerSec = Robot.motionProfile.calculateElevatorLogisticMotion(Mode.MEDIUM.getPositionSetpointInches(), 2.6, startTime);
+              inchesPerSec = Robot.motionProfile.calculateElevatorLogisticMotion(Mode.MEDIUM.getPositionSetpointInches() + 2, 1.43, startTime + 0.7);
             }
           } else {
             // == Use high's special profile

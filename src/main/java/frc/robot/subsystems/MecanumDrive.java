@@ -39,13 +39,8 @@ public class MecanumDrive extends Subsystem {
 		FRONT_RIGHT_TALON.setNeutralMode(NeutralMode.Brake);
 		BACK_RIGHT_TALON.setNeutralMode(NeutralMode.Brake);	
 
-		if (!Robot.getInstance().isClone()) {
-			FRONT_LEFT_TALON.setInverted(true);
-			BACK_LEFT_TALON.setInverted(true);
-		} else {
-			FRONT_RIGHT_TALON.setInverted(true);
-			BACK_RIGHT_TALON.setInverted(true);
-		}
+		FRONT_LEFT_TALON.setInverted(true);
+		BACK_LEFT_TALON.setInverted(true);
 	}
 
 	public void mecanumDriveJoystick(Joystick driveStick, boolean applyDeadband) {
@@ -56,6 +51,10 @@ public class MecanumDrive extends Subsystem {
 			x = applyDeadband(x);
 			y = applyDeadband(y);
 			twist = applyDeadband(twist);
+		}
+		if (Robot.getInstance().isClone()) {
+			x *= -1;
+			y *= -1;
 		}
 		drive.mecanumDrive_Cartesian(x, y, twist, 0);
 	}
@@ -68,6 +67,10 @@ public class MecanumDrive extends Subsystem {
 			x = applyDeadband(x);
 			y = applyDeadband(y);
 			twist = applyDeadband(twist);
+		}
+		if (Robot.getInstance().isClone()) {
+			x *= -1;
+			y *= -1;
 		}
 		drive.mecanumDrive_Cartesian(x, y, twist, gyro);
 	}
@@ -95,6 +98,10 @@ public class MecanumDrive extends Subsystem {
 			x = applyDeadband(x);
 			y = applyDeadband(y);
 			twist = applyDeadband(twist);
+		}
+		if (Robot.getInstance().isClone()) {
+			x *= -1;
+			y *= -1;
 		}
 		drive.mecanumDrive_Cartesian(x, y, twist, gyro);
 	}

@@ -34,15 +34,15 @@ public enum Mode {
   /**
    * Level where we're shooting cargo into cargo ship or taking a cargo from loading station
    */
-  LOADING_STATION("Loading Station", 16, 2.0, (mode) -> 0.7),
+  LOADING_STATION("Loading Station", 16, 1.0, (mode) -> 0.7),
   /**
    * Level where we're placing cargo or hatches on rocket middle ports
    */
-  MEDIUM("Medium", 28, 2.0, (mode) -> 1.1),
+  MEDIUM("Medium", 28, 1.0, (mode) -> 1.1),
   /**
    * Level where we're placing cargo or hatches on rocket high ports
    */
-  HIGH("High", 49, 2.0, (mode) -> 1.3);
+  HIGH("High", 55, 1.0, (mode) -> 1.5);
 
   private String name;
   private boolean isLevel;
