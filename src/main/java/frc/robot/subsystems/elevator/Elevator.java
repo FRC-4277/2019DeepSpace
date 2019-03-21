@@ -192,7 +192,7 @@ public class Elevator extends Subsystem {
   public void periodic() {
     int velocity = getVelocityTicks();
     velocityEntry.setDouble(velocity);
-    int position = getEncoderTicks();
+    double position = getHeightInches();
     positionEntry.setDouble(position);
   }
 

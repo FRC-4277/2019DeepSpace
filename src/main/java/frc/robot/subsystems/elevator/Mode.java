@@ -17,7 +17,7 @@ public enum Mode {
    *    Duration going to home level is 30% more than going up to that level from home
    */
   //(mode) -> mode.name().equals("HOME") ? 0.25 : (mode.getDuration(Mode.valueOf("HOME")) * 1.3))
-  HOME("Home", -2, 0.5, mode -> {
+  HOME("Home", -2, 1, mode -> {
     if (!mode.isLevel()) {
       return 0.0;
     }

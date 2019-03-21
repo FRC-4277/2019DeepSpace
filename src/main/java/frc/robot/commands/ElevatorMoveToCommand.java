@@ -31,13 +31,18 @@ public class ElevatorMoveToCommand extends Command {
   @Override
   protected void initialize() {
     invalid = false;
+    boolean reachedHome = Robot.elevator.hasReachedPositionInches(0, 2);
     Mode reachedMode = Robot.elevator.getReachedMode();
     // If we're in a manual mode and we're trying to go anywhere but home and we're not at home, disallow it
-    if (!reachedMode.isLevel() && mode != Mode.HOME && !Robot.elevator.hasReachedPositionInches(0, 5)) {
+    if (!reachedMode.isLevel() && mode != Mode.HOME && !reachedHome) {
       invalid = true;
     // If reached mode isn't HOME and we're trying to go anywhere else but HOME, disallow it
-    } else if (reachedMode.isLevel() && reachedMode != Mode.HOME && mode != Mode.HOME) {
+    } else if (reachedMode.isLevel() && !reachedHome && mode != Mode.HOME) {
       invalid = true;
+    }
+
+    if (reachedHome) {
+      Robot.elevator.reachedMode = Mode.HOME;
     }
 
     if (!invalid) {
