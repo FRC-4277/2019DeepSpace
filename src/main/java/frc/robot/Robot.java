@@ -160,7 +160,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    gameTimeEntry.setNumber(DriverStation.getInstance().getMatchTime());
+    int secondsLeft = (int) DriverStation.getInstance().getMatchTime();
+    String gameTime;
+    if (secondsLeft >= 0) {
+      int minutes = (int) Math.floor(secondsLeft / 60);
+      int seconds = secondsLeft - (minutes * 60);
+      gameTime = String.format("%d:%02d", minutes, seconds);
+    } else {
+      gameTime = "X:XX";
+    }
+    gameTimeEntry.setString(gameTime);
   }
 
   /**

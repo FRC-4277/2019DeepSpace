@@ -26,7 +26,7 @@ public class DriveDistanceCorrectionCommand extends Command {
       return;
     }
 
-    Robot.mecanumDrive.mecanumDrive(0, speed, Robot.lineUpGyro.getAngle(), false);
+    Robot.mecanumDrive.mecanumDrive(0, speed, 0, Robot.lineUpGyro.getAngle(), false);
   }
   @Override
   protected boolean isFinished(){
