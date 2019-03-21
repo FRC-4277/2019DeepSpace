@@ -194,6 +194,9 @@ public class Elevator extends Subsystem {
     velocityEntry.setDouble(velocity);
     double position = getHeightInches();
     positionEntry.setDouble(position);
+    /*if (mainMotor.getSensorCollection().isFwdLimitSwitchClosed()) {
+      System.out.println("Wiring needs to be looked at :)");
+    }*/
   }
 
   public void resetEncoder() {

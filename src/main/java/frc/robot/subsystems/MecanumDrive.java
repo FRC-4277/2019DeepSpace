@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.robot.Robot;
 import frc.robot.commands.*;
 
 @SuppressWarnings("deprecation")
@@ -38,8 +39,13 @@ public class MecanumDrive extends Subsystem {
 		FRONT_RIGHT_TALON.setNeutralMode(NeutralMode.Brake);
 		BACK_RIGHT_TALON.setNeutralMode(NeutralMode.Brake);	
 
-		FRONT_LEFT_TALON.setInverted(true);
-		BACK_LEFT_TALON.setInverted(true);
+		if (!Robot.getInstance().isClone()) {
+			FRONT_LEFT_TALON.setInverted(true);
+			BACK_LEFT_TALON.setInverted(true);
+		} else {
+			FRONT_RIGHT_TALON.setInverted(true);
+			BACK_RIGHT_TALON.setInverted(true);
+		}
 	}
 
 	public void mecanumDriveJoystick(Joystick driveStick, boolean applyDeadband) {
