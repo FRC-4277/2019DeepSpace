@@ -22,11 +22,11 @@ public class MotionProfile extends Subsystem {
   // here. Call these from Commands.
 
   //feet per second
-  public double maxXSpeed = 100000;// This is high so that we get zero rather than null must be changes to use
+  public double maxXSpeed = 7.24;
   //feet per second
-  public double maxYSpeed = 7.4;
+  public double maxYSpeed = 10.24;
   //degrees per second
-  public double maxZSpeed = 240.6889;// This is high so that we get zero rather than null must be changes to use
+  public double maxZSpeed = 240.6889;
 
 
   @Override
