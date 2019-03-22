@@ -43,8 +43,8 @@ public class GoToRightRocketRight extends CommandGroup implements AutonomousCons
     addSequential(new HatchRocketPlaceGroup(false));
     addParallel(new ElevatorStayAtCommand(Mode.HIGH),1.0);
     addSequential(new ElevatorMoveToHomeCommand(),1.5);
-    addSequential(new DriveToCommand(0.0,0.0,RIGHT_ROCKET_TOWARD_WALL_ROTATION_TARGET,RIGHT_ROCKET_TOWARD_WALL_DURATION,false));
-    addSequential(new DriveToCommand(0.0,-RETURN_TO_WALL_DISTANCE,0,RETURN_TO_WALL_DURATION,true));
+    //addSequential(new DriveToCommand(0.0,0.0,RIGHT_ROCKET_TOWARD_WALL_ROTATION_TARGET,RIGHT_ROCKET_TOWARD_WALL_DURATION,false));
+    //addSequential(new DriveToCommand(0.0,-RETURN_TO_WALL_DISTANCE,0,RETURN_TO_WALL_DURATION,true));
     addSequential(new StartCommand(new JoystickDriveCommand()));
   }
 }
