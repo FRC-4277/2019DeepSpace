@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.robot.Robot;
 import frc.robot.commands.*;
 
 @SuppressWarnings("deprecation")
@@ -51,6 +52,10 @@ public class MecanumDrive extends Subsystem {
 			y = applyDeadband(y);
 			twist = applyDeadband(twist);
 		}
+		if (Robot.getInstance().isClone()) {
+			x *= -1;
+			y *= -1;
+		}
 		drive.mecanumDrive_Cartesian(x, y, twist, 0);
 	}
 
@@ -62,6 +67,10 @@ public class MecanumDrive extends Subsystem {
 			x = applyDeadband(x);
 			y = applyDeadband(y);
 			twist = applyDeadband(twist);
+		}
+		if (Robot.getInstance().isClone()) {
+			x *= -1;
+			y *= -1;
 		}
 		drive.mecanumDrive_Cartesian(x, y, twist, gyro);
 	}
@@ -89,6 +98,10 @@ public class MecanumDrive extends Subsystem {
 			x = applyDeadband(x);
 			y = applyDeadband(y);
 			twist = applyDeadband(twist);
+		}
+		if (Robot.getInstance().isClone()) {
+			x *= -1;
+			y *= -1;
 		}
 		drive.mecanumDrive_Cartesian(x, y, twist, gyro);
 	}

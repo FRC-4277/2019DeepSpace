@@ -160,6 +160,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    SmartDashboard.putBoolean("Distance", proximitySensorHatch.get());
     int secondsLeft = (int) DriverStation.getInstance().getMatchTime();
     String gameTime;
     if (secondsLeft >= 0) {

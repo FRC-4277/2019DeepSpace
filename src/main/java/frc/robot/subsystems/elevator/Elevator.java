@@ -24,9 +24,9 @@ import frc.robot.utils.Settings.Setting;
  * Add your docs here.
  */
 public class Elevator extends Subsystem {
-  private static final double velocityP = 0.00053;
-  private static final double velocityI = 0.00021;
-  private static final double positionP = 0.018;
+  private static final double velocityP = 0.001766;
+  private static final double velocityI = 0.0007;
+  private static final double positionP = 0.06;
   private static final double positionI = 0.0;
   
   
@@ -35,7 +35,7 @@ public class Elevator extends Subsystem {
   private static final double PVC_DIAMETER = 3.5;
   private static final double PVC_CIRCUMFERENCE = PVC_DIAMETER * Math.PI;
   // Gear ratio from encoder to elevator
-  private static final int GEAR_RATIO = 10;
+  private static final int GEAR_RATIO = 3;
   private static final int ENCODER_TICKS_PER_ROTATION = 4096;
 
   /**
@@ -88,7 +88,7 @@ public class Elevator extends Subsystem {
      addShuffleboardEntries();
      // Set sensor phase
      //mainMotor.setSensorPhase(sensorPhaseSetting.getValue());
-     mainMotor.setSensorPhase(false);
+     mainMotor.setSensorPhase(true);
      // Set position to 0 on bottom limit switch
      mainMotor.configClearPositionOnLimitR(true, TALONSRX_CONFIGURE_TIMEOUT);
      // *Don't* 0 position at top
@@ -192,8 +192,11 @@ public class Elevator extends Subsystem {
   public void periodic() {
     int velocity = getVelocityTicks();
     velocityEntry.setDouble(velocity);
-    int position = getEncoderTicks();
+    double position = getHeightInches();
     positionEntry.setDouble(position);
+    /*if (mainMotor.getSensorCollection().isFwdLimitSwitchClosed()) {
+      System.out.println("Wiring needs to be looked at :)");
+    }*/
   }
 
   public void resetEncoder() {

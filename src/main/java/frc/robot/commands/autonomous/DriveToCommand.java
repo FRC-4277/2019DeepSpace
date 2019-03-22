@@ -20,7 +20,8 @@ public class DriveToCommand extends Command {
 	boolean finish  = false;
 	boolean isXNeg = false;
 	boolean isYNeg = false;
-	boolean isThetaNeg = false;
+  boolean isThetaNeg = false;
+  boolean useFieldOrientedDrive = true;
 	
 	double driveX;
 	double driveY;
@@ -44,7 +45,7 @@ public class DriveToCommand extends Command {
   int n;
   int counter;
 
-    public DriveToCommand(double inputDistanceX, double inputDistanceY, double inputDegrees, double duration) {
+    public DriveToCommand(double inputDistanceX, double inputDistanceY, double inputDegrees, double duration, boolean useFieldOrientedDrive) {
 
       requires(Robot.mecanumDrive);
       
@@ -64,10 +65,12 @@ public class DriveToCommand extends Command {
       xProfile = new LogisticMotionProfile(distanceX, this.duration);
       yProfile = new LogisticMotionProfile(distanceY, this.duration);
       rotationalProfile = new LogisticMotionProfile(rotationZ, this.duration);
+
+      this.useFieldOrientedDrive = useFieldOrientedDrive;
     	
     }
 
-    public DriveToCommand(double inputDistanceX, double inputDistanceY, double duration, CurveParameters...rotationTargetsWithDurationsAndDelay){
+    public DriveToCommand(double inputDistanceX, double inputDistanceY, double duration, boolean useFieldOrientedDrive, CurveParameters...rotationTargetsWithDurationsAndDelay){
 
       requires(Robot.mecanumDrive);
 
@@ -96,6 +99,8 @@ public class DriveToCommand extends Command {
       
       rotationalProfile = rotations[0];
       isThetaNeg = isThetaNegativeArray[0];
+      this.useFieldOrientedDrive = useFieldOrientedDrive;
+
     }
 
   // Called just before this Command runs the first time
@@ -122,7 +127,11 @@ public class DriveToCommand extends Command {
     }
 
     normalizeDrive();
+    
+    if(useFieldOrientedDrive)
     Robot.mecanumDrive.mecanumDrive(driveX, driveY, driveZ, Robot.navX.getAngle(), false);
+    else
+    Robot.mecanumDrive.mecanumDrive(driveX, driveY, driveZ, 0, false);
   }
 
   // Make this return true when this Command no longer needs to run execute()
