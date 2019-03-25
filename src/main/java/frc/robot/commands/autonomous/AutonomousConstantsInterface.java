@@ -14,8 +14,8 @@ import frc.robot.subsystems.motionprofiles.CurveParameters;
  */
 public interface AutonomousConstantsInterface {
 
-static double RIGHT_ROCKET_Y_DISTANCE_1 = 16.5;
-static double RIGHT_ROCKET_DURATION = 5.5;
+static double RIGHT_ROCKET_Y_DISTANCE_1 = 15;
+static double RIGHT_ROCKET_DURATION = 5.0;
 
 static double RIGHT_ROCKET_ROTATION_TARGET_1 = -60.0;
 static double RIGHT_ROCKET_ROTATION_TARGET_1_DELAY = 1.0;
@@ -37,7 +37,7 @@ static CurveParameters RIGHT_ROCKET_CURVE_1 =
 static CurveParameters RIGHT_ROCKET_CURVE_2 = 
     new CurveParameters(RIGHT_ROCKET_ROTATION_TARGET_2, RIGHT_ROCKET_ROTATION_TARGET_2_DURATION, RIGHT_ROCKET_ROTATION_TARGET_2_DELAY);
 
-static double LEFT_ROCKET_Y_DISTANCE_1 = 14.5;
+static double LEFT_ROCKET_Y_DISTANCE_1 = 15;
 static double LEFT_ROCKET_DURATION = 5.0;
     
 static double LEFT_ROCKET_ROTATION_TARGET_1 = -55.0;
@@ -53,7 +53,7 @@ static CurveParameters LEFT_ROCKET_CURVE_1 =
 static CurveParameters LEFT_ROCKET_CURVE_2 = 
     new CurveParameters(LEFT_ROCKET_ROTATION_TARGET_2, LEFT_ROCKET_ROTATION_TARGET_2_DURATION, LEFT_ROCKET_ROTATION_TARGET_2_DELAY);
 
-static double CARGOSHIP_DISTANCE = 12.0;
+static double CARGOSHIP_DISTANCE = 11.6;
 static double CARGOSHIP_DURATION = 5.2;
 
 static double LINE_UP_STRAFE_SPEED = 0.3;
