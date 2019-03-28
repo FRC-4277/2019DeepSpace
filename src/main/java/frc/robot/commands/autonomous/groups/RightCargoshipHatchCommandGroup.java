@@ -17,7 +17,7 @@ public class RightCargoshipHatchCommandGroup extends CommandGroup implements Aut
    */
   public RightCargoshipHatchCommandGroup() {
     addSequential(new DriveToCommand(0.0, CARGOSHIP_DISTANCE, 0.0, CARGOSHIP_DURATION, true));
-    addSequential(new DriveStopOnLineCommand(LINE_UP_STRAFE_SPEED, "left"));
+    addSequential(new DriveStopOnLineCommand(LINE_UP_STRAFE_SPEED, "left"), 5.0);
     addSequential(new DriveDistanceCorrectionCommand(DISTANCE_CORRECTION_SPEED));
     addSequential(new HatchRocketPlaceGroup(true));
     // Add Commands here:

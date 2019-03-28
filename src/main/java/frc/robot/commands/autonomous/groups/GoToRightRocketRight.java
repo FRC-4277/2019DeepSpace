@@ -37,7 +37,7 @@ public class GoToRightRocketRight extends CommandGroup implements AutonomousCons
     // arm.
 
     addSequential(new DriveToCommand(0.0, RIGHT_ROCKET_Y_DISTANCE_1, RIGHT_ROCKET_DURATION, false, ZERO_CURVE, RIGHT_ROCKET_CURVE_1, RIGHT_ROCKET_CURVE_2));
-    addSequential(new DriveStopOnLineCommand(LINE_UP_STRAFE_SPEED, "right"), 2.0);
+    addSequential(new DriveStopOnLineCommand(LINE_UP_STRAFE_SPEED, "right"), 5.0);
     addSequential(new DriveDistanceCorrectionCommand(0.25));
     addSequential(new ElevatorMoveToHighCommand(), 2.0);
     addSequential(new HatchRocketPlaceGroup(false));
