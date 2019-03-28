@@ -38,7 +38,7 @@ public enum Mode {
   /**
    * Level where we're placing cargo or hatches on rocket middle ports
    */
-  MEDIUM("Medium", 28, 1.0, (mode) -> 1.1),
+  MEDIUM("Medium", 27, 1.0, (mode) -> 1.1),
   /**
    * Level where we're placing cargo or hatches on rocket high ports
    */
