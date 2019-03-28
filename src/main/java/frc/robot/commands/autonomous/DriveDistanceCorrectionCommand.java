@@ -10,7 +10,7 @@ public class DriveDistanceCorrectionCommand extends Command {
 
   public DriveDistanceCorrectionCommand(Double speed){
     requires(Robot.mecanumDrive);
-    this.speed = speed;
+    this.speed = -speed;
   }
 
   @Override
