@@ -18,6 +18,7 @@ import frc.robot.Robot;
 import frc.robot.ColorProximitySensor.Result;
 
 public class JoystickDriveStopOnLineCommand extends Command {
+  public static final int THRESHOLD = 12;
   public static NetworkTableEntry entry, linedUpEntry;
   static {
     entry = Shuffleboard.getTab("General")
@@ -69,7 +70,7 @@ public class JoystickDriveStopOnLineCommand extends Command {
     }
     Result result = Robot.cargoColorSensor.readAll();
     Result result2 = Robot.hatchColorSensor.readAll();
-    if (result.getClear() > 10 || result2.getClear() > 10) {
+    if (result.getClear() > THRESHOLD || result2.getClear() > THRESHOLD) {
       OI.xboxController1.setRumble(RumbleType.kRightRumble, 1.0);
       Robot.mecanumDrive.mecanumDrive(0, 0, 0, false);
       hasReachedLine = true;

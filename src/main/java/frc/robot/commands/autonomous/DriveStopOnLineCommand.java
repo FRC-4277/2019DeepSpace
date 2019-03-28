@@ -44,7 +44,7 @@ public class DriveStopOnLineCommand extends Command {
     }
     Result result = Robot.cargoColorSensor.readAll();
     Result result2 = Robot.hatchColorSensor.readAll();
-    if (result.getClear() > 10 || result2.getClear() > 10) {
+    if (result.getClear() > JoystickDriveStopOnLineCommand.THRESHOLD || result2.getClear() > JoystickDriveStopOnLineCommand.THRESHOLD) {
       hasReachedLine = true;
       return;
     }
