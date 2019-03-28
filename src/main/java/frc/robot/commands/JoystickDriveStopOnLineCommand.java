@@ -25,7 +25,7 @@ public class JoystickDriveStopOnLineCommand extends Command {
 		.add("Line Up Mode", false)
     .withWidget("Boolean Box")
     // POSITION & SIZE
-    .withPosition(6, 2)
+    .withPosition(4, 2)
     .withSize(2, 2)
     .getEntry();
 
@@ -37,7 +37,7 @@ public class JoystickDriveStopOnLineCommand extends Command {
       "Color when true", "#0004ff" // Blue when true
     ))
     // POSITION & SIZE
-    .withPosition(8, 2)
+    .withPosition(6, 2)
     .withSize(2, 2)
     .getEntry();
   }

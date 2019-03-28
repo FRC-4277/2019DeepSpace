@@ -155,14 +155,14 @@ public class Elevator extends Subsystem {
       .add("Running Mode", runningMode.name())
       .withWidget(BuiltInWidgets.kTextView)
       // POSITION & SIZE
-      .withPosition(6, 0)
+      .withPosition(4, 0)
       .withSize(1, 1)
       .getEntry();
     reachedModeEntry = Shuffleboard.getTab("General")
       .add("Reached Mode", reachedMode.name())
       .withWidget(BuiltInWidgets.kTextView)
       // POSITION & SIZE
-      .withPosition(7, 0)
+      .withPosition(5, 0)
       .withSize(1, 1)
       .getEntry();
 
@@ -171,19 +171,19 @@ public class Elevator extends Subsystem {
       .add("PID Config", "None")
       .withWidget(BuiltInWidgets.kTextView)
       // POSITION & SIZE
-      .withPosition(8, 0)
+      .withPosition(6, 0)
       .withSize(1, 1)
       .getEntry();
 
     /* Add Elevator Sensor Info to Shuffleboard */
     velocityEntry = Shuffleboard.getTab("General")
        .add("Elevator Velocity", 0.0)
-       .withPosition(6, 1)
+       .withPosition(4, 1)
        .withSize(1, 1)
        .getEntry();
     positionEntry = Shuffleboard.getTab("General")
        .add("Elevator Position", 0.0)
-       .withPosition(7, 1)
+       .withPosition(5, 1)
        .withSize(1, 1)
        .getEntry();
   }
