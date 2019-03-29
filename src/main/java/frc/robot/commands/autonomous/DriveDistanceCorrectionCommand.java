@@ -5,7 +5,7 @@ import frc.robot.Robot;
 
 public class DriveDistanceCorrectionCommand extends Command {
 
-  private boolean isAtDistance;
+  private boolean isAtDistance = false;
   private double speed;
 
   public DriveDistanceCorrectionCommand(Double speed){
@@ -20,7 +20,8 @@ public class DriveDistanceCorrectionCommand extends Command {
 
   @Override
   protected void execute() {
-    isAtDistance = !Robot.proximitySensorHatch.get();
+    // Temporarily stop using distance sensor
+    //isAtDistance = !Robot.proximitySensorHatch.get();
 
     if (isAtDistance) {
       return;
