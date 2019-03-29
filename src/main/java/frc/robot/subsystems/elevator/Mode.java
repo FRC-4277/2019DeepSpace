@@ -34,7 +34,7 @@ public enum Mode {
   /**
    * Level where we're shooting cargo into cargo ship or taking a cargo from loading station
    */
-  LOADING_STATION("Loading Station", 16, 1.0, (mode) -> 0.7),
+  LOADING_STATION("Loading Station", 11, 1.0, (mode) -> 0.5),
   /**
    * Level where we're placing cargo or hatches on rocket middle ports
    */
