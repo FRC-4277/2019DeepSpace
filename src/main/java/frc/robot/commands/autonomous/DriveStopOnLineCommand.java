@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.ColorProximitySensor.Result;
 import frc.robot.commands.JoystickDriveStopOnLineCommand;
+import frc.robot.utils.RobotTime;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import frc.robot.OI;
 
@@ -19,6 +20,8 @@ public class DriveStopOnLineCommand extends Command {
   double x;
   
   private boolean hasReachedLine = false;
+  private double trippedTimestampSeconds;
+  private boolean needToFinish = false;
 
   public DriveStopOnLineCommand(Double speed, String rightORleft) {
     requires(Robot.mecanumDrive);
@@ -39,15 +42,20 @@ public class DriveStopOnLineCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if (hasReachedLine) {
+    if (hasReachedLine && needToFinish) {
       return;
     }
     Result result = Robot.cargoColorSensor.readAll();
     Result result2 = Robot.hatchColorSensor.readAll();
     if (result.getClear() > JoystickDriveStopOnLineCommand.THRESHOLD || result2.getClear() > JoystickDriveStopOnLineCommand.THRESHOLD) {
       hasReachedLine = true;
+      trippedTimestampSeconds = RobotTime.getFPGASeconds();
       return;
     }
+
+    if ((RobotTime.getFPGASeconds() - trippedTimestampSeconds) >= 0.2) {
+      needToFinish = true;
+    } 
     
     Robot.mecanumDrive.mecanumDrive(x, 0, 0, Robot.lineUpGyro.getAngle(), true);
   }
@@ -55,7 +63,7 @@ public class DriveStopOnLineCommand extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return hasReachedLine;
+    return hasReachedLine && needToFinish;
   }
 
   // Called once after isFinished returns true
