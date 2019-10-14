@@ -36,11 +36,11 @@ public class GoToLeftRocket extends CommandGroup implements AutonomousConstantsI
     // arm.
     addSequential(new DriveToCommand(0.0, LEFT_ROCKET_Y_DISTANCE_1, LEFT_ROCKET_DURATION, false, ZERO_CURVE, LEFT_ROCKET_CURVE_1, LEFT_ROCKET_CURVE_2));
     addSequential(new DriveStopOnLineCommand(LINE_UP_STRAFE_SPEED, "left"), 5.0);
-    addSequential(new DriveDistanceCorrectionCommand(0.25));
-    addSequential(new ElevatorMoveToHighCommand(), 2.0);
+    addSequential(new DriveDistanceCorrectionCommand(0.25), 2.0);
+    //addSequential(new ElevatorMoveToMediumCommand(), 2.0);
+    //addParallel(new ElevatorStayAtCommand(Mode.MEDIUM));
     addSequential(new HatchRocketPlaceGroup(false));
-    addParallel(new ElevatorStayAtCommand(Mode.HIGH),1.0);
-    addSequential(new ElevatorMoveToHomeCommand());
+    //addSequential(new ElevatorMoveToHomeCommand());
     //addSequential(new DriveToCommand(0.0,0.0,RIGHT_ROCKET_TOWARD_WALL_DURATION,false,))
     addSequential(new StartCommand(new JoystickDriveCommand()));
   }
